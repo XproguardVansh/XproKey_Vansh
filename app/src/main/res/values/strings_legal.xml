@@ -1,0 +1,122 @@
+<resources>
+    <!-- Shared -->
+    <string name="legal_back">Back</string>
+    <string name="legal_last_updated">Last updated: Jan 06, 2026</string>
+    <string name="legal_contact_email">contact@xprokey.com</string>
+
+    <!-- Terms of Service -->
+    <string name="terms_badge">Legal Agreement</string>
+    <string name="terms_title_prefix">Terms of</string>
+    <string name="terms_title_highlight">Service</string>
+    <string name="terms_subtitle">Please read these terms carefully before using XproKey.</string>
+
+    <string name="terms_acceptance_title">Acceptance of Terms</string>
+    <string name="terms_acceptance_body">By accessing or using XproKey, you agree to these Terms of Service. If you do not agree, you must not use the Service.</string>
+
+    <string name="terms_service_title">Service Description</string>
+    <string name="terms_service_body">XproKey is a password manager that allows users to securely store and manage passwords, payment card information, and notes inside encrypted vaults.</string>
+    <string name="terms_service_item_1">Password storage and management</string>
+    <string name="terms_service_item_2">Credit/debit card storage</string>
+    <string name="terms_service_item_3">Secure notes</string>
+    <string name="terms_service_item_4">Password generator</string>
+    <string name="terms_service_item_5">Import and export (CSV)</string>
+
+    <string name="terms_responsibilities_title">User Responsibilities</string>
+    <string name="terms_responsibilities_item_1">You are responsible for your master password</string>
+    <string name="terms_responsibilities_item_2">We cannot recover lost passwords</string>
+    <string name="terms_responsibilities_item_3">You must use the service legally</string>
+    <string name="terms_responsibilities_item_4">You must keep your account secure</string>
+
+    <string name="terms_billing_title">Subscriptions &amp; Billing</string>
+    <string name="terms_billing_item_1">Some features require a paid subscription</string>
+    <string name="terms_billing_item_2">You may cancel anytime</string>
+    <string name="terms_billing_item_3">Access continues until billing period ends</string>
+    <string name="terms_billing_item_4">Payments may be non-refundable</string>
+
+    <string name="terms_business_title">Business Accounts</string>
+    <string name="terms_business_item_1">Access is provided via license keys</string>
+    <string name="terms_business_item_2">Managed by your organization</string>
+    <string name="terms_business_item_3">Access may be revoked at any time</string>
+
+    <string name="terms_security_title">Security</string>
+    <string name="terms_security_body_1">Your data is encrypted before being stored. We are designed so that we cannot access or decrypt your vault contents.</string>
+    <string name="terms_security_body_2">We use strong encryption standards and secure infrastructure to protect your data during storage and transmission.</string>
+    <string name="terms_security_body_3">However, no system is completely secure, and we cannot guarantee absolute security.</string>
+
+    <string name="terms_prohibited_title">Prohibited Use</string>
+    <string name="terms_prohibited_item_1">Illegal activities</string>
+    <string name="terms_prohibited_item_2">Unauthorized access attempts</string>
+    <string name="terms_prohibited_item_3">Reverse engineering</string>
+    <string name="terms_prohibited_item_4">Service misuse</string>
+
+    <string name="terms_liability_title">Limitation of Liability</string>
+    <string name="terms_liability_body_1">We are not liable for indirect damages, data loss, or loss of profits resulting from use of the Service.</string>
+    <string name="terms_liability_body_2">Our total liability is limited to the amount paid by you in the last 12 months.</string>
+
+    <string name="terms_termination_title">Termination</string>
+    <string name="terms_termination_body">We may suspend or terminate your account if you violate these Terms.</string>
+
+    <string name="terms_law_title">Governing Law</string>
+    <string name="terms_law_body">These Terms are governed by the laws of India.</string>
+
+    <string name="terms_contact_title">Contact</string>
+
+    <!-- Privacy Policy -->
+    <string name="privacy_badge">Your Privacy Matters</string>
+    <string name="privacy_title_prefix">Privacy</string>
+    <string name="privacy_title_highlight">Policy</string>
+    <string name="privacy_subtitle">We are committed to protecting your privacy and ensuring the security of your data. Learn how we collect, use, and safeguard your information.</string>
+
+    <string name="privacy_zk_title">Zero-Knowledge Architecture</string>
+    <string name="privacy_zk_body_prefix">XproKey follows a</string>
+    <string name="privacy_zk_body_bold">zero-knowledge encryption model.</string>
+    <string name="privacy_zk_body_suffix">Your data is encrypted before it is stored, and our system is designed so that we do not have access to your vault contents or master password.</string>
+
+    <string name="privacy_collect_title">Information We Collect</string>
+    <string name="privacy_collect_subtitle">We collect only the minimum information necessary to provide our service.</string>
+    <string name="privacy_collect_account_heading">Account Information</string>
+    <string name="privacy_collect_account_item_1">Name and email address</string>
+    <string name="privacy_collect_account_item_2">Master password hash (never stored in plain text)</string>
+    <string name="privacy_collect_account_item_3">Account preferences and settings</string>
+    <string name="privacy_collect_vault_heading">Encrypted Vault Data</string>
+    <string name="privacy_collect_vault_item_1">Passwords and secure notes (encrypted)</string>
+    <string name="privacy_collect_vault_item_2">Credit card information (encrypted)</string>
+    <string name="privacy_collect_vault_item_3">Custom fields and attachments (encrypted)</string>
+    <string name="privacy_collect_note_label">Important:</string>
+    <string name="privacy_collect_note">Your vault data is encrypted before storage. Our architecture ensures that your stored data cannot be read or accessed.</string>
+
+    <string name="privacy_use_title">How We Use Your Data</string>
+    <string name="privacy_use_subtitle">We use your information to provide and maintain our service.</string>
+    <string name="privacy_use_service_heading">Service</string>
+    <string name="privacy_use_service_item_1">Secure password storage</string>
+    <string name="privacy_use_service_item_2">Account authentication</string>
+    <string name="privacy_use_service_item_3">Vault synchronization</string>
+    <string name="privacy_use_service_item_4">Password generation</string>
+    <string name="privacy_use_account_heading">Account</string>
+    <string name="privacy_use_account_item_1">Manage subscriptions</string>
+    <string name="privacy_use_account_item_2">Send service emails</string>
+    <string name="privacy_use_account_item_3">Customer support</string>
+    <string name="privacy_use_account_item_4">Prevent misuse</string>
+
+    <string name="privacy_security_title">Security Measures</string>
+    <string name="privacy_security_subtitle">We implement security practices to protect your data.</string>
+    <string name="privacy_security_item_1">Strong encryption for stored data</string>
+    <string name="privacy_security_item_2">Secure transmission (HTTPS)</string>
+    <string name="privacy_security_item_3">Password hashing and key derivation</string>
+    <string name="privacy_security_item_4">Secure infrastructure and backups</string>
+
+    <string name="privacy_sharing_title">Data Sharing</string>
+    <string name="privacy_sharing_subtitle">We do not sell your data.</string>
+    <string name="privacy_sharing_body">We only share data when necessary for service operation, legal requirements, or with your consent.</string>
+
+    <string name="privacy_rights_title">Your Rights</string>
+    <string name="privacy_rights_subtitle">You control your data.</string>
+    <string name="privacy_rights_item_1">Access your data</string>
+    <string name="privacy_rights_item_2">Update or delete your account</string>
+    <string name="privacy_rights_item_3">Export your vault data</string>
+
+    <string name="privacy_retention_title">Data Retention</string>
+    <string name="privacy_retention_body">We retain your data while your account is active. Upon deletion, your data is removed from our systems, with limited retention in backups for a short period.</string>
+
+    <string name="privacy_contact_title">Contact Us</string>
+</resources>

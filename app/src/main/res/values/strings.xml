@@ -1,0 +1,98 @@
+<resources>
+    <string name="app_name">XproKeey2</string>
+    <string name="brand_name">Xprokey</string>
+
+    <!-- Common -->
+    <string name="label_email">Email</string>
+    <string name="placeholder_email">Enter your email</string>
+    <string name="label_master_password">Master password</string>
+    <string name="or">OR</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="sign_up_with_google">Sign up with Google</string>
+    <string name="cd_show_password">Show password</string>
+    <string name="cd_hide_password">Hide password</string>
+
+    <!-- Login -->
+    <string name="login_title">Welcome back</string>
+    <string name="login_subtitle">Sign in to unlock your account.</string>
+    <string name="remember_me">Remember me</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="sign_in">Sign in →</string>
+    <string name="new_to_xprokey">New to Xprokey?</string>
+    <string name="create_an_account">Create an account</string>
+    <string name="login_success_no_vault">Login successful. This account was created with an older app version, so it has no vault or recovery key.</string>
+
+    <!-- Signup -->
+    <string name="signup_title">Create your account</string>
+    <string name="signup_subtitle">Affordable plans for every stage</string>
+    <string name="label_full_name">Full name</string>
+    <string name="placeholder_full_name">Aarav Mehta</string>
+    <string name="label_confirm_master_password">Confirm master password</string>
+    <string name="i_agree_to_the">I agree to the</string>
+    <string name="terms">Terms</string>
+    <string name="ampersand">&amp;</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="create_account">Create account →</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="sign_in_link">Sign in</string>
+
+    <!-- Password strength -->
+    <string name="strength_weak">Weak</string>
+    <string name="strength_okay">Okay</string>
+    <string name="strength_good">Good</string>
+    <string name="strength_strong">Strong</string>
+
+    <!-- Verify email -->
+    <string name="verify_title">Verify your email</string>
+    <string name="verify_subtitle">We sent a 6-digit verification code to</string>
+    <string name="verify_account">Verify Account</string>
+    <string name="didnt_receive_code">Didn\'t receive the code?</string>
+    <string name="resend_in">Resend in %1$ds</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="back_to_sign_up">Back to Sign Up</string>
+    <string name="cd_otp_field">6-digit verification code</string>
+
+    <!-- Forgot / reset password -->
+    <string name="forgot_title">Forgot password</string>
+    <string name="forgot_subtitle">Enter your registered email and we\'ll send you an OTP to reset your password.</string>
+    <string name="placeholder_email_address">Email address</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="remember_password">Remember your password?</string>
+    <string name="log_in">Log in</string>
+    <string name="reset_title">Reset password</string>
+    <string name="reset_subtitle">Enter the OTP sent to your email and set a new password.</string>
+    <string name="placeholder_enter_otp">Enter OTP</string>
+    <string name="otp_valid_hint">OTP is valid for 10 minutes.</string>
+    <string name="placeholder_recovery_key">Recovery key</string>
+    <string name="recovery_key_hint">Enter the recovery key you received when creating your account.</string>
+    <string name="placeholder_new_password">New password (min 8 characters)</string>
+    <string name="placeholder_confirm_new_password">Confirm new password</string>
+    <string name="reset_password">Reset Password</string>
+
+    <!-- Recovery key dialog -->
+    <string name="recovery_title">Save your recovery key</string>
+    <string name="recovery_body">This key allows you to recover your vault if you forget your password. Store it somewhere safe. We cannot recover it for you.</string>
+    <string name="recovery_warning">If you lose this key and your password, you will permanently lose access to your vault.</string>
+    <string name="copy">Copy</string>
+    <string name="download_csv">Download CSV</string>
+    <string name="continue_label">Continue</string>
+    <string name="recovery_key_copied">Recovery key copied</string>
+    <string name="recovery_key_saved">Recovery key saved</string>
+    <string name="recovery_key_save_failed">Couldn\'t save the file</string>
+    <string name="recovery_key_clip_label">Xprokey recovery key</string>
+
+    <!-- Validation -->
+    <string name="error_required">This field is required</string>
+    <string name="error_invalid_email">Enter a valid email address</string>
+    <string name="error_password_too_short">Password must be at least 8 characters</string>
+    <string name="error_password_mismatch">Passwords don\'t match</string>
+    <string name="error_terms_not_accepted">Please accept the Terms and Privacy Policy</string>
+    <string name="error_invalid_recovery_key">This recovery key doesn\'t match your account</string>
+    <string name="error_invalid_otp">Enter the 6-digit code</string>
+
+    <!-- Network errors -->
+    <string name="error_no_internet">No internet connection. Please try again.</string>
+    <string name="error_timeout">The server took too long to respond. Please try again.</string>
+    <string name="error_vault_unlock_failed">Signed in, but your vault couldn\'t be unlocked with this master password. Please try again.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+</resources>
