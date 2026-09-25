@@ -7,20 +7,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.security.SecureRandom
 import javax.crypto.Cipher
+import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import kotlin.io.encoding.Base64
 
 /**
- * Mirrors the web app's `lib/api/crypto.ts` (tech doc §1):
- * - master salt: 16 random bytes, Base64
- * - vault / recovery key: 32 random bytes, Base64
- * - master key: PBKDF2-SHA256, 100,000 iterations, salt = UTF-8 bytes of the Base64 salt *string*
- * - AES-256-GCM with a fresh 12-byte IV; payload = Base64(iv || ciphertext+tag)
- * - the Base64 vault-key string is what gets encrypted (matches the 72-byte blobs the server returns)
- * - password reset: recovery key opens the vault key, which is re-locked under the *same* salt
- *   (verified against a real reset payload from the web app)
+ * Byte-for-byte port of the web app's crypto ("XproKey - End-to-End Encryption Architecture" §3-4):
+ * - master salt: 16 random bytes, Base64; vault key and recovery key: 32 random bytes, Base64
+ * - Key A = PBKDF2-SHA256(secret, salt), 100,000 iterations, 32 bytes, where secret is the password
+ *   *or the recovery key* (its Base64 text) and salt is the UTF-8 bytes of the master_salt *string*
+ * - AES-256-GCM, fresh 12-byte IV, no AAD; payload = Base64(iv || ciphertext+tag)
+ * - the vault key is stored as two copies of its Base64 text: under Key A[password]
+ *   (encrypted_vault_key) and under Key A[recoveryKey] (encrypted_vault_key_recovery)
+ * - password reset re-wraps the same vault key under Key A[new password] with the same salt
  */
 class VaultCryptoImpl @Inject constructor() : VaultCrypto {
 
@@ -34,8 +36,8 @@ class VaultCryptoImpl @Inject constructor() : VaultCrypto {
         NewVault(
             encryptedKeys = EncryptedVaultKeys(
                 masterSalt = masterSalt,
-                encryptedVaultKey = encrypt(vaultKey, deriveMasterKey(masterPassword, masterSalt)),
-                encryptedVaultKeyRecovery = encrypt(vaultKey, Base64.decode(recoveryKey)),
+                encryptedVaultKey = wrap(vaultKey, secret = masterPassword, masterSalt = masterSalt),
+                encryptedVaultKeyRecovery = wrap(vaultKey, secret = recoveryKey, masterSalt = masterSalt),
             ),
             recoveryKey = recoveryKey,
         )
@@ -46,34 +48,54 @@ class VaultCryptoImpl @Inject constructor() : VaultCrypto {
         masterSalt: String,
         encryptedVaultKey: String,
     ): String? = withContext(Dispatchers.Default) {
-        runCatching {
-            decodeVaultKey(decrypt(encryptedVaultKey, deriveMasterKey(masterPassword, masterSalt)))
-        }.getOrNull()
+        unwrap(encryptedVaultKey, secret = masterPassword, masterSalt = masterSalt)
     }
 
     override suspend fun recoverVaultKey(
         recoveryKey: String,
+        masterSalt: String,
         encryptedVaultKeyRecovery: String,
     ): String? = withContext(Dispatchers.Default) {
-        runCatching {
-            decodeVaultKey(decrypt(encryptedVaultKeyRecovery, Base64.decode(recoveryKey)))
-        }.getOrNull()
+        unwrap(encryptedVaultKeyRecovery, secret = recoveryKey, masterSalt = masterSalt)
     }
 
     override suspend fun lockVaultKey(vaultKey: String, masterPassword: String, masterSalt: String): String =
-        withContext(Dispatchers.Default) { encrypt(vaultKey, deriveMasterKey(masterPassword, masterSalt)) }
+        withContext(Dispatchers.Default) { wrap(vaultKey, secret = masterPassword, masterSalt = masterSalt) }
 
-    /** Expected: the Base64 key string. Also accept the raw 32 key bytes. */
-    private fun decodeVaultKey(plain: ByteArray): String =
-        if (plain.size == KEY_SIZE) Base64.encode(plain) else String(plain, Charsets.UTF_8)
+    /** Web `encryptText(vaultKey, secret, masterSalt)`: AES-GCM under Key A[secret]. */
+    private fun wrap(vaultKey: String, secret: String, masterSalt: String): String =
+        encrypt(vaultKey, deriveKey(secret, masterSalt))
 
-    internal fun deriveMasterKey(masterPassword: String, masterSalt: String): ByteArray =
-        Pbkdf2.deriveKey(
-            password = masterPassword.toByteArray(Charsets.UTF_8),
-            salt = masterSalt.toByteArray(Charsets.UTF_8),
-            iterations = PBKDF2_ITERATIONS,
-            keyLength = KEY_SIZE,
+    /**
+     * Web `decryptText(payload, secret, masterSalt)`. Null when the secret is wrong (GCM tag check) or
+     * the result isn't a vault key: 44 Base64 chars decoding to 32 bytes (doc pitfall #7).
+     */
+    private fun unwrap(payload: String, secret: String, masterSalt: String): String? =
+        runCatching { String(decrypt(payload, deriveKey(secret, masterSalt)), Charsets.UTF_8) }
+            .getOrNull()
+            ?.takeIf(::isVaultKey)
+
+    private fun isVaultKey(value: String): Boolean =
+        value.length == VAULT_KEY_BASE64_LENGTH &&
+            runCatching { Base64.decode(value).size == KEY_SIZE }.getOrDefault(false)
+
+    /**
+     * Key A (doc §6.2): PBKDF2WithHmacSHA256 over [secret] and the UTF-8 bytes of the Base64 salt
+     * *text* (not decoded). The provider turns the password chars into UTF-8, like WebCrypto's TextEncoder.
+     */
+    internal fun deriveKey(secret: String, masterSalt: String): ByteArray {
+        val spec = PBEKeySpec(
+            secret.toCharArray(),
+            masterSalt.toByteArray(Charsets.UTF_8),
+            PBKDF2_ITERATIONS,
+            KEY_SIZE * 8,
         )
+        return try {
+            SecretKeyFactory.getInstance(PBKDF2_ALGORITHM).generateSecret(spec).encoded
+        } finally {
+            spec.clearPassword()
+        }
+    }
 
     internal fun encrypt(plainText: String, key: ByteArray): String {
         val iv = ByteArray(IV_SIZE).also(random::nextBytes)
@@ -98,9 +120,11 @@ class VaultCryptoImpl @Inject constructor() : VaultCrypto {
     private fun randomBase64(size: Int): String = Base64.encode(ByteArray(size).also(random::nextBytes))
 
     private companion object {
+        const val PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA256"
         const val PBKDF2_ITERATIONS = 100_000
         const val SALT_SIZE = 16
         const val KEY_SIZE = 32
+        const val VAULT_KEY_BASE64_LENGTH = 44
         const val IV_SIZE = 12
         const val TAG_SIZE_BITS = 128
         const val TRANSFORMATION = "AES/GCM/NoPadding"

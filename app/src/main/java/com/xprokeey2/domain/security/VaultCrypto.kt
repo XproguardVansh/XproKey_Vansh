@@ -15,8 +15,15 @@ interface VaultCrypto {
         encryptedVaultKey: String,
     ): String?
 
-    /** Returns the Base64 vault key, or null if [recoveryKey] doesn't decrypt it. */
-    suspend fun recoverVaultKey(recoveryKey: String, encryptedVaultKeyRecovery: String): String?
+    /**
+     * Returns the Base64 vault key, or null if [recoveryKey] doesn't decrypt it. Like the password,
+     * the recovery key goes through PBKDF2 with the account's [masterSalt].
+     */
+    suspend fun recoverVaultKey(
+        recoveryKey: String,
+        masterSalt: String,
+        encryptedVaultKeyRecovery: String,
+    ): String?
 
     /**
      * Returns [vaultKey] encrypted with [masterPassword] under the account's existing [masterSalt]

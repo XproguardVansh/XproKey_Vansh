@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import kotlin.io.encoding.Base64
 
@@ -12,18 +13,19 @@ class VaultCryptoImplTest {
     private val crypto = VaultCryptoImpl()
 
     /**
-     * Produced in Node's WebCrypto with `deriveKey` / `encryptWithVaultKey` copied verbatim
-     * from the tech doc, so it proves web-made vaults open on Android.
+     * Produced in Node's WebCrypto with the web app's `deriveKey` and `encryptText(text, secret, masterSalt)`
+     * as described in the encryption architecture doc: both copies of the vault key are wrapped under
+     * PBKDF2(secret, master_salt), where secret is the password or the recovery key.
      */
     private object WebVector {
         const val PASSWORD = "Sup3r\$ecret-ñ✓"
-        const val MASTER_SALT = "35yLnWFVxjmU+iVyd7eB9A=="
-        const val VAULT_KEY = "B8L6OyX8Tl6tTAwW7nkl5QJEm9AEzuJGrJkg/tCWNO8="
-        const val RECOVERY_KEY = "/c5mld3IDjCSQItDghPj0+U0ofHL9SFDU2ylU+WSemU="
+        const val MASTER_SALT = "2RhJvQ8+aYKXzTvGAuC+/Q=="
+        const val VAULT_KEY = "TQkzi8jV90LIkYuRaWsDS+2eg5H290vBdeLpW2GgCv8="
+        const val RECOVERY_KEY = "6MDnmCGlH698SS49Y3Qhf33tnoofwiM9bUBNfg8at8s="
         const val ENCRYPTED_VAULT_KEY =
-            "r4uta3dCQsy/zU4mKL1ZmGgIJAod0fUf3/od3/X7PpPL8wqj28rEjGtJEhWgFh5Y4Hr273e3/3rodWiMqOL+R5TFRuNOp2S8"
+            "ikEqj27BCHC7sxqh4Eh1lLfYOmoR2JY+5kb2dxq96BtPgrFKONAHc0VB2Pg0m+4yMVc30jj5DjKIoaX6IkY2RfAD270eekhK"
         const val ENCRYPTED_VAULT_KEY_RECOVERY =
-            "ukduZrnCMzPYJvk3RRCvLR/WLF/NdS2B7C9TpkR3ZYVd6ETqIR5Nn/bj7pKOUyjiRzKWeDt8igqrfeqYjkj/drNCsDWMmVRv"
+            "2NtiA6gyeGU6GzNe5KIP/RJy7rYkcj8L2E2DrofZwva6svxNbJrLlTzFCtugjMjLesnt+4CGWl4+kbpSVRogSuANkaTkDRfx"
     }
 
     @Test
@@ -40,31 +42,31 @@ class VaultCryptoImplTest {
     fun recoveryKeyFromWebAppRecoversVaultKey() = runBlocking {
         assertEquals(
             WebVector.VAULT_KEY,
-            crypto.recoverVaultKey(WebVector.RECOVERY_KEY, WebVector.ENCRYPTED_VAULT_KEY_RECOVERY),
+            crypto.recoverVaultKey(
+                recoveryKey = WebVector.RECOVERY_KEY,
+                masterSalt = WebVector.MASTER_SALT,
+                encryptedVaultKeyRecovery = WebVector.ENCRYPTED_VAULT_KEY_RECOVERY,
+            ),
         )
     }
 
+    /** Regression: the recovery key is a PBKDF2 secret, never a raw AES key (that broke Android <-> web). */
     @Test
-    fun wrongRecoveryKeyRecoversNothing() = runBlocking {
-        val otherKey = Base64.encode(ByteArray(32) { 7 })
-        assertNull(crypto.recoverVaultKey(otherKey, WebVector.ENCRYPTED_VAULT_KEY_RECOVERY))
-        assertNull(crypto.recoverVaultKey("not base64 at all", WebVector.ENCRYPTED_VAULT_KEY_RECOVERY))
+    fun recoveryCopyIsNotLockedWithTheRawRecoveryKey() {
+        val rawKeyAttempt = runCatching {
+            crypto.decrypt(WebVector.ENCRYPTED_VAULT_KEY_RECOVERY, Base64.decode(WebVector.RECOVERY_KEY))
+        }
+        assertTrue(rawKeyAttempt.isFailure)
     }
 
-    /** What the web app does on reset: same vault key, new password, SAME salt; only encrypted_vault_key changes. */
     @Test
-    fun passwordResetKeepsVaultKeyAndSalt() = runBlocking {
-        val vault = crypto.createVault("Old-Password1")
-        val salt = vault.encryptedKeys.masterSalt
-
-        val vaultKey = crypto.recoverVaultKey(vault.recoveryKey, vault.encryptedKeys.encryptedVaultKeyRecovery)!!
-        val newEncryptedVaultKey = crypto.lockVaultKey(vaultKey, "New-Password2", salt)
-
-        assertEquals(vaultKey, crypto.unlockVaultKey("New-Password2", salt, newEncryptedVaultKey))
-        assertNull(crypto.unlockVaultKey("Old-Password1", salt, newEncryptedVaultKey))
-        assertEquals(72, Base64.decode(newEncryptedVaultKey).size)
-        // The recovery key keeps working after the reset.
-        assertEquals(vaultKey, crypto.recoverVaultKey(vault.recoveryKey, vault.encryptedKeys.encryptedVaultKeyRecovery))
+    fun wrongRecoveryKeyOrSaltRecoversNothing() = runBlocking {
+        val otherKey = Base64.encode(ByteArray(32) { 7 })
+        assertNull(crypto.recoverVaultKey(otherKey, WebVector.MASTER_SALT, WebVector.ENCRYPTED_VAULT_KEY_RECOVERY))
+        assertNull(crypto.recoverVaultKey("not base64 at all", WebVector.MASTER_SALT, WebVector.ENCRYPTED_VAULT_KEY_RECOVERY))
+        assertNull(
+            crypto.recoverVaultKey(WebVector.RECOVERY_KEY, "AAAAAAAAAAAAAAAAAAAAAA==", WebVector.ENCRYPTED_VAULT_KEY_RECOVERY)
+        )
     }
 
     @Test
@@ -78,8 +80,17 @@ class VaultCryptoImplTest {
         )
     }
 
+    /** Doc pitfall #7: a decrypted value that isn't a 44-char / 32-byte Base64 key is rejected. */
     @Test
-    fun createdVaultRoundTripsWithPasswordAndRecoveryKey() = runBlocking {
+    fun decryptedValueThatIsNotAVaultKeyIsRejected() = runBlocking {
+        val salt = "2RhJvQ8+aYKXzTvGAuC+/Q=="
+        val notAVaultKey = crypto.lockVaultKey("hello world", "pw-12345", salt)
+        assertNull(crypto.unlockVaultKey("pw-12345", salt, notAVaultKey))
+        assertNull(crypto.recoverVaultKey("pw-12345", salt, notAVaultKey))
+    }
+
+    @Test
+    fun createdVaultOpensWithPasswordAndWithRecoveryKey() = runBlocking {
         val password = "Correct-Horse-9"
         val vault = crypto.createVault(password)
         val keys = vault.encryptedKeys
@@ -91,13 +102,42 @@ class VaultCryptoImplTest {
         assertEquals(72, Base64.decode(keys.encryptedVaultKeyRecovery).size)
 
         val viaPassword = crypto.unlockVaultKey(password, keys.masterSalt, keys.encryptedVaultKey)
-        val viaRecovery = String(
-            crypto.decrypt(keys.encryptedVaultKeyRecovery, Base64.decode(vault.recoveryKey)),
-            Charsets.UTF_8,
-        )
+        val viaRecovery = crypto.recoverVaultKey(vault.recoveryKey, keys.masterSalt, keys.encryptedVaultKeyRecovery)
         assertEquals(viaPassword, viaRecovery)
         assertEquals(32, Base64.decode(viaPassword!!).size)
     }
+
+    /** What the web app does on reset: same vault key, new password, SAME salt; only encrypted_vault_key changes. */
+    @Test
+    fun passwordResetKeepsVaultKeyAndSalt() = runBlocking {
+        val vault = crypto.createVault("Old-Password1")
+        val keys = vault.encryptedKeys
+
+        val vaultKey = crypto.recoverVaultKey(vault.recoveryKey, keys.masterSalt, keys.encryptedVaultKeyRecovery)!!
+        val newEncryptedVaultKey = crypto.lockVaultKey(vaultKey, "New-Password2", keys.masterSalt)
+
+        assertEquals(vaultKey, crypto.unlockVaultKey("New-Password2", keys.masterSalt, newEncryptedVaultKey))
+        assertNull(crypto.unlockVaultKey("Old-Password1", keys.masterSalt, newEncryptedVaultKey))
+        assertEquals(72, Base64.decode(newEncryptedVaultKey).size)
+        // The recovery key keeps working after the reset.
+        assertEquals(vaultKey, crypto.recoverVaultKey(vault.recoveryKey, keys.masterSalt, keys.encryptedVaultKeyRecovery))
+    }
+
+    /** Expected values from Python's hashlib.pbkdf2_hmac("sha256", ..., 100_000, 32). */
+    @Test
+    fun keyDerivationMatchesPbkdf2Reference() {
+        assertEquals(
+            "0394a2ede332c9a13eb82e9b24631604c31df978b4e2f0fbd2c549944f9d79a5",
+            crypto.deriveKey("password", "salt").toHex(),
+        )
+        // Non-ASCII password: the provider must turn chars into UTF-8 bytes, like the web's TextEncoder.
+        assertEquals(
+            "5e4d68da9281a8120b484f05cbd50e015dfad2e0589c3b11c52f988322604cbb",
+            crypto.deriveKey("pässwörd✓-€", "2RhJvQ8+aYKXzTvGAuC+/Q==").toHex(),
+        )
+    }
+
+    private fun ByteArray.toHex() = joinToString("") { "%02x".format(it) }
 
     @Test
     fun everyEncryptionUsesAFreshIv() {

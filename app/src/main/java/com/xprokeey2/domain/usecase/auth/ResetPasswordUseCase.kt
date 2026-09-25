@@ -31,6 +31,7 @@ class ResetPasswordUseCase @Inject constructor(
             val vaultKey = vaultCrypto.recoverVaultKey(
                 // Tolerate spaces/line breaks from copying the key off the dialog or the CSV.
                 recoveryKey = recoveryKey.filterNot(Char::isWhitespace),
+                masterSalt = masterSalt,
                 encryptedVaultKeyRecovery = encryptedVaultKeyRecovery,
             ) ?: return Resource.Error(DataError.InvalidRecoveryKey)
             vaultCrypto.lockVaultKey(vaultKey = vaultKey, masterPassword = newPassword, masterSalt = masterSalt)
