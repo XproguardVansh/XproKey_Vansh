@@ -1,5 +1,6 @@
 package com.xprokeey2.presentation.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -60,6 +61,7 @@ fun XpTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     label: String? = null,
+    @DrawableRes labelIcon: Int? = null,
     placeholder: String = "",
     supportingText: String? = null,
     error: String? = null,
@@ -72,6 +74,8 @@ fun XpTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     textStyle: TextStyle = XpTheme.typography.fieldText,
     placeholderStyle: TextStyle = XpTheme.typography.fieldText,
+    /** More than 1 makes a multi-line field (e.g. notes) that grows with its text. */
+    minLines: Int = 1,
     leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
 ) {
@@ -89,7 +93,7 @@ fun XpTextField(
 
     Column(modifier = modifier) {
         if (label != null) {
-            FieldLabel(label = label, required = required)
+            FieldLabel(label = label, required = required, icon = labelIcon)
             Spacer(Modifier.height(8.dp))
         }
         BasicTextField(
@@ -105,7 +109,8 @@ fun XpTextField(
             readOnly = readOnly,
             textStyle = textStyle.copy(color = if (readOnly) colors.textLabel else colors.textPrimary),
             cursorBrush = SolidColor(colors.primary),
-            singleLine = true,
+            singleLine = minLines == 1,
+            minLines = minLines,
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
             visualTransformation = visualTransformation,
@@ -115,8 +120,9 @@ fun XpTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 48.dp)
-                        .padding(start = 16.dp, end = if (trailingContent != null) 6.dp else 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                        .padding(start = 16.dp, end = if (trailingContent != null) 6.dp else 16.dp)
+                        .then(if (minLines > 1) Modifier.padding(vertical = 14.dp) else Modifier),
+                    verticalAlignment = if (minLines > 1) Alignment.Top else Alignment.CenterVertically,
                 ) {
                     if (leadingContent != null) {
                         leadingContent()
@@ -207,19 +213,33 @@ fun XpPasswordField(
     )
 }
 
-/** Uppercase field label; required fields get a red asterisk like the web signup form. */
+/**
+ * Uppercase field label; required fields get a red asterisk like the web signup form. The card
+ * forms put a small icon in front of it.
+ */
 @Composable
-private fun FieldLabel(label: String, required: Boolean) {
+private fun FieldLabel(label: String, required: Boolean, @DrawableRes icon: Int?) {
     val colors = XpTheme.colors
-    Text(
-        text = buildAnnotatedString {
-            append(label.uppercase())
-            if (required) {
-                append(" ")
-                withStyle(SpanStyle(color = colors.error)) { append("*") }
-            }
-        },
-        style = XpTheme.typography.fieldLabel,
-        color = colors.textLabel,
-    )
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        if (icon != null) {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = null,
+                tint = colors.textLabel,
+                modifier = Modifier.size(13.dp),
+            )
+            Spacer(Modifier.width(6.dp))
+        }
+        Text(
+            text = buildAnnotatedString {
+                append(label.uppercase())
+                if (required) {
+                    append(" ")
+                    withStyle(SpanStyle(color = colors.error)) { append("*") }
+                }
+            },
+            style = XpTheme.typography.fieldLabel,
+            color = colors.textLabel,
+        )
+    }
 }

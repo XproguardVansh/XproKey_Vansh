@@ -90,10 +90,125 @@
     <string name="activate_license">Activate License →</string>
     <string name="license_info">Each license key can be used only once. If you\'re having trouble, contact your IT department or system administrator.</string>
 
-    <!-- Dashboard (temporary placeholder) -->
+    <!-- Personal plan (payment not built yet: the trial button stays disabled) -->
+    <string name="back">Back</string>
+    <string name="plan_secure_payment">Secure payment powered by Razorpay</string>
+    <string name="plan_title">Choose your plan</string>
+    <string name="plan_subtitle">Unlock premium zero-knowledge encryption vaults and tools instantly.</string>
+    <string name="plan_quarterly">Quarterly</string>
+    <string name="plan_quarterly_tagline">Short-term protection — 7 days free trial</string>
+    <string name="plan_quarterly_period">/ 3 months</string>
+    <string name="plan_yearly">Yearly</string>
+    <string name="plan_yearly_tagline">Best value — 7 days free trial</string>
+    <string name="plan_yearly_period">/ per year</string>
+    <string name="plan_price">₹10</string>
+    <string name="plan_trial_badge">7-day trial</string>
+    <string name="plan_recommended">Recommended</string>
+    <string name="plan_click_to_select">Click to select</string>
+    <string name="plan_selected">✓ Selected</string>
+    <string name="plan_start_trial">Start 7-day free trial →</string>
+    <string name="feature_encrypted_vaults">AES-256-GCM encrypted vaults</string>
+
+    <!-- Workspace shell (drawer + top bar) -->
+    <string name="menu">Menu</string>
+    <string name="cd_open_menu">Open menu</string>
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_passwords">Passwords</string>
+    <string name="nav_cards">Cards</string>
+    <string name="nav_tools">Tools</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_support">Support</string>
+
+    <!-- Dashboard -->
     <string name="dashboard_title">Dashboard</string>
-    <string name="dashboard_placeholder">You\'re signed in. Your dashboard is coming soon.</string>
-    <string name="dashboard_organization">Organization: %1$s</string>
+    <string name="add_password">Add password</string>
+    <string name="stat_passwords">Passwords</string>
+    <string name="stat_passwords_caption">Total passwords</string>
+    <string name="stat_cards">Cards</string>
+    <string name="stat_cards_caption">Total cards</string>
+    <string name="stat_security_score">Security score</string>
+    <string name="stat_security_caption">Add items to see score</string>
+    <string name="stat_weak_items">Weak items</string>
+    <string name="stat_weak_caption">Review now</string>
+    <string name="stat_unknown">—</string>
+    <string name="recently_updated">Recently updated</string>
+    <string name="view_all">View all</string>
+    <string name="recently_updated_placeholder">Your recently updated items will appear here.</string>
+    <string name="quick_actions">Quick actions</string>
+    <string name="action_generate_password">Generate password</string>
+    <string name="action_import_passwords">Import passwords</string>
+    <string name="action_manage_cards">Manage cards</string>
+    <string name="security_caption">Security</string>
+    <string name="security_placeholder">— add items to start</string>
+
+    <!-- Cards -->
+    <string name="cards_title">Cards</string>
+    <string name="add_card">Add card</string>
+    <string name="search_cards">Search cards…</string>
+    <string name="cards_empty_title">No cards found</string>
+    <string name="cards_empty_body">Get started by adding your first card.</string>
+    <string name="cards_no_match">No cards match \"%1$s\"</string>
+    <string name="cards_load_failed">Couldn\'t load your cards.</string>
+    <string name="retry">Try again</string>
+    <string name="reveal">Reveal</string>
+    <string name="hide">Hide</string>
+    <string name="view">View</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="cd_delete_card">Delete card</string>
+    <string name="delete_card_title">Delete this card?</string>
+    <string name="delete_card_body">%1$s ending in %2$s will be permanently removed from your vault.</string>
+    <string name="card_fallback_name">This card</string>
+    <string name="card_saved">Card saved successfully.</string>
+    <string name="card_updated">Card updated successfully.</string>
+    <string name="card_decrypt_failed">This card couldn\'t be decrypted with your vault key.</string>
+    <string name="card_secure_caption">Xprokey Secure</string>
+    <string name="card_holder_caption">Card holder</string>
+    <string name="card_expires_caption">Expires</string>
+    <string name="card_holder_placeholder">Your name</string>
+    <string name="card_expiry_placeholder">MM/YY</string>
+
+    <!-- Add / edit card -->
+    <string name="add_card_title">Add card</string>
+    <string name="edit_card_title">Edit card</string>
+    <string name="live_preview">Live preview</string>
+    <string name="card_details_section">Card details</string>
+    <string name="label_card_type">Card type</string>
+    <string name="placeholder_card_type">e.g. Personal</string>
+    <string name="label_cardholder_name">Cardholder name</string>
+    <string name="placeholder_cardholder_name">Full name</string>
+    <string name="label_card_number">Card number</string>
+    <string name="placeholder_card_number">0000 0000 0000 0000</string>
+    <string name="label_expiry">Expiry</string>
+    <string name="placeholder_expiry">MM / YY</string>
+    <string name="label_cvv">CVV</string>
+    <string name="cd_show_cvv">Show CVV</string>
+    <string name="cd_hide_cvv">Hide CVV</string>
+    <string name="label_card_category">Card category</string>
+    <string name="label_bank_name">Bank name</string>
+    <string name="placeholder_bank_name">e.g. XproKey Secure Bank</string>
+    <string name="label_notes">Notes</string>
+    <string name="placeholder_notes">Add any relevant details…</string>
+    <string name="save_card">Save card</string>
+    <string name="card_secrets_unreadable">The saved card number and CVV couldn\'t be decrypted. Enter them again to save this card.</string>
+    <string name="category_credit">Credit card</string>
+    <string name="category_debit">Debit card</string>
+    <string name="category_emi">EMI card</string>
+    <string name="category_prepaid">Prepaid card</string>
+    <string name="category_corporate">Corporate card</string>
+
+    <!-- Card details -->
+    <string name="card_details_title">Card Details</string>
+    <string name="card_preview">Card preview</string>
+    <string name="label_brand">Brand</string>
+    <string name="label_expiry_date">Expiry date</string>
+    <string name="label_cvc">CVC</string>
+    <string name="copy_action">COPY</string>
+    <string name="reveal_action">REVEAL</string>
+    <string name="hide_action">HIDE</string>
+    <string name="copied">%1$s copied</string>
+    <string name="empty_value">—</string>
 
     <!-- Recovery key dialog -->
     <string name="recovery_title">Save your recovery key</string>
@@ -115,11 +230,15 @@
     <string name="error_terms_not_accepted">Please accept the Terms and Privacy Policy</string>
     <string name="error_invalid_recovery_key">This recovery key doesn\'t match your account</string>
     <string name="error_invalid_otp">Enter the 6-digit code</string>
+    <string name="error_invalid_card_number">Enter a valid card number</string>
+    <string name="error_invalid_expiry">Enter a valid expiry date (MM / YY)</string>
+    <string name="error_invalid_cvc">Enter the 3 or 4-digit CVV</string>
 
     <!-- Network errors -->
     <string name="error_no_internet">No internet connection. Please try again.</string>
     <string name="error_timeout">The server took too long to respond. Please try again.</string>
     <string name="error_session_expired">Your session has expired. Please sign in again.</string>
+    <string name="error_vault_locked">Your vault is locked. Please sign in again to unlock it.</string>
     <string name="error_vault_unlock_failed">Signed in, but your vault couldn\'t be unlocked with this master password. Please try again.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
 </resources>

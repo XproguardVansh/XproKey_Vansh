@@ -19,3 +19,10 @@ data class ErrorResponseDto(
     val detail: String? = null,
     @SerialName("is_verified") val isVerified: Boolean? = null,
 )
+
+/** Envelope of the card endpoints: `{"data": ..., "message": "..."}`. */
+@Serializable
+data class DataResponseDto<T>(
+    val data: T,
+    val message: String? = null,
+)

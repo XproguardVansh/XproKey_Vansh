@@ -10,16 +10,21 @@ import androidx.compose.ui.unit.sp
 import com.xprokeey2.R
 
 val Manrope = FontFamily(
-    Font(R.font.manrope_regular, FontWeight.Normal),
-    Font(R.font.manrope_medium, FontWeight.Medium),
-    Font(R.font.manrope_semibold, FontWeight.SemiBold),
-    Font(R.font.manrope_bold, FontWeight.Bold),
-    Font(R.font.manrope_extrabold, FontWeight.ExtraBold),
+    Font(R.font.montserrat_regular, FontWeight.Normal),
+    Font(R.font.montserrat_medium, FontWeight.Medium),
+    Font(R.font.montserrat_semibold, FontWeight.SemiBold),
+    Font(R.font.montserrat_bold, FontWeight.Bold),
+    Font(R.font.montserrat_extrabold, FontWeight.ExtraBold),
 )
 
 val JetBrainsMono = FontFamily(
-    Font(R.font.jetbrains_mono_medium, FontWeight.Medium),
-    Font(R.font.jetbrains_mono_bold, FontWeight.Bold),
+    Font(R.font.montserrat_regular, FontWeight.Medium),
+    Font(R.font.montserrat_semibold, FontWeight.Bold),
+)
+
+/** Card faces only (number and network wordmark), as in the Figma card designs. */
+val SpaceGrotesk = FontFamily(
+    Font(R.font.montserrat_bold, FontWeight.Bold),
 )
 
 /** Text styles matching the Figma auth screens. */
@@ -41,6 +46,13 @@ data class XpTypography(
     val mono: TextStyle = TextStyle(fontFamily = JetBrainsMono, fontWeight = FontWeight.Medium, fontSize = 16.sp, lineHeight = 26.sp, letterSpacing = 1.sp),
     val dialogTitle: TextStyle = TextStyle(fontFamily = Manrope, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp),
     val dialogBody: TextStyle = TextStyle(fontFamily = Manrope, fontWeight = FontWeight.Medium, fontSize = 14.sp, lineHeight = 21.sp),
+    // Workspace (dashboard, cards)
+    val pageTitle: TextStyle = TextStyle(fontFamily = Manrope, fontWeight = FontWeight.ExtraBold, fontSize = 26.sp, lineHeight = 32.sp, letterSpacing = (-0.6).sp),
+    val sectionTitle: TextStyle = TextStyle(fontFamily = Manrope, fontWeight = FontWeight.Bold, fontSize = 15.sp, lineHeight = 20.sp),
+    val statValue: TextStyle = TextStyle(fontFamily = Manrope, fontWeight = FontWeight.ExtraBold, fontSize = 28.sp, lineHeight = 32.sp, letterSpacing = (-0.6).sp),
+    val navItem: TextStyle = TextStyle(fontFamily = Manrope, fontWeight = FontWeight.Medium, fontSize = 14.sp),
+    val cardNumber: TextStyle = TextStyle(fontFamily = SpaceGrotesk, fontWeight = FontWeight.Bold, fontSize = 19.sp, letterSpacing = 2.6.sp),
+    val cardCaption: TextStyle = TextStyle(fontFamily = JetBrainsMono, fontWeight = FontWeight.Bold, fontSize = 7.5.sp, letterSpacing = 0.9.sp),
 )
 
 private val default = Typography()

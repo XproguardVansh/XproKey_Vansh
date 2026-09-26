@@ -144,4 +144,36 @@ class VaultCryptoImplTest {
         val key = ByteArray(32) { it.toByte() }
         assertNotEquals(crypto.encrypt("same text", key), crypto.encrypt("same text", key))
     }
+
+    /**
+     * Produced in Node's WebCrypto with the tech doc's `encryptWithVaultKey(text, vaultKey)`: the raw
+     * vault key is the AES-GCM key (no PBKDF2), as the web app does for card numbers and CVCs.
+     */
+    private object CardVector {
+        const val NUMBER = "4111111111111111"
+        const val ENCRYPTED_NUMBER = "tqh+LtR1Igu2hYHOqJuEhGjWg7FsBgSPesDkFnLkxlSn3c6yoKeU3g/1BPE="
+        const val CVC = "123"
+        const val ENCRYPTED_CVC = "tX0frXm3hOznXmr+UdOW8yuUS8F2PjLKpkyZVNVhnQ=="
+    }
+
+    @Test
+    fun decryptsCardSecretsEncryptedByWebApp() = runBlocking {
+        assertEquals(CardVector.NUMBER, crypto.decryptWithVaultKey(CardVector.ENCRYPTED_NUMBER, WebVector.VAULT_KEY))
+        assertEquals(CardVector.CVC, crypto.decryptWithVaultKey(CardVector.ENCRYPTED_CVC, WebVector.VAULT_KEY))
+    }
+
+    @Test
+    fun cardSecretsRoundTripUnderVaultKey() = runBlocking {
+        val encrypted = crypto.encryptWithVaultKey(CardVector.NUMBER, WebVector.VAULT_KEY)
+        assertNotEquals(CardVector.NUMBER, encrypted)
+        assertEquals(CardVector.NUMBER, crypto.decryptWithVaultKey(encrypted, WebVector.VAULT_KEY))
+    }
+
+    @Test
+    fun cardSecretsDontOpenWithAnotherVaultKeyOrAsPlainText() = runBlocking {
+        val otherVaultKey = WebVector.RECOVERY_KEY // any other 32-byte key
+        assertNull(crypto.decryptWithVaultKey(CardVector.ENCRYPTED_NUMBER, otherVaultKey))
+        // Cards saved from Postman store the number unencrypted.
+        assertNull(crypto.decryptWithVaultKey("4111111111111111", WebVector.VAULT_KEY))
+    }
 }

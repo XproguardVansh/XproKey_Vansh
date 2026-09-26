@@ -30,4 +30,13 @@ interface VaultCrypto {
      * (password reset: the web app keeps the salt and only replaces encrypted_vault_key).
      */
     suspend fun lockVaultKey(vaultKey: String, masterPassword: String, masterSalt: String): String
+
+    /**
+     * Web `encryptWithVaultKey`: AES-256-GCM directly under the Base64 [vaultKey] (no KDF), used
+     * for vault item secrets such as card numbers and CVCs.
+     */
+    suspend fun encryptWithVaultKey(plainText: String, vaultKey: String): String
+
+    /** Web `decryptWithVaultKey`; null when [payload] isn't ciphertext under this [vaultKey]. */
+    suspend fun decryptWithVaultKey(payload: String, vaultKey: String): String?
 }

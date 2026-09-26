@@ -29,3 +29,10 @@ data class LoginUserDto(
     @SerialName("subscription_status") val subscriptionStatus: String? = null,
     @SerialName("subscription_expires_at") val subscriptionExpiresAt: String? = null,
 )
+
+/** `{"access_token": "...", "message": "Access token refreshed successfully"}` */
+@Serializable
+data class RefreshTokenResponseDto(
+    @SerialName("access_token") val accessToken: String,
+    val message: String? = null,
+)

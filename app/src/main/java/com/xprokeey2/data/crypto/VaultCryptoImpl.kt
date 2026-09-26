@@ -62,6 +62,18 @@ class VaultCryptoImpl @Inject constructor() : VaultCrypto {
     override suspend fun lockVaultKey(vaultKey: String, masterPassword: String, masterSalt: String): String =
         withContext(Dispatchers.Default) { wrap(vaultKey, secret = masterPassword, masterSalt = masterSalt) }
 
+    /** Doc §4.4 / §6.5: the raw 32-byte vault key is the AES key, no PBKDF2. */
+    override suspend fun encryptWithVaultKey(plainText: String, vaultKey: String): String =
+        withContext(Dispatchers.Default) { encrypt(plainText, vaultKeyBytes(vaultKey)) }
+
+    override suspend fun decryptWithVaultKey(payload: String, vaultKey: String): String? =
+        withContext(Dispatchers.Default) {
+            runCatching { String(decrypt(payload, vaultKeyBytes(vaultKey)), Charsets.UTF_8) }.getOrNull()
+        }
+
+    private fun vaultKeyBytes(vaultKey: String): ByteArray =
+        Base64.decode(vaultKey).also { require(it.size == KEY_SIZE) { "Vault key must be $KEY_SIZE bytes" } }
+
     /** Web `encryptText(vaultKey, secret, masterSalt)`: AES-GCM under Key A[secret]. */
     private fun wrap(vaultKey: String, secret: String, masterSalt: String): String =
         encrypt(vaultKey, deriveKey(secret, masterSalt))

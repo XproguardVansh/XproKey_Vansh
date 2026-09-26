@@ -11,3 +11,9 @@ data class SessionEntity(
     val name: String,
     val email: String,
 )
+
+data class SessionProfile(
+    val userId: String,
+    val name: String,
+    val email: String,
+)

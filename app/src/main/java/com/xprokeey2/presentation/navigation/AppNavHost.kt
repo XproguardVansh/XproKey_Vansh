@@ -1,7 +1,10 @@
 package com.xprokeey2.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,18 +15,26 @@ import com.xprokeey2.presentation.auth.login.LoginScreenRoot
 import com.xprokeey2.presentation.auth.reset.ResetPasswordScreenRoot
 import com.xprokeey2.presentation.auth.signup.SignupScreenRoot
 import com.xprokeey2.presentation.auth.verify.VerifyEmailScreenRoot
-import com.xprokeey2.presentation.dashboard.DashboardScreen
+import com.xprokeey2.presentation.cards.details.CardDetailsScreenRoot
+import com.xprokeey2.presentation.cards.form.CardFormScreenRoot
+import com.xprokeey2.presentation.cards.list.CardsScreenRoot
+import com.xprokeey2.presentation.dashboard.DashboardScreenRoot
 import com.xprokeey2.presentation.legal.LegalDocumentScreen
 import com.xprokeey2.presentation.legal.PrivacyPolicy
 import com.xprokeey2.presentation.legal.TermsOfService
 import com.xprokeey2.presentation.onboarding.AccountTypeScreen
 import com.xprokeey2.presentation.onboarding.license.ActivateLicenseScreenRoot
+import com.xprokeey2.presentation.onboarding.plan.PlanScreen
+import com.xprokeey2.presentation.workspace.WorkspaceSection
 
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
+    // Session over or vault locked: start again at Login, showing why.
+    val signInAgain = { message: String -> navController.clearStackAndNavigate(LoginRoute(message = message)) }
+
     NavHost(
         navController = navController,
         startDestination = LoginRoute(),
@@ -35,7 +46,7 @@ fun AppNavHost(
                 onNavigateToVerify = { email -> navController.navigate(VerifyEmailRoute(email)) },
                 onNavigateToForgotPassword = { email -> navController.navigate(ForgotPasswordRoute(email)) },
                 onNavigateToAccountSetup = { navController.clearStackAndNavigate(AccountTypeRoute) },
-                onNavigateToDashboard = { navController.clearStackAndNavigate(DashboardRoute()) },
+                onNavigateToDashboard = { navController.clearStackAndNavigate(DashboardRoute) },
             )
         }
 
@@ -87,18 +98,61 @@ fun AppNavHost(
         }
 
         composable<AccountTypeRoute> {
-            AccountTypeScreen(onBusinessClick = { navController.navigate(ActivateLicenseRoute) })
+            AccountTypeScreen(
+                onPersonalClick = { navController.navigate(PlanRoute) },
+                onBusinessClick = { navController.navigate(ActivateLicenseRoute) },
+            )
+        }
+
+        composable<PlanRoute> {
+            PlanScreen(onBack = { navController.popBackStack() })
         }
 
         composable<ActivateLicenseRoute> {
             ActivateLicenseScreenRoot(
-                onActivated = { organization -> navController.clearStackAndNavigate(DashboardRoute(organization)) },
-                onSessionExpired = { message -> navController.clearStackAndNavigate(LoginRoute(message = message)) },
+                onActivated = { navController.clearStackAndNavigate(DashboardRoute) },
+                onSessionExpired = signInAgain,
             )
         }
 
-        composable<DashboardRoute> { entry ->
-            DashboardScreen(organization = entry.toRoute<DashboardRoute>().organization)
+        composable<DashboardRoute> {
+            DashboardScreenRoot(
+                onSectionClick = navController::openSection,
+                onManageCards = { navController.openSection(WorkspaceSection.CARDS) },
+                onSessionExpired = signInAgain,
+            )
+        }
+
+        composable<CardsRoute> { entry ->
+            val resultMessage by entry.resultMessage()
+            CardsScreenRoot(
+                resultMessage = resultMessage,
+                onResultMessageShown = entry::clearResultMessage,
+                onSectionClick = navController::openSection,
+                onAddCard = { navController.navigate(CardFormRoute()) },
+                onViewCard = { cardId -> navController.navigate(CardDetailsRoute(cardId)) },
+                onSignInRequired = signInAgain,
+            )
+        }
+
+        composable<CardFormRoute> {
+            CardFormScreenRoot(
+                onBack = { navController.popBackStack() },
+                onSaved = navController::popBackWithMessage,
+                onSignInRequired = signInAgain,
+            )
+        }
+
+        composable<CardDetailsRoute> { entry ->
+            val resultMessage by entry.resultMessage()
+            CardDetailsScreenRoot(
+                resultMessage = resultMessage,
+                onResultMessageShown = entry::clearResultMessage,
+                onBack = { navController.popBackStack() },
+                onEdit = { navController.navigate(CardFormRoute(cardId = entry.toRoute<CardDetailsRoute>().cardId)) },
+                onDeleted = navController::popBackWithMessage,
+                onSignInRequired = signInAgain,
+            )
         }
     }
 }
@@ -122,4 +176,35 @@ private fun <T : Any> NavHostController.clearStackAndNavigate(route: T) {
     navigate(route) {
         popUpTo(graph.id) { inclusive = true }
     }
+}
+
+/** Drawer / quick actions. Dashboard stays at the bottom of the stack, so Back from Cards returns to it. */
+private fun NavHostController.openSection(section: WorkspaceSection) {
+    when (section) {
+        WorkspaceSection.DASHBOARD -> if (!popBackStack<DashboardRoute>(inclusive = false)) {
+            clearStackAndNavigate(DashboardRoute)
+        }
+        WorkspaceSection.CARDS -> navigate(CardsRoute) {
+            popUpTo<DashboardRoute>()
+            launchSingleTop = true
+        }
+        // Not built yet (disabled in the drawer).
+        else -> Unit
+    }
+}
+
+private const val RESULT_MESSAGE = "result_message"
+
+/** Goes back and hands [message] to the previous screen, which shows it once (e.g. "Card saved"). */
+private fun NavHostController.popBackWithMessage(message: String) {
+    previousBackStackEntry?.savedStateHandle?.set(RESULT_MESSAGE, message)
+    popBackStack()
+}
+
+@Composable
+private fun NavBackStackEntry.resultMessage() =
+    savedStateHandle.getStateFlow<String?>(RESULT_MESSAGE, null).collectAsStateWithLifecycle()
+
+private fun NavBackStackEntry.clearResultMessage() {
+    savedStateHandle[RESULT_MESSAGE] = null
 }

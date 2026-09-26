@@ -1,17 +1,25 @@
 package com.xprokeey2.di
 
 import com.xprokeey2.data.crypto.VaultCryptoImpl
+import com.xprokeey2.data.local.session.AccessTokenStore
 import com.xprokeey2.data.local.session.InMemoryVaultSession
+import com.xprokeey2.data.local.session.SessionStorage
 import com.xprokeey2.data.remote.datasource.AuthRemoteDataSource
 import com.xprokeey2.data.remote.datasource.AuthRemoteDataSourceImpl
+import com.xprokeey2.data.remote.datasource.CardRemoteDataSource
+import com.xprokeey2.data.remote.datasource.CardRemoteDataSourceImpl
 import com.xprokeey2.data.remote.datasource.LicenseRemoteDataSource
 import com.xprokeey2.data.remote.datasource.LicenseRemoteDataSourceImpl
 import com.xprokeey2.data.repository.AuthRepositoryImpl
+import com.xprokeey2.data.repository.CardRepositoryImpl
 import com.xprokeey2.data.repository.LicenseRepositoryImpl
 import com.xprokeey2.data.repository.RecoveryKeyRepositoryImpl
+import com.xprokeey2.data.repository.UserRepositoryImpl
 import com.xprokeey2.domain.repository.AuthRepository
+import com.xprokeey2.domain.repository.CardRepository
 import com.xprokeey2.domain.repository.LicenseRepository
 import com.xprokeey2.domain.repository.RecoveryKeyRepository
+import com.xprokeey2.domain.repository.UserRepository
 import com.xprokeey2.domain.security.VaultCrypto
 import com.xprokeey2.domain.security.VaultSession
 import dagger.Binds
@@ -43,6 +51,22 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindRecoveryKeyRepository(impl: RecoveryKeyRepositoryImpl): RecoveryKeyRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCardRemoteDataSource(impl: CardRemoteDataSourceImpl): CardRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindCardRepository(impl: CardRepositoryImpl): CardRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRepository(impl: UserRepositoryImpl): UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAccessTokenStore(impl: SessionStorage): AccessTokenStore
 
     @Binds
     @Singleton

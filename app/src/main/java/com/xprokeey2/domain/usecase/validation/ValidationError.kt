@@ -7,4 +7,7 @@ enum class ValidationError {
     PASSWORD_MISMATCH,
     TERMS_NOT_ACCEPTED,
     INVALID_OTP,
+    INVALID_CARD_NUMBER,
+    INVALID_EXPIRY,
+    INVALID_CVC,
 }

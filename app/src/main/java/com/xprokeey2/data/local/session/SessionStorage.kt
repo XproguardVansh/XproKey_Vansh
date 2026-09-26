@@ -15,7 +15,7 @@ import javax.inject.Singleton
 class SessionStorage @Inject constructor(
     @param:SessionDataStore private val dataStore: DataStore<Preferences>,
     private val cipher: KeystoreCipher,
-) {
+) : AccessTokenStore {
 
     suspend fun save(session: SessionEntity) {
         dataStore.edit { prefs ->
@@ -29,11 +29,23 @@ class SessionStorage @Inject constructor(
         }
     }
 
-    suspend fun getAccessToken(): String? = readSecret(ACCESS_TOKEN)
+    override suspend fun getAccessToken(): String? = readSecret(ACCESS_TOKEN)
 
-    suspend fun getRefreshToken(): String? = readSecret(REFRESH_TOKEN)
+    override suspend fun getRefreshToken(): String? = readSecret(REFRESH_TOKEN)
+
+    /** After POST /refresh: only the access token changes (the refresh token isn't rotated). */
+    override suspend fun saveAccessToken(accessToken: String) {
+        dataStore.edit { it[ACCESS_TOKEN] = cipher.encrypt(accessToken) }
+    }
 
     suspend fun getUserId(): String? = dataStore.data.first()[USER_ID]
+
+    /** Who is signed in, or null when no session is saved. */
+    suspend fun getProfile(): SessionProfile? {
+        val prefs = dataStore.data.first()
+        val userId = prefs[USER_ID] ?: return null
+        return SessionProfile(userId = userId, name = prefs[NAME].orEmpty(), email = prefs[EMAIL].orEmpty())
+    }
 
     suspend fun clear() {
         dataStore.edit { it.clear() }

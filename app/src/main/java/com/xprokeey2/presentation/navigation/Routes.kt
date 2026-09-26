@@ -40,9 +40,23 @@ data class ResetPasswordRoute(
 @Serializable
 data object AccountTypeRoute
 
+/** Personal: "Choose your plan" (payment not built yet). */
+@Serializable
+data object PlanRoute
+
 @Serializable
 data object ActivateLicenseRoute
 
-/** Placeholder dashboard; [organization] is only known right after activating a license. */
+/** Home of the signed-in app, shared by Personal and Business accounts. */
 @Serializable
-data class DashboardRoute(val organization: String? = null)
+data object DashboardRoute
+
+@Serializable
+data object CardsRoute
+
+/** Add card, or Edit card when [cardId] is set. */
+@Serializable
+data class CardFormRoute(val cardId: Long? = null)
+
+@Serializable
+data class CardDetailsRoute(val cardId: Long)

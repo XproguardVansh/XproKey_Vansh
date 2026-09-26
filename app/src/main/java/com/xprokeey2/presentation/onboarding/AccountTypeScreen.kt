@@ -46,12 +46,9 @@ private val Features = listOf(
     R.string.feature_zero_knowledge,
 )
 
-/**
- * "Choose how you want to use Xprokey", shown after login until the account is set up.
- * Only the Business path is live for now; the Personal plan button is disabled.
- */
+/** "Choose how you want to use Xprokey", shown after login until the account is set up. */
 @Composable
-fun AccountTypeScreen(onBusinessClick: () -> Unit) {
+fun AccountTypeScreen(onPersonalClick: () -> Unit, onBusinessClick: () -> Unit) {
     val colors = XpTheme.colors
     val typography = XpTheme.typography
 
@@ -80,8 +77,7 @@ fun AccountTypeScreen(onBusinessClick: () -> Unit) {
             title = R.string.personal_account,
             description = R.string.personal_account_description,
             buttonText = R.string.buy_personal_plan,
-            onClick = {},
-            enabled = false,
+            onClick = onPersonalClick,
             highlighted = false,
         )
 
@@ -92,7 +88,6 @@ fun AccountTypeScreen(onBusinessClick: () -> Unit) {
             description = R.string.business_account_description,
             buttonText = R.string.activate_license_key,
             onClick = onBusinessClick,
-            enabled = true,
             highlighted = true,
         )
     }
@@ -105,7 +100,6 @@ private fun AccountTypeCard(
     @StringRes description: Int,
     @StringRes buttonText: Int,
     onClick: () -> Unit,
-    enabled: Boolean,
     highlighted: Boolean,
 ) {
     val colors = XpTheme.colors
@@ -176,7 +170,6 @@ private fun AccountTypeCard(
         XpPrimaryButton(
             text = stringResource(buttonText),
             onClick = onClick,
-            enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
         )
     }
@@ -185,11 +178,11 @@ private fun AccountTypeCard(
 @Preview(name = "Light", showBackground = true, heightDp = 1300)
 @Composable
 private fun AccountTypeScreenPreview() {
-    XproKeyTheme(darkTheme = false) { AccountTypeScreen(onBusinessClick = {}) }
+    XproKeyTheme(darkTheme = false) { AccountTypeScreen(onPersonalClick = {}, onBusinessClick = {}) }
 }
 
 @Preview(name = "Dark", showBackground = true, heightDp = 1300)
 @Composable
 private fun AccountTypeScreenDarkPreview() {
-    XproKeyTheme(darkTheme = true) { AccountTypeScreen(onBusinessClick = {}) }
+    XproKeyTheme(darkTheme = true) { AccountTypeScreen(onPersonalClick = {}, onBusinessClick = {}) }
 }

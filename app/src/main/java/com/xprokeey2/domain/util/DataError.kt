@@ -16,6 +16,12 @@ sealed interface DataError {
     /** No valid login session (token missing or rejected with 401): the user must sign in again. */
     data object SessionExpired : DataError
 
+    /**
+     * The vault key isn't in memory (it never touches disk, so it's gone after the process is
+     * killed): signing in again unlocks it.
+     */
+    data object VaultLocked : DataError
+
     data object NoInternet : DataError
     data object Timeout : DataError
     data class Unknown(val message: String? = null) : DataError
