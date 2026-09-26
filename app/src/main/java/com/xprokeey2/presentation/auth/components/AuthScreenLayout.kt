@@ -1,5 +1,6 @@
 package com.xprokeey2.presentation.auth.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -16,6 +17,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.xprokeey2.presentation.theme.XpTheme
 
@@ -28,11 +30,14 @@ fun AuthScreenLayout(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
+    /** [Arrangement.Center] centres short content on screen; long content still scrolls. */
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    containerColor: Color = XpTheme.colors.surface,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
-        containerColor = XpTheme.colors.surface,
+        containerColor = containerColor,
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         Column(
@@ -44,6 +49,7 @@ fun AuthScreenLayout(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp, vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = verticalArrangement,
         ) {
             Column(
                 modifier = Modifier

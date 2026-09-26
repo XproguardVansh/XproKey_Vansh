@@ -35,3 +35,14 @@ data class ResetPasswordRoute(
     val masterSalt: String,
     val encryptedVaultKeyRecovery: String,
 )
+
+/** Personal / Business chooser, shown after login until the account is set up. */
+@Serializable
+data object AccountTypeRoute
+
+@Serializable
+data object ActivateLicenseRoute
+
+/** Placeholder dashboard; [organization] is only known right after activating a license. */
+@Serializable
+data class DashboardRoute(val organization: String? = null)

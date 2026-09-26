@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.xprokeey2.R
 import com.xprokeey2.domain.usecase.auth.LoginUseCase
 import com.xprokeey2.domain.usecase.validation.ValidateLoginFormUseCase
 import com.xprokeey2.domain.util.DataError
@@ -81,13 +80,11 @@ class LoginViewModel @Inject constructor(
 
             when (result) {
                 is Resource.Success -> _events.send(
-                    LoginEvent.LoginSuccess(
-                        if (result.data.hasVaultKeys) {
-                            UiText.Dynamic(result.data.message)
-                        } else {
-                            UiText.Resource(R.string.login_success_no_vault)
-                        }
-                    )
+                    if (result.data.needsAccountSetup) {
+                        LoginEvent.NavigateToAccountSetup
+                    } else {
+                        LoginEvent.NavigateToDashboard
+                    }
                 )
                 is Resource.Error -> when (val error = result.error) {
                     // Unverified accounts go back to OTP entry; the earlier OTP is still valid.

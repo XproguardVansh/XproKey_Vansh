@@ -16,6 +16,17 @@ data class LoginResult(
     /** False for accounts created before client-side vault keys existed (server returns ""). */
     val hasVaultKeys: Boolean
         get() = masterSalt.isNotBlank() && encryptedVaultKey.isNotBlank()
+
+    /**
+     * True until the user finished account setup (e.g. activated a business license): the server
+     * sends next_action "dashboard" once setup is done, and something else (e.g. "payment") before.
+     */
+    val needsAccountSetup: Boolean
+        get() = nextAction != NEXT_ACTION_DASHBOARD
+
+    companion object {
+        const val NEXT_ACTION_DASHBOARD = "dashboard"
+    }
 }
 
 data class VerifyAccountResult(

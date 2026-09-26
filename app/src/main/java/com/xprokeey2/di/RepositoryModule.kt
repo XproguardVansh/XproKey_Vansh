@@ -4,9 +4,13 @@ import com.xprokeey2.data.crypto.VaultCryptoImpl
 import com.xprokeey2.data.local.session.InMemoryVaultSession
 import com.xprokeey2.data.remote.datasource.AuthRemoteDataSource
 import com.xprokeey2.data.remote.datasource.AuthRemoteDataSourceImpl
+import com.xprokeey2.data.remote.datasource.LicenseRemoteDataSource
+import com.xprokeey2.data.remote.datasource.LicenseRemoteDataSourceImpl
 import com.xprokeey2.data.repository.AuthRepositoryImpl
+import com.xprokeey2.data.repository.LicenseRepositoryImpl
 import com.xprokeey2.data.repository.RecoveryKeyRepositoryImpl
 import com.xprokeey2.domain.repository.AuthRepository
+import com.xprokeey2.domain.repository.LicenseRepository
 import com.xprokeey2.domain.repository.RecoveryKeyRepository
 import com.xprokeey2.domain.security.VaultCrypto
 import com.xprokeey2.domain.security.VaultSession
@@ -27,6 +31,14 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLicenseRemoteDataSource(impl: LicenseRemoteDataSourceImpl): LicenseRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindLicenseRepository(impl: LicenseRepositoryImpl): LicenseRepository
 
     @Binds
     @Singleton

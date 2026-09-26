@@ -13,6 +13,9 @@ sealed interface DataError {
     /** The recovery key entered during a password reset doesn't open this account's vault. */
     data object InvalidRecoveryKey : DataError
 
+    /** No valid login session (token missing or rejected with 401): the user must sign in again. */
+    data object SessionExpired : DataError
+
     data object NoInternet : DataError
     data object Timeout : DataError
     data class Unknown(val message: String? = null) : DataError

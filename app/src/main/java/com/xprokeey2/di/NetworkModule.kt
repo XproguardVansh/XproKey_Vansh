@@ -2,6 +2,7 @@ package com.xprokeey2.di
 
 import com.xprokeey2.BuildConfig
 import com.xprokeey2.data.remote.api.AuthApi
+import com.xprokeey2.data.remote.api.LicenseApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -51,4 +52,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideAuthApi(retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideLicenseApi(retrofit: Retrofit): LicenseApi = retrofit.create(LicenseApi::class.java)
 }

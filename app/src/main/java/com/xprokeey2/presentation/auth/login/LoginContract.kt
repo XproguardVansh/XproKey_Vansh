@@ -21,7 +21,11 @@ sealed interface LoginAction {
 }
 
 sealed interface LoginEvent {
-    data class LoginSuccess(val message: UiText) : LoginEvent
+    /** Setup already done (server next_action "dashboard"). */
+    data object NavigateToDashboard : LoginEvent
+
+    /** First time: choose Personal / Business, then activate. */
+    data object NavigateToAccountSetup : LoginEvent
     data class NavigateToVerify(val email: String) : LoginEvent
     data class ShowMessage(val message: UiText) : LoginEvent
 }

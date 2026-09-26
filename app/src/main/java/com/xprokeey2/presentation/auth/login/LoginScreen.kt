@@ -54,6 +54,8 @@ fun LoginScreenRoot(
     onNavigateToSignup: () -> Unit,
     onNavigateToVerify: (email: String) -> Unit,
     onNavigateToForgotPassword: (email: String) -> Unit,
+    onNavigateToAccountSetup: () -> Unit,
+    onNavigateToDashboard: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -64,10 +66,8 @@ fun LoginScreenRoot(
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is LoginEvent.NavigateToVerify -> onNavigateToVerify(event.email)
-            // TODO: navigate to the dashboard once that screen exists.
-            is LoginEvent.LoginSuccess -> scope.launch {
-                snackbarHostState.showSnackbar(event.message.asString(context))
-            }
+            LoginEvent.NavigateToAccountSetup -> onNavigateToAccountSetup()
+            LoginEvent.NavigateToDashboard -> onNavigateToDashboard()
             is LoginEvent.ShowMessage -> scope.launch {
                 snackbarHostState.showSnackbar(event.message.asString(context))
             }

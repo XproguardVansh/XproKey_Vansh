@@ -33,6 +33,8 @@ class SessionStorage @Inject constructor(
 
     suspend fun getRefreshToken(): String? = readSecret(REFRESH_TOKEN)
 
+    suspend fun getUserId(): String? = dataStore.data.first()[USER_ID]
+
     suspend fun clear() {
         dataStore.edit { it.clear() }
     }

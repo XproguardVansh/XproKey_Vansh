@@ -9,6 +9,7 @@ fun DataError.asUiText(): UiText = when (this) {
     is DataError.AccountNotVerified -> UiText.Dynamic(message)
     DataError.VaultUnlockFailed -> UiText.Resource(R.string.error_vault_unlock_failed)
     DataError.InvalidRecoveryKey -> UiText.Resource(R.string.error_invalid_recovery_key)
+    DataError.SessionExpired -> UiText.Resource(R.string.error_session_expired)
     DataError.NoInternet -> UiText.Resource(R.string.error_no_internet)
     DataError.Timeout -> UiText.Resource(R.string.error_timeout)
     is DataError.Unknown -> UiText.Resource(R.string.error_unknown)

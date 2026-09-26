@@ -6,14 +6,18 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.xprokeey2.presentation.auth.forgot.ForgotPasswordScreenRoot
 import com.xprokeey2.presentation.auth.login.LoginScreenRoot
 import com.xprokeey2.presentation.auth.reset.ResetPasswordScreenRoot
 import com.xprokeey2.presentation.auth.signup.SignupScreenRoot
 import com.xprokeey2.presentation.auth.verify.VerifyEmailScreenRoot
+import com.xprokeey2.presentation.dashboard.DashboardScreen
 import com.xprokeey2.presentation.legal.LegalDocumentScreen
 import com.xprokeey2.presentation.legal.PrivacyPolicy
 import com.xprokeey2.presentation.legal.TermsOfService
+import com.xprokeey2.presentation.onboarding.AccountTypeScreen
+import com.xprokeey2.presentation.onboarding.license.ActivateLicenseScreenRoot
 
 @Composable
 fun AppNavHost(
@@ -30,6 +34,8 @@ fun AppNavHost(
                 onNavigateToSignup = { navController.navigate(SignupRoute) },
                 onNavigateToVerify = { email -> navController.navigate(VerifyEmailRoute(email)) },
                 onNavigateToForgotPassword = { email -> navController.navigate(ForgotPasswordRoute(email)) },
+                onNavigateToAccountSetup = { navController.clearStackAndNavigate(AccountTypeRoute) },
+                onNavigateToDashboard = { navController.clearStackAndNavigate(DashboardRoute()) },
             )
         }
 
@@ -79,6 +85,21 @@ fun AppNavHost(
                 onBackToLogin = navController::backToLogin,
             )
         }
+
+        composable<AccountTypeRoute> {
+            AccountTypeScreen(onBusinessClick = { navController.navigate(ActivateLicenseRoute) })
+        }
+
+        composable<ActivateLicenseRoute> {
+            ActivateLicenseScreenRoot(
+                onActivated = { organization -> navController.clearStackAndNavigate(DashboardRoute(organization)) },
+                onSessionExpired = { message -> navController.clearStackAndNavigate(LoginRoute(message = message)) },
+            )
+        }
+
+        composable<DashboardRoute> { entry ->
+            DashboardScreen(organization = entry.toRoute<DashboardRoute>().organization)
+        }
     }
 }
 
@@ -93,5 +114,12 @@ private fun NavHostController.backToLogin() {
 private fun NavHostController.restartAtLogin(route: LoginRoute) {
     navigate(route) {
         popUpTo<LoginRoute> { inclusive = true }
+    }
+}
+
+/** Leaves the current flow for good (signed in, set up, session expired): Back can't return to it. */
+private fun <T : Any> NavHostController.clearStackAndNavigate(route: T) {
+    navigate(route) {
+        popUpTo(graph.id) { inclusive = true }
     }
 }

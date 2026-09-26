@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -70,6 +71,8 @@ fun XpTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     textStyle: TextStyle = XpTheme.typography.fieldText,
+    placeholderStyle: TextStyle = XpTheme.typography.fieldText,
+    leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
 ) {
     val colors = XpTheme.colors
@@ -115,11 +118,15 @@ fun XpTextField(
                         .padding(start = 16.dp, end = if (trailingContent != null) 6.dp else 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    if (leadingContent != null) {
+                        leadingContent()
+                        Spacer(Modifier.width(10.dp))
+                    }
                     Box(modifier = Modifier.weight(1f)) {
                         if (value.isEmpty() && placeholder.isNotEmpty()) {
                             Text(
                                 text = placeholder,
-                                style = typography.fieldText,
+                                style = placeholderStyle,
                                 color = colors.textPlaceholder,
                                 maxLines = 1,
                             )

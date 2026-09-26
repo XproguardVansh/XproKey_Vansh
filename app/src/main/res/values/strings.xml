@@ -20,7 +20,6 @@
     <string name="sign_in">Sign in →</string>
     <string name="new_to_xprokey">New to Xprokey?</string>
     <string name="create_an_account">Create an account</string>
-    <string name="login_success_no_vault">Login successful. This account was created with an older app version, so it has no vault or recovery key.</string>
 
     <!-- Signup -->
     <string name="signup_title">Create your account</string>
@@ -69,6 +68,33 @@
     <string name="placeholder_confirm_new_password">Confirm new password</string>
     <string name="reset_password">Reset Password</string>
 
+    <!-- Account type (after login) -->
+    <string name="account_type_title">Choose how you want to use Xprokey</string>
+    <string name="account_type_subtitle">Select the account type that best matches your needs. You can upgrade or switch anytime.</string>
+    <string name="personal_account">Personal Account</string>
+    <string name="personal_account_description">Ideal for individuals who want a private, secure keychain for managing personal passwords, cards, and secrets.</string>
+    <string name="business_account">Business Account</string>
+    <string name="business_account_description">Designed for teams and organizations that want secure password management with encrypted keychains and company-issued license access.</string>
+    <string name="feature_unlimited_items">Unlimited passwords &amp; cards</string>
+    <string name="feature_encrypted_keychains">AES-256-GCM encrypted keychains</string>
+    <string name="feature_generator_tools">Password generator &amp; tools</string>
+    <string name="feature_zero_knowledge">Zero-knowledge architecture</string>
+    <string name="buy_personal_plan">Buy Personal Plan →</string>
+    <string name="activate_license_key">Activate License Key →</string>
+
+    <!-- Activate license -->
+    <string name="license_title">Activate your license</string>
+    <string name="license_subtitle">Enter the license key provided by your organization administrator to access your team keychain.</string>
+    <string name="label_license_key">License key</string>
+    <string name="placeholder_license_key">XXXX-XXXX-XXXX</string>
+    <string name="activate_license">Activate License →</string>
+    <string name="license_info">Each license key can be used only once. If you\'re having trouble, contact your IT department or system administrator.</string>
+
+    <!-- Dashboard (temporary placeholder) -->
+    <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_placeholder">You\'re signed in. Your dashboard is coming soon.</string>
+    <string name="dashboard_organization">Organization: %1$s</string>
+
     <!-- Recovery key dialog -->
     <string name="recovery_title">Save your recovery key</string>
     <string name="recovery_body">This key allows you to recover your vault if you forget your password. Store it somewhere safe. We cannot recover it for you.</string>
@@ -93,6 +119,7 @@
     <!-- Network errors -->
     <string name="error_no_internet">No internet connection. Please try again.</string>
     <string name="error_timeout">The server took too long to respond. Please try again.</string>
+    <string name="error_session_expired">Your session has expired. Please sign in again.</string>
     <string name="error_vault_unlock_failed">Signed in, but your vault couldn\'t be unlocked with this master password. Please try again.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
 </resources>
