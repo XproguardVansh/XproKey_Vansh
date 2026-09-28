@@ -26,9 +26,9 @@ data class CardFormUiState(
     /** Edit only: the stored number/CVC aren't ciphertext under this vault key, so they must be re-entered. */
     val secretsUnreadable: Boolean = false,
     val isSaving: Boolean = false,
-) {
-    val brand: CardBrand get() = CardBrand.detect(number)
-}
+    /** Detected from the number; an unknown number keeps the last brand (Visa at first), like the web. */
+    val brand: CardBrand = CardBrand.VISA,
+)
 
 sealed interface CardFormAction {
     data class LabelChanged(val value: String) : CardFormAction

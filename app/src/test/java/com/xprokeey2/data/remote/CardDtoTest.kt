@@ -6,11 +6,13 @@ import com.xprokeey2.data.mapper.toStoredCard
 import com.xprokeey2.data.remote.dto.card.CardDto
 import com.xprokeey2.data.remote.dto.card.CardListDto
 import com.xprokeey2.data.remote.dto.card.CardRequestDto
+import com.xprokeey2.data.remote.dto.card.CardUpdateRequestDto
 import com.xprokeey2.data.remote.dto.common.DataResponseDto
 import com.xprokeey2.domain.model.CardBrand
 import com.xprokeey2.domain.model.CardCategory
 import com.xprokeey2.domain.model.CardExpiry
 import com.xprokeey2.domain.model.CardPayload
+import com.xprokeey2.domain.model.CardUpdatePayload
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
@@ -92,5 +94,19 @@ class CardDtoTest {
         assertEquals("\"debit\"", body["card_type"].toString())
         assertEquals("\"RUPAY\"", body["brand"].toString())
         assertEquals("2028", body["expiry_year"].toString())
+    }
+
+    @Test
+    fun updateSendsOnlyChangedFields() {
+        val payload = CardUpdatePayload(
+            label = "Travel",
+            category = CardCategory.PREPAID,
+            expiry = CardExpiry(12, 2029),
+        )
+
+        val body = json.encodeToJsonElement(CardUpdateRequestDto.serializer(), payload.toRequestDto()).jsonObject
+
+        assertEquals(setOf("card_name", "card_type", "expiry_month", "expiry_year"), body.keys)
+        assertEquals("\"debit\"", body["card_type"].toString())
     }
 }

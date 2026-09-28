@@ -31,7 +31,7 @@ data class CardDto(
     val cvc: String? = null,
 )
 
-/** Body of POST /cards/createcard and PUT /cards/updatecard/:id. */
+/** Body of POST /cards/createcard. */
 @Serializable
 data class CardRequestDto(
     @SerialName("card_name") val cardName: String,
@@ -45,4 +45,23 @@ data class CardRequestDto(
     val brand: String,
     @SerialName("bank_name") val bankName: String,
     val notes: String,
+)
+
+/**
+ * Body of PUT /cards/updatecard/:id: only changed fields. Null properties are left out of the JSON
+ * (they default to null, and the app's Json doesn't encode defaults or explicit nulls).
+ */
+@Serializable
+data class CardUpdateRequestDto(
+    @SerialName("card_name") val cardName: String? = null,
+    @SerialName("card_holder_name") val cardHolderName: String? = null,
+    @SerialName("card_type") val cardType: String? = null,
+    @SerialName("card_number") val cardNumber: String? = null,
+    val cvc: String? = null,
+    @SerialName("expiry_month") val expiryMonth: Int? = null,
+    @SerialName("expiry_year") val expiryYear: Int? = null,
+    val last4: String? = null,
+    val brand: String? = null,
+    @SerialName("bank_name") val bankName: String? = null,
+    val notes: String? = null,
 )

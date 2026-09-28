@@ -6,6 +6,7 @@ import com.xprokeey2.data.mapper.toStoredCard
 import com.xprokeey2.data.remote.datasource.CardRemoteDataSource
 import com.xprokeey2.domain.model.Card
 import com.xprokeey2.domain.model.CardPayload
+import com.xprokeey2.domain.model.CardUpdatePayload
 import com.xprokeey2.domain.model.StoredCard
 import com.xprokeey2.domain.repository.CardRepository
 import com.xprokeey2.domain.util.Resource
@@ -25,7 +26,7 @@ class CardRepositoryImpl @Inject constructor(
     override suspend fun createCard(payload: CardPayload): Resource<Card> =
         remote.createCard(payload.toRequestDto()).map { it.toDomain() }
 
-    override suspend fun updateCard(id: Long, payload: CardPayload): Resource<Card> =
+    override suspend fun updateCard(id: Long, payload: CardUpdatePayload): Resource<Card> =
         remote.updateCard(id, payload.toRequestDto()).map { it.toDomain() }
 
     override suspend fun deleteCard(id: Long): Resource<String> = remote.deleteCard(id)

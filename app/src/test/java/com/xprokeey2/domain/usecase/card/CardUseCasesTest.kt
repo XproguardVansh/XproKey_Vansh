@@ -4,9 +4,11 @@ import com.xprokeey2.data.crypto.VaultCryptoImpl
 import com.xprokeey2.domain.model.Card
 import com.xprokeey2.domain.model.CardBrand
 import com.xprokeey2.domain.model.CardCategory
+import com.xprokeey2.domain.model.CardChanges
 import com.xprokeey2.domain.model.CardDraft
 import com.xprokeey2.domain.model.CardExpiry
 import com.xprokeey2.domain.model.CardPayload
+import com.xprokeey2.domain.model.CardUpdatePayload
 import com.xprokeey2.domain.model.StoredCard
 import com.xprokeey2.domain.repository.CardRepository
 import com.xprokeey2.domain.security.VaultSession
@@ -35,7 +37,7 @@ class CardUseCasesTest {
 
     private class FakeCardRepository(private val stored: StoredCard? = null) : CardRepository {
         var created: CardPayload? = null
-        var updated: Pair<Long, CardPayload>? = null
+        var updated: Pair<Long, CardUpdatePayload>? = null
 
         override suspend fun getCards(): Resource<List<Card>> = Resource.Success(listOfNotNull(stored?.card))
         override suspend fun getCard(id: Long): Resource<StoredCard> = Resource.Success(stored!!)
@@ -44,7 +46,7 @@ class CardUseCasesTest {
             return Resource.Success(CARD)
         }
 
-        override suspend fun updateCard(id: Long, payload: CardPayload): Resource<Card> {
+        override suspend fun updateCard(id: Long, payload: CardUpdatePayload): Resource<Card> {
             updated = id to payload
             return Resource.Success(CARD)
         }
@@ -55,44 +57,76 @@ class CardUseCasesTest {
     private val draft = CardDraft(
         label = " Personal ",
         holderName = "Vansh Goel",
-        number = "65228143420114",
-        cvc = "123",
-        expiry = CardExpiry(month = 7, year = 2028),
-        category = CardCategory.DEBIT,
-        bankName = "BOB",
+        number = "4640464646484465",
+        cvc = "578",
+        expiry = CardExpiry(month = 7, year = 2030),
+        category = CardCategory.CORPORATE,
+        brand = CardBrand.VISA,
+        bankName = "Bo",
         notes = "",
     )
 
     @Test
-    fun savingEncryptsNumberAndCvcWithTheVaultKey() = runBlocking {
+    fun addingEncryptsNumberAndCvcWithTheVaultKey() = runBlocking {
         val repository = FakeCardRepository()
-        val result = SaveCardUseCase(repository, crypto, FakeVaultSession(VAULT_KEY))(draft)
+        val result = AddCardUseCase(repository, crypto, FakeVaultSession(VAULT_KEY))(draft)
 
         assertTrue(result is Resource.Success)
         val payload = repository.created!!
         assertNotEquals(draft.number, payload.encryptedNumber)
         assertEquals(draft.number, crypto.decryptWithVaultKey(payload.encryptedNumber, VAULT_KEY))
-        assertEquals("123", crypto.decryptWithVaultKey(payload.encryptedCvc, VAULT_KEY))
-        assertEquals("0114", payload.last4)
-        assertEquals(CardBrand.RUPAY, payload.brand)
+        assertEquals("578", crypto.decryptWithVaultKey(payload.encryptedCvc, VAULT_KEY))
+        assertEquals("4465", payload.last4)
+        assertEquals(CardBrand.VISA, payload.brand)
         assertEquals("Personal", payload.label)
-        assertEquals(CardExpiry(7, 2028), payload.expiry)
+        // Corporate cards are saved as "credit": the server only accepts credit / debit.
+        assertEquals("credit", payload.category.cardType)
     }
 
     @Test
-    fun editingReplacesTheSameCard() = runBlocking {
+    fun lockedVaultCantAddCards() = runBlocking {
         val repository = FakeCardRepository()
-        SaveCardUseCase(repository, crypto, FakeVaultSession(VAULT_KEY))(draft, cardId = 267)
-        assertEquals(267L, repository.updated?.first)
-        assertNull(repository.created)
-    }
-
-    @Test
-    fun lockedVaultCantSaveCards() = runBlocking {
-        val repository = FakeCardRepository()
-        val result = SaveCardUseCase(repository, crypto, FakeVaultSession(null))(draft)
+        val result = AddCardUseCase(repository, crypto, FakeVaultSession(null))(draft)
         assertEquals(Resource.Error(DataError.VaultLocked), result)
         assertNull(repository.created)
+    }
+
+    @Test
+    fun editSendsOnlyChangedFields() = runBlocking {
+        val repository = FakeCardRepository()
+        UpdateCardUseCase(repository, crypto, FakeVaultSession(VAULT_KEY))(
+            cardId = 267,
+            changes = CardChanges(notes = " New limit "),
+        )
+
+        val (id, payload) = repository.updated!!
+        assertEquals(267L, id)
+        assertEquals(CardUpdatePayload(notes = "New limit"), payload)
+    }
+
+    @Test
+    fun editedNumberIsEncryptedAndSentWithLast4AndBrand() = runBlocking {
+        val repository = FakeCardRepository()
+        UpdateCardUseCase(repository, crypto, FakeVaultSession(VAULT_KEY))(
+            cardId = 267,
+            changes = CardChanges(number = "6521000000000007", brand = CardBrand.RUPAY),
+        )
+
+        val payload = repository.updated!!.second
+        assertEquals("6521000000000007", crypto.decryptWithVaultKey(payload.encryptedNumber!!, VAULT_KEY))
+        assertEquals("0007", payload.last4)
+        assertEquals(CardBrand.RUPAY, payload.brand)
+        assertNull(payload.encryptedCvc)
+    }
+
+    @Test
+    fun editWithoutSecretsDoesNotNeedTheVault() = runBlocking {
+        val repository = FakeCardRepository()
+        val result = UpdateCardUseCase(repository, crypto, FakeVaultSession(null))(267, CardChanges(label = "Travel"))
+        assertTrue(result is Resource.Success)
+
+        val locked = UpdateCardUseCase(repository, crypto, FakeVaultSession(null))(267, CardChanges(cvc = "123"))
+        assertEquals(Resource.Error(DataError.VaultLocked), locked)
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.xprokeey2.domain.repository
 
 import com.xprokeey2.domain.model.Card
 import com.xprokeey2.domain.model.CardPayload
+import com.xprokeey2.domain.model.CardUpdatePayload
 import com.xprokeey2.domain.model.StoredCard
 import com.xprokeey2.domain.util.Resource
 
@@ -14,7 +15,8 @@ interface CardRepository {
 
     suspend fun createCard(payload: CardPayload): Resource<Card>
 
-    suspend fun updateCard(id: Long, payload: CardPayload): Resource<Card>
+    /** Sends only the fields set in [payload]. */
+    suspend fun updateCard(id: Long, payload: CardUpdatePayload): Resource<Card>
 
     /** Returns the server message. */
     suspend fun deleteCard(id: Long): Resource<String>

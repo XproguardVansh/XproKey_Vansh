@@ -257,7 +257,7 @@ private fun CardFormFields(
                     label = stringResource(R.string.label_cvv),
                     labelIcon = R.drawable.ic_key,
                     required = true,
-                    placeholder = "•••",
+                    placeholder = "•".repeat(state.brand.cvcLength),
                     error = state.cvcError?.asString(),
                     enabled = !state.isSaving,
                     textStyle = monoStyle,

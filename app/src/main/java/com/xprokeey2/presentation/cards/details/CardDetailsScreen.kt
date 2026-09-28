@@ -290,7 +290,7 @@ private fun CardDetailsContent(
                 )
                 DetailField(
                     label = stringResource(R.string.label_card_category),
-                    value = CardCategory.fromApiValue(card.category)?.let { stringResource(it.labelRes) }
+                    value = CardCategory.fromCardType(card.category)?.let { stringResource(it.labelRes) }
                         ?: card.category.ifBlank { empty },
                     onCopy = { copy(CardField.CATEGORY) },
                     modifier = Modifier.weight(1f),

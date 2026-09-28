@@ -95,7 +95,7 @@ class CardDetailsViewModel @Inject constructor(
             CardField.EXPIRY -> R.string.label_expiry_date to formatExpiry(card.expiryMonth, card.expiryYear).asText()
             CardField.CVC -> R.string.label_cvc to details.cvc?.asText()
             CardField.CATEGORY -> R.string.label_card_category to (
-                CardCategory.fromApiValue(card.category)?.let { UiText.Resource(it.labelRes) } ?: card.category.asText()
+                CardCategory.fromCardType(card.category)?.let { UiText.Resource(it.labelRes) } ?: card.category.asText()
             )
             CardField.BANK_NAME -> R.string.label_bank_name to card.bankName.asText()
             CardField.NOTES -> R.string.label_notes to card.notes.asText()

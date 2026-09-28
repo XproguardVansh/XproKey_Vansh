@@ -56,7 +56,7 @@ private val CardBrand.face: CardFace
     get() = when (this) {
         CardBrand.RUPAY -> GreenFace
         CardBrand.AMEX -> TealFace
-        CardBrand.MASTERCARD, CardBrand.MAESTRO, CardBrand.DINERS, CardBrand.DISCOVER, CardBrand.JCB -> GraphiteFace
+        CardBrand.MASTERCARD, CardBrand.DINERS, CardBrand.DISCOVER, CardBrand.JCB, CardBrand.UNIONPAY -> GraphiteFace
         CardBrand.VISA, CardBrand.UNKNOWN -> BlueFace
     }
 
@@ -235,7 +235,7 @@ private fun CardChip(silver: Boolean) {
 @Composable
 fun CardBrandMark(brand: CardBrand, modifier: Modifier = Modifier) {
     when (brand) {
-        CardBrand.MASTERCARD, CardBrand.MAESTRO -> Box(modifier = modifier.size(width = 38.dp, height = 24.dp)) {
+        CardBrand.MASTERCARD -> Box(modifier = modifier.size(width = 38.dp, height = 24.dp)) {
             Box(
                 Modifier
                     .size(24.dp)

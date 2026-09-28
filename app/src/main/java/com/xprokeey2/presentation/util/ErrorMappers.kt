@@ -24,8 +24,15 @@ fun ValidationError.asUiText(): UiText = UiText.Resource(
         ValidationError.PASSWORD_MISMATCH -> R.string.error_password_mismatch
         ValidationError.TERMS_NOT_ACCEPTED -> R.string.error_terms_not_accepted
         ValidationError.INVALID_OTP -> R.string.error_invalid_otp
+        ValidationError.CARD_LABEL_REQUIRED -> R.string.error_card_label_required
+        ValidationError.CARD_NUMBER_REQUIRED -> R.string.error_card_number_required
         ValidationError.INVALID_CARD_NUMBER -> R.string.error_invalid_card_number
-        ValidationError.INVALID_EXPIRY -> R.string.error_invalid_expiry
-        ValidationError.INVALID_CVC -> R.string.error_invalid_cvc
+        ValidationError.EXPIRY_MONTH_INVALID -> R.string.error_expiry_month_invalid
+        ValidationError.EXPIRY_YEAR_REQUIRED -> R.string.error_expiry_year_required
+        ValidationError.EXPIRY_YEAR_TWO_DIGITS -> R.string.error_expiry_year_two_digits
+        ValidationError.CARD_EXPIRED -> R.string.error_card_expired
+        ValidationError.CVC_REQUIRED -> R.string.error_cvc_required
+        ValidationError.CVC_MUST_BE_3_DIGITS -> R.string.error_cvc_3_digits
+        ValidationError.CVC_MUST_BE_4_DIGITS -> R.string.error_cvc_4_digits
     }
 )

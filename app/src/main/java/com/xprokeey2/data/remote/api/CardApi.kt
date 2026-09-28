@@ -3,6 +3,7 @@ package com.xprokeey2.data.remote.api
 import com.xprokeey2.data.remote.dto.card.CardDto
 import com.xprokeey2.data.remote.dto.card.CardListDto
 import com.xprokeey2.data.remote.dto.card.CardRequestDto
+import com.xprokeey2.data.remote.dto.card.CardUpdateRequestDto
 import com.xprokeey2.data.remote.dto.common.DataResponseDto
 import com.xprokeey2.data.remote.dto.common.MessageResponseDto
 import retrofit2.http.Body
@@ -34,7 +35,7 @@ interface CardApi {
     suspend fun updateCard(
         @Header("Authorization") authorization: String,
         @Path("id") id: Long,
-        @Body body: CardRequestDto,
+        @Body body: CardUpdateRequestDto,
     ): DataResponseDto<CardDto>
 
     @DELETE("cards/deletecard/{id}")
