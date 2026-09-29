@@ -60,3 +60,14 @@ data class CardFormRoute(val cardId: Long? = null)
 
 @Serializable
 data class CardDetailsRoute(val cardId: Long)
+
+/** Passwords list; [showWeakItems] opens it on the "Weak Items" filter (dashboard card). */
+@Serializable
+data class PasswordsRoute(val showWeakItems: Boolean = false)
+
+/** Add password, or Edit ("Update Vault Details") when [itemId] is set. */
+@Serializable
+data class PasswordFormRoute(val itemId: Long? = null)
+
+@Serializable
+data class PasswordDetailsRoute(val itemId: Long)

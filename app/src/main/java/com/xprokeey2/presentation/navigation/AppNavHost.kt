@@ -25,6 +25,9 @@ import com.xprokeey2.presentation.legal.TermsOfService
 import com.xprokeey2.presentation.onboarding.AccountTypeScreen
 import com.xprokeey2.presentation.onboarding.license.ActivateLicenseScreenRoot
 import com.xprokeey2.presentation.onboarding.plan.PlanScreen
+import com.xprokeey2.presentation.passwords.details.PasswordDetailsScreenRoot
+import com.xprokeey2.presentation.passwords.form.PasswordFormScreenRoot
+import com.xprokeey2.presentation.passwords.list.PasswordsScreenRoot
 import com.xprokeey2.presentation.workspace.WorkspaceSection
 
 @Composable
@@ -118,8 +121,45 @@ fun AppNavHost(
         composable<DashboardRoute> {
             DashboardScreenRoot(
                 onSectionClick = navController::openSection,
+                onAddPassword = { navController.navigate(PasswordFormRoute()) },
+                onOpenWeakItems = { navController.openSection(WorkspaceSection.PASSWORDS, showWeakItems = true) },
+                onViewPassword = { itemId -> navController.navigate(PasswordDetailsRoute(itemId)) },
                 onManageCards = { navController.openSection(WorkspaceSection.CARDS) },
                 onSessionExpired = signInAgain,
+            )
+        }
+
+        composable<PasswordsRoute> { entry ->
+            val resultMessage by entry.resultMessage()
+            PasswordsScreenRoot(
+                resultMessage = resultMessage,
+                onResultMessageShown = entry::clearResultMessage,
+                onSectionClick = navController::openSection,
+                onAddPassword = { navController.navigate(PasswordFormRoute()) },
+                onViewItem = { itemId -> navController.navigate(PasswordDetailsRoute(itemId)) },
+                onSignInRequired = signInAgain,
+            )
+        }
+
+        composable<PasswordFormRoute> {
+            PasswordFormScreenRoot(
+                onBack = { navController.popBackStack() },
+                onSaved = navController::popBackWithMessage,
+                onSignInRequired = signInAgain,
+            )
+        }
+
+        composable<PasswordDetailsRoute> { entry ->
+            val resultMessage by entry.resultMessage()
+            PasswordDetailsScreenRoot(
+                resultMessage = resultMessage,
+                onResultMessageShown = entry::clearResultMessage,
+                onBack = { navController.popBackStack() },
+                onEdit = {
+                    navController.navigate(PasswordFormRoute(itemId = entry.toRoute<PasswordDetailsRoute>().itemId))
+                },
+                onDeleted = navController::popBackWithMessage,
+                onSignInRequired = signInAgain,
             )
         }
 
@@ -178,11 +218,18 @@ private fun <T : Any> NavHostController.clearStackAndNavigate(route: T) {
     }
 }
 
-/** Drawer / quick actions. Dashboard stays at the bottom of the stack, so Back from Cards returns to it. */
-private fun NavHostController.openSection(section: WorkspaceSection) {
+/**
+ * Drawer / dashboard shortcuts. Dashboard stays at the bottom of the stack, so Back from a section
+ * returns to it. [showWeakItems] opens Passwords on the "Weak Items" filter.
+ */
+private fun NavHostController.openSection(section: WorkspaceSection, showWeakItems: Boolean = false) {
     when (section) {
         WorkspaceSection.DASHBOARD -> if (!popBackStack<DashboardRoute>(inclusive = false)) {
             clearStackAndNavigate(DashboardRoute)
+        }
+        WorkspaceSection.PASSWORDS -> navigate(PasswordsRoute(showWeakItems)) {
+            popUpTo<DashboardRoute>()
+            launchSingleTop = true
         }
         WorkspaceSection.CARDS -> navigate(CardsRoute) {
             popUpTo<DashboardRoute>()

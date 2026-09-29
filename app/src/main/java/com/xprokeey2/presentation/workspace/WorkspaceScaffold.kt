@@ -62,7 +62,7 @@ enum class WorkspaceSection(
     val hasSubmenu: Boolean = false,
 ) {
     DASHBOARD(R.string.nav_dashboard, R.drawable.ic_layout_grid, isAvailable = true),
-    PASSWORDS(R.string.nav_passwords, R.drawable.ic_lock, isAvailable = false),
+    PASSWORDS(R.string.nav_passwords, R.drawable.ic_lock, isAvailable = true),
     CARDS(R.string.nav_cards, R.drawable.ic_credit_card, isAvailable = true),
     TOOLS(R.string.nav_tools, R.drawable.ic_wrench, isAvailable = false, hasSubmenu = true),
     SETTINGS(R.string.nav_settings, R.drawable.ic_settings, isAvailable = false, hasSubmenu = true),

@@ -1,10 +1,5 @@
 package com.xprokeey2.presentation.cards.details
 
-import android.content.ClipData
-import android.content.ClipDescription
-import android.content.ClipboardManager
-import android.content.Context
-import android.os.PersistableBundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -58,6 +53,7 @@ import com.xprokeey2.presentation.components.XpPrimaryButton
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import com.xprokeey2.presentation.util.ObserveAsEvents
+import com.xprokeey2.presentation.util.copyToClipboard
 import com.xprokeey2.presentation.workspace.CompactButton
 import com.xprokeey2.presentation.workspace.CompactButtonStyle
 import com.xprokeey2.presentation.workspace.LoadingBlock
@@ -114,17 +110,6 @@ fun CardDetailsScreenRoot(
         onBack = onBack,
         onEdit = onEdit,
     )
-}
-
-/** Card numbers and CVCs are flagged sensitive so Android 13+ doesn't preview them. */
-private fun copyToClipboard(context: Context, label: String, value: String, sensitive: Boolean) {
-    val clip = ClipData.newPlainText(label, value)
-    if (sensitive) {
-        clip.description.extras = PersistableBundle().apply {
-            putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
-        }
-    }
-    context.getSystemService(ClipboardManager::class.java)?.setPrimaryClip(clip)
 }
 
 @Composable

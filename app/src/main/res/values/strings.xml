@@ -210,6 +210,95 @@
     <string name="copied">%1$s copied</string>
     <string name="empty_value">—</string>
 
+    <!-- Passwords list -->
+    <string name="passwords_title">My Passwords</string>
+    <string name="passwords_subtitle">Manage your secure passwords and credentials.</string>
+    <string name="add_password_button">Add Password</string>
+    <string name="search_passwords">Search…</string>
+    <string name="filter_all_items">All Items</string>
+    <string name="filter_favorites">Favorites</string>
+    <string name="filter_weak_items">Weak Items</string>
+    <string name="passwords_empty_title">No items found</string>
+    <string name="passwords_empty_body">Try a different search or filter.</string>
+    <string name="passwords_load_failed">Couldn\'t load your passwords.</string>
+    <string name="no_url">No URL</string>
+    <string name="dot_separator">" · "</string>
+    <string name="column_item">Item</string>
+    <string name="selected_count">%1$d selected</string>
+    <string name="delete_selected">Delete (%1$d)</string>
+    <string name="cd_select_all">Select all</string>
+    <string name="cd_select_item">Select %1$s</string>
+    <string name="cd_view_details">View details</string>
+    <string name="cd_copy_username">Copy username</string>
+    <string name="cd_add_favorite">Add to favorites</string>
+    <string name="cd_remove_favorite">Remove from favorites</string>
+    <plurals name="delete_passwords_title">
+        <item quantity="one">Delete this item?</item>
+        <item quantity="other">Delete %1$d items?</item>
+    </plurals>
+    <plurals name="delete_passwords_body">
+        <item quantity="one">It will be permanently removed from your vault.</item>
+        <item quantity="other">They will be permanently removed from your vault.</item>
+    </plurals>
+    <plurals name="passwords_deleted">
+        <item quantity="one">%1$d item deleted.</item>
+        <item quantity="other">%1$d items deleted.</item>
+    </plurals>
+
+    <!-- Add / edit password -->
+    <string name="add_password_title">Add new password</string>
+    <string name="add_password_subtitle">Save credentials securely with encryption</string>
+    <string name="edit_password_title">Update Vault Details</string>
+    <string name="edit_password_subtitle">Change only what you need — other fields stay unchanged</string>
+    <string name="label_name">Name</string>
+    <string name="placeholder_name">e.g. GitHub</string>
+    <string name="label_website_url">Website URL</string>
+    <string name="placeholder_website_url">https://github.com</string>
+    <string name="label_username">Username</string>
+    <string name="label_username_email">Username / Email</string>
+    <string name="placeholder_username">your username or handle</string>
+    <string name="label_category">Category</string>
+    <string name="label_password">Password</string>
+    <string name="generate">Generate</string>
+    <string name="label_secure_notes">Secure notes</string>
+    <string name="placeholder_password_notes">Optional notes (recovery codes, security questions…)</string>
+    <string name="mark_favorite">Mark as Favorite</string>
+    <string name="save_password">Save password</string>
+    <string name="save_vault">Save Vault</string>
+    <string name="new_category">New Category</string>
+    <string name="new_category_title">New category</string>
+    <string name="new_category_placeholder">Category name</string>
+    <string name="create">Create</string>
+    <string name="password_saved">Password saved successfully.</string>
+    <string name="password_updated">Password updated successfully.</string>
+    <string name="password_unreadable">The saved password couldn\'t be decrypted. Enter it again to save this item.</string>
+
+    <!-- Password details -->
+    <string name="vaults_caption">Vaults</string>
+    <string name="favorite">Favorite</string>
+    <string name="not_favorite">Not Favorite</string>
+    <string name="credentials">Credentials</string>
+    <string name="label_website">Website</string>
+    <string name="visit">Visit</string>
+    <string name="details_section">Details</string>
+    <string name="timestamps">Timestamps</string>
+    <string name="created_label">Created:</string>
+    <string name="updated_label">Updated:</string>
+    <string name="delete_password_title">Delete this password?</string>
+    <string name="delete_password_body">%1$s will be permanently removed from your vault.</string>
+    <string name="password_decrypt_failed">This password couldn\'t be decrypted with your vault key.</string>
+    <string name="link_open_failed">Couldn\'t open this link.</string>
+
+    <!-- Dashboard security -->
+    <string name="security_excellent">Excellent</string>
+    <string name="security_good">Good</string>
+    <string name="security_needs_review">Needs Review</string>
+    <string name="security_percent">%1$d%%</string>
+    <string name="security_protected">protected</string>
+    <string name="recently_updated_empty">No items found. Add your first item to get started!</string>
+    <string name="no_username">no username</string>
+    <string name="just_now">Just now</string>
+
     <!-- Recovery key dialog -->
     <string name="recovery_title">Save your recovery key</string>
     <string name="recovery_body">This key allows you to recover your vault if you forget your password. Store it somewhere safe. We cannot recover it for you.</string>

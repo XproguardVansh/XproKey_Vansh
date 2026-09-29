@@ -21,6 +21,10 @@ annotation class SessionDataStore
 @Retention(AnnotationRetention.BINARY)
 annotation class RecoveryKeyDataStore
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class VaultSecurityDataStore
+
 @Module
 @InstallIn(SingletonComponent::class)
 object StorageModule {
@@ -39,5 +43,13 @@ object StorageModule {
     fun provideRecoveryKeyDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
         PreferenceDataStoreFactory.create {
             context.preferencesDataStoreFile("pending_recovery_keys")
+        }
+
+    @Provides
+    @Singleton
+    @VaultSecurityDataStore
+    fun provideVaultSecurityDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
+        PreferenceDataStoreFactory.create {
+            context.preferencesDataStoreFile("vault_security")
         }
 }

@@ -5,6 +5,7 @@ import com.xprokeey2.data.remote.api.AuthApi
 import com.xprokeey2.data.remote.api.CardApi
 import com.xprokeey2.data.remote.api.LicenseApi
 import com.xprokeey2.data.remote.api.TokenApi
+import com.xprokeey2.data.remote.api.VaultApi
 import com.xprokeey2.data.remote.auth.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
@@ -66,6 +67,10 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideCardApi(retrofit: Retrofit): CardApi = retrofit.create(CardApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideVaultApi(retrofit: Retrofit): VaultApi = retrofit.create(VaultApi::class.java)
 
     private fun baseClient(): OkHttpClient.Builder {
         // BASIC only: request/response bodies carry passwords and tokens, never log them.
