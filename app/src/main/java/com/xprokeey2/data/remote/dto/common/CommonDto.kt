@@ -16,6 +16,8 @@ data class MessageResponseDto(
 @Serializable
 data class ErrorResponseDto(
     val error: String? = null,
+    /** Some endpoints (e.g. support tickets) explain errors in "message" instead. */
+    val message: String? = null,
     val detail: String? = null,
     @SerialName("is_verified") val isVerified: Boolean? = null,
 )

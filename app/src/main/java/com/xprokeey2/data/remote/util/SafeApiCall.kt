@@ -30,7 +30,8 @@ private fun HttpException.toDataError(json: Json): DataError {
     val errorDto = body?.let {
         runCatching { json.decodeFromString<ErrorResponseDto>(it) }.getOrNull()
     }
-    val message = errorDto?.error ?: message()
+    // Like the web: the body's "error", else its "message", else the HTTP status text.
+    val message = errorDto?.error ?: errorDto?.message ?: message()
 
     return if (errorDto?.isVerified == false) {
         DataError.AccountNotVerified(message)

@@ -28,6 +28,9 @@ import com.xprokeey2.presentation.onboarding.plan.PlanScreen
 import com.xprokeey2.presentation.passwords.details.PasswordDetailsScreenRoot
 import com.xprokeey2.presentation.passwords.form.PasswordFormScreenRoot
 import com.xprokeey2.presentation.passwords.list.PasswordsScreenRoot
+import com.xprokeey2.presentation.support.details.SupportTicketScreenRoot
+import com.xprokeey2.presentation.support.list.SupportScreenRoot
+import com.xprokeey2.presentation.support.newticket.NewTicketScreenRoot
 import com.xprokeey2.presentation.tools.exportdata.ExportScreenRoot
 import com.xprokeey2.presentation.tools.generator.GeneratorScreenRoot
 import com.xprokeey2.presentation.tools.importdata.ImportScreenRoot
@@ -217,6 +220,47 @@ fun AppNavHost(
                 onSignInRequired = signInAgain,
             )
         }
+
+        composable<SupportRoute> { entry ->
+            val resultMessage by entry.resultMessage()
+            SupportScreenRoot(
+                resultMessage = resultMessage,
+                onResultMessageShown = entry::clearResultMessage,
+                onSectionClick = navController::openSection,
+                onNewTicket = { navController.navigate(NewTicketRoute) },
+                onViewTicket = { ticketId -> navController.navigate(SupportTicketRoute(ticketId)) },
+                onSignInRequired = signInAgain,
+            )
+        }
+
+        composable<NewTicketRoute> {
+            NewTicketScreenRoot(
+                onBack = { navController.popBackStack() },
+                onCreated = { ticketId, message ->
+                    // Like the web: straight to the new ticket when the server returns it.
+                    if (ticketId == null) {
+                        navController.popBackWithMessage(message)
+                    } else {
+                        navController.navigate(SupportTicketRoute(ticketId)) {
+                            popUpTo<NewTicketRoute> { inclusive = true }
+                        }
+                        navController.currentBackStackEntry?.savedStateHandle?.set(RESULT_MESSAGE, message)
+                    }
+                },
+                onSignInRequired = signInAgain,
+            )
+        }
+
+        composable<SupportTicketRoute> { entry ->
+            val resultMessage by entry.resultMessage()
+            SupportTicketScreenRoot(
+                resultMessage = resultMessage,
+                onResultMessageShown = entry::clearResultMessage,
+                onBack = { navController.popBackStack() },
+                onLoadFailed = navController::popBackWithMessage,
+                onSignInRequired = signInAgain,
+            )
+        }
     }
 }
 
@@ -267,6 +311,10 @@ private fun NavHostController.openSection(section: WorkspaceSection, showWeakIte
             launchSingleTop = true
         }
         WorkspaceSection.IMPORT -> navigate(ImportRoute) {
+            popUpTo<DashboardRoute>()
+            launchSingleTop = true
+        }
+        WorkspaceSection.SUPPORT -> navigate(SupportRoute) {
             popUpTo<DashboardRoute>()
             launchSingleTop = true
         }

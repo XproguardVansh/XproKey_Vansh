@@ -292,6 +292,84 @@
     <string name="password_decrypt_failed">This password couldn\'t be decrypted with your vault key.</string>
     <string name="link_open_failed">Couldn\'t open this link.</string>
 
+    <!-- Support (web wording) -->
+    <string name="support_title">Help &amp; Support</string>
+    <string name="support_subtitle">Need assistance? Submit a ticket and track responses from our security team in real time.</string>
+    <string name="support_new_ticket">New Ticket</string>
+    <string name="support_total">Total tickets</string>
+    <string name="support_all">All</string>
+    <string name="support_open">Open</string>
+    <string name="support_in_progress">In Progress</string>
+    <string name="support_resolved">Resolved</string>
+    <string name="support_closed">Closed</string>
+    <string name="support_search">Search tickets…</string>
+    <string name="support_all_categories">All Categories</string>
+    <string name="support_cat_technical">Technical</string>
+    <string name="support_cat_billing">Billing</string>
+    <string name="support_cat_account">Account</string>
+    <string name="support_cat_bug">Bug Report</string>
+    <string name="support_cat_general">General</string>
+    <string name="support_priority_low">Low Priority</string>
+    <string name="support_priority_medium">Medium Priority</string>
+    <string name="support_priority_high">High Priority</string>
+    <string name="support_priority_urgent">Urgent Priority</string>
+    <string name="support_created">Created %1$s</string>
+    <string name="support_view_details">View details</string>
+    <string name="support_load_failed">Failed to load tickets.</string>
+    <string name="support_empty_none_title">No tickets yet</string>
+    <string name="support_empty_none_body">You haven\'t submitted any support requests yet.</string>
+    <string name="support_create_first">Create First Ticket</string>
+    <string name="support_empty_in_progress_title">No tickets in progress</string>
+    <string name="support_empty_in_progress_body">None of your tickets are being reviewed right now. They will show up here once our team starts working on them.</string>
+    <string name="support_empty_closed_title">No closed tickets</string>
+    <string name="support_empty_closed_body">You don\'t have any closed tickets yet. Tickets appear here after they are fully wrapped up.</string>
+    <string name="support_empty_filter_title">No tickets found</string>
+    <string name="support_empty_filter_body">No tickets match your active filter criteria.</string>
+
+    <!-- Support > New ticket -->
+    <string name="new_ticket_title">Submit a Support Ticket</string>
+    <string name="new_ticket_subtitle">Describe your question or technical issue. Our team will review and respond promptly.</string>
+    <string name="ticket_name_label">Your name</string>
+    <string name="ticket_name_placeholder">Jane Doe</string>
+    <string name="ticket_email_label">Email address</string>
+    <string name="ticket_email_placeholder">jane@example.com</string>
+    <string name="ticket_subject_label">Subject</string>
+    <string name="ticket_subject_placeholder">Brief summary of your issue (e.g. Vault sync issue)</string>
+    <string name="ticket_message_label">Description &amp; details</string>
+    <string name="ticket_message_placeholder">Please describe the issue in detail, including steps to reproduce or any error messages…</string>
+    <string name="ticket_cat_technical">Technical Issue</string>
+    <string name="ticket_cat_billing">Billing &amp; Payment</string>
+    <string name="ticket_cat_account">Account &amp; Security</string>
+    <string name="ticket_cat_bug">Bug Report</string>
+    <string name="ticket_cat_general">General Question</string>
+    <string name="ticket_submit">Submit Ticket</string>
+    <string name="ticket_error_name">Please enter your name.</string>
+    <string name="ticket_error_email">Please enter your email address.</string>
+    <string name="ticket_error_subject">Please enter a subject.</string>
+    <string name="ticket_error_message">Please provide details for your issue.</string>
+    <string name="ticket_created">Support ticket created successfully!</string>
+    <string name="ticket_submit_failed">Failed to submit ticket.</string>
+
+    <!-- Support > Ticket details -->
+    <string name="ticket_refresh">Refresh</string>
+    <string name="ticket_refreshed">Ticket refreshed.</string>
+    <string name="ticket_refresh_failed">Failed to refresh ticket.</string>
+    <string name="ticket_id_copied">Ticket ID copied to clipboard.</string>
+    <string name="cd_copy_ticket_id">Copy ticket ID</string>
+    <string name="ticket_status_open_desc">Ticket received. Our support team will review it shortly.</string>
+    <string name="ticket_status_in_progress_desc">Our engineering team is actively investigating your request.</string>
+    <string name="ticket_status_resolved_desc">This issue has been resolved. If you need more help, feel free to submit a new ticket.</string>
+    <string name="ticket_status_closed_desc">This ticket is now closed.</string>
+    <string name="ticket_email_note">Email responses will be sent directly to your registered email address.</string>
+    <string name="ticket_requester">Requester</string>
+    <string name="ticket_contact_email">Contact email</string>
+    <string name="ticket_submitted">Submitted</string>
+    <string name="ticket_last_updated">Last updated</string>
+    <string name="ticket_issue_description">Issue Description</string>
+    <string name="ticket_security_note">XproKey zero-knowledge encryption ensures your vault passwords are never shared in support logs.</string>
+    <string name="ticket_load_failed">Failed to load ticket details.</string>
+    <string name="ticket_not_available">N/A</string>
+
     <!-- Tools > Generator (web wording; the info line says "on your device" instead of "in your browser") -->
     <string name="generator_title">Password Generator</string>
     <string name="generator_badge">Generator</string>

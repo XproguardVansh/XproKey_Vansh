@@ -83,3 +83,14 @@ data object ExportRoute
 /** Tools > Import */
 @Serializable
 data object ImportRoute
+
+/** Support: "Help & Support", the user's tickets. */
+@Serializable
+data object SupportRoute
+
+/** "Submit a Support Ticket" */
+@Serializable
+data object NewTicketRoute
+
+@Serializable
+data class SupportTicketRoute(val ticketId: String)

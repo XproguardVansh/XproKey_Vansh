@@ -4,6 +4,7 @@ import com.xprokeey2.BuildConfig
 import com.xprokeey2.data.remote.api.AuthApi
 import com.xprokeey2.data.remote.api.CardApi
 import com.xprokeey2.data.remote.api.LicenseApi
+import com.xprokeey2.data.remote.api.SupportApi
 import com.xprokeey2.data.remote.api.TokenApi
 import com.xprokeey2.data.remote.api.TransferApi
 import com.xprokeey2.data.remote.api.VaultApi
@@ -76,6 +77,10 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideTransferApi(retrofit: Retrofit): TransferApi = retrofit.create(TransferApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSupportApi(retrofit: Retrofit): SupportApi = retrofit.create(SupportApi::class.java)
 
     private fun baseClient(): OkHttpClient.Builder {
         // BASIC only: request/response bodies carry passwords and tokens, never log them.

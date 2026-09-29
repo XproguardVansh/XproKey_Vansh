@@ -78,7 +78,7 @@ enum class WorkspaceSection(
     EXPORT(R.string.nav_export, R.drawable.ic_download, isAvailable = true, isToolsItem = true),
     IMPORT(R.string.nav_import, R.drawable.ic_upload, isAvailable = true, isToolsItem = true),
     SETTINGS(R.string.nav_settings, R.drawable.ic_settings, isAvailable = false, hasSubmenu = true),
-    SUPPORT(R.string.nav_support, R.drawable.ic_headphones, isAvailable = false),
+    SUPPORT(R.string.nav_support, R.drawable.ic_headphones, isAvailable = true),
 }
 
 /**
