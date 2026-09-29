@@ -71,6 +71,7 @@ fun DashboardScreenRoot(
     onOpenWeakItems: () -> Unit,
     onViewPassword: (itemId: Long) -> Unit,
     onManageCards: () -> Unit,
+    onGeneratePassword: () -> Unit,
     onImportPasswords: () -> Unit,
     onSessionExpired: (message: String) -> Unit,
     viewModel: DashboardViewModel = hiltViewModel(),
@@ -96,6 +97,7 @@ fun DashboardScreenRoot(
         onOpenWeakItems = onOpenWeakItems,
         onViewPassword = onViewPassword,
         onManageCards = onManageCards,
+        onGeneratePassword = onGeneratePassword,
         onImportPasswords = onImportPasswords,
     )
 }
@@ -108,6 +110,7 @@ fun DashboardScreen(
     onOpenWeakItems: () -> Unit,
     onViewPassword: (itemId: Long) -> Unit,
     onManageCards: () -> Unit,
+    onGeneratePassword: () -> Unit,
     onImportPasswords: () -> Unit,
 ) {
     val colors = XpTheme.colors
@@ -219,8 +222,7 @@ fun DashboardScreen(
                 )
                 Spacer(Modifier.height(14.dp))
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    // The generator isn't built yet.
-                    QuickAction(R.drawable.ic_wand, stringResource(R.string.action_generate_password), onClick = null)
+                    QuickAction(R.drawable.ic_wand, stringResource(R.string.action_generate_password), onClick = onGeneratePassword)
                     QuickAction(R.drawable.ic_download, stringResource(R.string.action_import_passwords), onClick = onImportPasswords)
                     QuickAction(R.drawable.ic_credit_card, stringResource(R.string.action_manage_cards), onClick = onManageCards)
                 }
@@ -449,7 +451,7 @@ private fun DashboardScreenPreview() {
                 recentItems = PreviewItems,
             ),
             onSectionClick = {}, onAddPassword = {}, onOpenWeakItems = {}, onViewPassword = {}, onManageCards = {},
-            onImportPasswords = {},
+            onGeneratePassword = {}, onImportPasswords = {},
         )
     }
 }
@@ -466,7 +468,7 @@ private fun DashboardScreenDarkPreview() {
                 recentItems = emptyList(),
             ),
             onSectionClick = {}, onAddPassword = {}, onOpenWeakItems = {}, onViewPassword = {}, onManageCards = {},
-            onImportPasswords = {},
+            onGeneratePassword = {}, onImportPasswords = {},
         )
     }
 }

@@ -72,6 +72,10 @@ data class PasswordFormRoute(val itemId: Long? = null)
 @Serializable
 data class PasswordDetailsRoute(val itemId: Long)
 
+/** Tools > Generator */
+@Serializable
+data object GeneratorRoute
+
 /** Tools > Export */
 @Serializable
 data object ExportRoute

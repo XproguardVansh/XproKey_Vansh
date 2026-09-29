@@ -51,6 +51,7 @@ import com.xprokeey2.domain.model.ExportFormat
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import com.xprokeey2.presentation.util.ObserveAsEvents
+import com.xprokeey2.presentation.workspace.PageBadge
 import com.xprokeey2.presentation.workspace.UserBadge
 import com.xprokeey2.presentation.workspace.WorkspaceScaffold
 import com.xprokeey2.presentation.workspace.WorkspaceSection
@@ -125,7 +126,7 @@ fun ExportScreen(
                     modifier = Modifier.weight(1f, fill = false),
                 )
                 Spacer(Modifier.width(8.dp))
-                ExportBadge()
+                PageBadge(stringResource(R.string.export_badge))
             }
             Spacer(Modifier.height(6.dp))
             Text(
@@ -209,22 +210,6 @@ private enum class FormatAccent(val light: Color, val dark: Color) {
     Sky(Color(0xFF0284C7), Color(0xFF38BDF8)),
     Violet(Color(0xFF7C3AED), Color(0xFFA78BFA)),
     Emerald(Color(0xFF059669), Color(0xFF34D399)),
-}
-
-@Composable
-private fun ExportBadge() {
-    val colors = XpTheme.colors
-    val shape = RoundedCornerShape(6.dp)
-    Text(
-        text = stringResource(R.string.export_badge).uppercase(),
-        style = XpTheme.typography.caption.copy(fontSize = 9.sp, letterSpacing = 0.8.sp),
-        color = colors.primary,
-        modifier = Modifier
-            .clip(shape)
-            .background(colors.primary.copy(alpha = if (colors.isDark) 0.18f else 0.08f))
-            .border(1.dp, colors.primary.copy(alpha = 0.15f), shape)
-            .padding(horizontal = 8.dp, vertical = 3.dp),
-    )
 }
 
 @Composable

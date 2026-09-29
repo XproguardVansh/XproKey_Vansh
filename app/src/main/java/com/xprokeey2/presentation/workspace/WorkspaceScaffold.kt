@@ -74,7 +74,7 @@ enum class WorkspaceSection(
     PASSWORDS(R.string.nav_passwords, R.drawable.ic_lock, isAvailable = true),
     CARDS(R.string.nav_cards, R.drawable.ic_credit_card, isAvailable = true),
     TOOLS(R.string.nav_tools, R.drawable.ic_wrench, isAvailable = true, hasSubmenu = true),
-    GENERATOR(R.string.nav_generator, R.drawable.ic_wand, isAvailable = false, isToolsItem = true),
+    GENERATOR(R.string.nav_generator, R.drawable.ic_wand, isAvailable = true, isToolsItem = true),
     EXPORT(R.string.nav_export, R.drawable.ic_download, isAvailable = true, isToolsItem = true),
     IMPORT(R.string.nav_import, R.drawable.ic_upload, isAvailable = true, isToolsItem = true),
     SETTINGS(R.string.nav_settings, R.drawable.ic_settings, isAvailable = false, hasSubmenu = true),

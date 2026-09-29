@@ -67,6 +67,23 @@ fun PageHeader(title: String, modifier: Modifier = Modifier, action: (@Composabl
     }
 }
 
+/** Small uppercase tag next to a Tools page title ("EXPORT", "GENERATOR"). */
+@Composable
+fun PageBadge(text: String) {
+    val colors = XpTheme.colors
+    val shape = RoundedCornerShape(6.dp)
+    Text(
+        text = text.uppercase(),
+        style = XpTheme.typography.caption.copy(fontSize = 9.sp, letterSpacing = 0.8.sp),
+        color = colors.primary,
+        modifier = Modifier
+            .clip(shape)
+            .background(colors.primary.copy(alpha = if (colors.isDark) 0.18f else 0.08f))
+            .border(1.dp, colors.primary.copy(alpha = 0.15f), shape)
+            .padding(horizontal = 8.dp, vertical = 3.dp),
+    )
+}
+
 enum class CompactButtonStyle { Primary, Neutral, Danger }
 
 /** Small button of the workspace screens: "+ Add card", "Reveal", "View", "Edit", "Delete". */

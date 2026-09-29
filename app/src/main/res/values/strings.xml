@@ -292,6 +292,40 @@
     <string name="password_decrypt_failed">This password couldn\'t be decrypted with your vault key.</string>
     <string name="link_open_failed">Couldn\'t open this link.</string>
 
+    <!-- Tools > Generator (web wording; the info line says "on your device" instead of "in your browser") -->
+    <string name="generator_title">Password Generator</string>
+    <string name="generator_badge">Generator</string>
+    <string name="generator_subtitle">Create a cryptographically secure, random password to keep your online accounts safe.</string>
+    <string name="generator_output_label">Generated password</string>
+    <string name="generator_select_option">Select at least one option</string>
+    <string name="generator_strength_label">Security Strength</string>
+    <string name="generator_bits">%1$d bits</string>
+    <string name="generator_info">Generated entirely on your device using Android\'s secure random number generator (CSPRNG).</string>
+    <string name="generator_no_charset">Select at least one character type to generate a password.</string>
+    <string name="generator_weak">Weak</string>
+    <string name="generator_fair">Fair</string>
+    <string name="generator_good">Good</string>
+    <string name="generator_strong">Strong</string>
+    <string name="generator_excellent">Excellent</string>
+    <string name="generator_options">Options</string>
+    <string name="generator_length">Length</string>
+    <string name="generator_uppercase">Uppercase</string>
+    <string name="generator_uppercase_desc">Include capital letters (A-Z)</string>
+    <string name="generator_lowercase">Lowercase</string>
+    <string name="generator_lowercase_desc">Include lowercase letters (a-z)</string>
+    <string name="generator_numbers">Numbers</string>
+    <string name="generator_numbers_desc">Include numeric digits (0-9)</string>
+    <string name="generator_symbols">Symbols</string>
+    <string name="generator_symbols_desc">Include special symbols (!@#$%^&amp;*)</string>
+    <string name="generator_advanced">Advanced settings</string>
+    <string name="generator_avoid_ambiguous">Avoid ambiguous</string>
+    <string name="generator_avoid_ambiguous_desc">Exclude similar characters (like 1, l, 0, O)</string>
+    <string name="generator_require_all">Require all types</string>
+    <string name="generator_require_all_desc">Ensure at least one character of each class</string>
+    <string name="generator_copied">Password copied to clipboard.</string>
+    <string name="cd_regenerate">Regenerate</string>
+    <string name="cd_copy_password">Copy password</string>
+
     <!-- Tools > Export (web wording) -->
     <string name="export_title">Export Your Data</string>
     <string name="export_badge">Export</string>
