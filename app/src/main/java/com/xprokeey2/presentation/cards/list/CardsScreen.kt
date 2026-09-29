@@ -20,7 +20,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,6 +47,7 @@ import com.xprokeey2.presentation.components.XpTextField
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import com.xprokeey2.presentation.util.ObserveAsEvents
+import com.xprokeey2.presentation.util.ResultMessageEffect
 import com.xprokeey2.presentation.workspace.CompactButton
 import com.xprokeey2.presentation.workspace.CompactButtonStyle
 import com.xprokeey2.presentation.workspace.LoadingBlock
@@ -82,12 +82,7 @@ fun CardsScreenRoot(
         }
     }
     // e.g. "Card saved successfully." after coming back from Add card.
-    LaunchedEffect(resultMessage) {
-        if (resultMessage != null) {
-            onResultMessageShown()
-            snackbarHostState.showSnackbar(resultMessage)
-        }
-    }
+    ResultMessageEffect(resultMessage, snackbarHostState, onResultMessageShown)
     LifecycleResumeEffect(Unit) {
         viewModel.onAction(CardsAction.Refresh)
         onPauseOrDispose { }

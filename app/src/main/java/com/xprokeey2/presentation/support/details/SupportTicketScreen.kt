@@ -31,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,6 +61,7 @@ import com.xprokeey2.presentation.support.components.TicketStatusPill
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import com.xprokeey2.presentation.util.ObserveAsEvents
+import com.xprokeey2.presentation.util.ResultMessageEffect
 import com.xprokeey2.presentation.util.copyToClipboard
 import com.xprokeey2.presentation.workspace.IconTile
 import com.xprokeey2.presentation.workspace.LoadingBlock
@@ -97,12 +97,7 @@ fun SupportTicketScreenRoot(
         }
     }
     // e.g. "Support ticket created successfully!" right after sending it.
-    LaunchedEffect(resultMessage) {
-        if (resultMessage != null) {
-            onResultMessageShown()
-            snackbarHostState.showSnackbar(resultMessage)
-        }
-    }
+    ResultMessageEffect(resultMessage, snackbarHostState, onResultMessageShown)
 
     SupportTicketScreen(
         state = state,

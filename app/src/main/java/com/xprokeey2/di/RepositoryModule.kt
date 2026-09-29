@@ -22,6 +22,7 @@ import com.xprokeey2.data.repository.AuthRepositoryImpl
 import com.xprokeey2.data.repository.CardRepositoryImpl
 import com.xprokeey2.data.repository.LicenseRepositoryImpl
 import com.xprokeey2.data.repository.RecoveryKeyRepositoryImpl
+import com.xprokeey2.data.repository.SessionRepositoryImpl
 import com.xprokeey2.data.repository.SupportRepositoryImpl
 import com.xprokeey2.data.repository.UserRepositoryImpl
 import com.xprokeey2.data.repository.VaultRepositoryImpl
@@ -30,6 +31,7 @@ import com.xprokeey2.domain.repository.AuthRepository
 import com.xprokeey2.domain.repository.CardRepository
 import com.xprokeey2.domain.repository.LicenseRepository
 import com.xprokeey2.domain.repository.RecoveryKeyRepository
+import com.xprokeey2.domain.repository.SessionRepository
 import com.xprokeey2.domain.repository.SupportRepository
 import com.xprokeey2.domain.repository.UserFileRepository
 import com.xprokeey2.domain.repository.UserRepository
@@ -111,6 +113,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindSupportRepository(impl: SupportRepositoryImpl): SupportRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSessionRepository(impl: SessionRepositoryImpl): SessionRepository
 
     @Binds
     @Singleton

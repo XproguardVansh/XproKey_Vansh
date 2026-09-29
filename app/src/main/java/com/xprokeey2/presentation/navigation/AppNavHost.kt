@@ -30,6 +30,7 @@ import com.xprokeey2.presentation.onboarding.plan.PlanScreen
 import com.xprokeey2.presentation.passwords.details.PasswordDetailsScreenRoot
 import com.xprokeey2.presentation.passwords.form.PasswordFormScreenRoot
 import com.xprokeey2.presentation.passwords.list.PasswordsScreenRoot
+import com.xprokeey2.presentation.settings.changepassword.ChangePasswordScreenRoot
 import com.xprokeey2.presentation.support.details.SupportTicketScreenRoot
 import com.xprokeey2.presentation.support.list.SupportScreenRoot
 import com.xprokeey2.presentation.support.newticket.NewTicketScreenRoot
@@ -126,8 +127,11 @@ fun AppNavHost(
             )
         }
 
-        composable<DashboardRoute> {
+        composable<DashboardRoute> { entry ->
+            val resultMessage by entry.resultMessage()
             DashboardScreenRoot(
+                resultMessage = resultMessage,
+                onResultMessageShown = entry::clearResultMessage,
                 onSectionClick = navController::openSection,
                 onAddPassword = { navController.navigate(PasswordFormRoute()) },
                 onOpenWeakItems = { navController.openSection(WorkspaceSection.PASSWORDS, showWeakItems = true) },
@@ -219,6 +223,18 @@ fun AppNavHost(
         composable<ImportRoute> {
             ImportScreenRoot(
                 onSectionClick = navController::openSection,
+                onSignInRequired = signInAgain,
+            )
+        }
+
+        composable<ChangePasswordRoute> {
+            ChangePasswordScreenRoot(
+                onSectionClick = navController::openSection,
+                // The web goes on to its Profile page, which the app doesn't have: back to the Dashboard.
+                onPasswordChanged = { message ->
+                    navController.openSection(WorkspaceSection.DASHBOARD)
+                    navController.currentBackStackEntry?.savedStateHandle?.set(RESULT_MESSAGE, message)
+                },
                 onSignInRequired = signInAgain,
             )
         }
@@ -328,6 +344,10 @@ private fun NavHostController.openSection(section: WorkspaceSection, showWeakIte
             launchSingleTop = true
         }
         WorkspaceSection.SUPPORT -> navigate(SupportRoute) {
+            popUpTo<DashboardRoute>()
+            launchSingleTop = true
+        }
+        WorkspaceSection.CHANGE_PASSWORD -> navigate(ChangePasswordRoute) {
             popUpTo<DashboardRoute>()
             launchSingleTop = true
         }

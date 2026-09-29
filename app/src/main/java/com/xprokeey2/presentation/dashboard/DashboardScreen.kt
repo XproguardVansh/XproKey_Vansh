@@ -51,6 +51,7 @@ import com.xprokeey2.presentation.passwords.form.DEFAULT_CATEGORY
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import com.xprokeey2.presentation.util.ObserveAsEvents
+import com.xprokeey2.presentation.util.ResultMessageEffect
 import com.xprokeey2.presentation.workspace.CompactButton
 import com.xprokeey2.presentation.workspace.CompactButtonStyle
 import com.xprokeey2.presentation.workspace.IconTile
@@ -66,6 +67,8 @@ import java.util.Locale
 
 @Composable
 fun DashboardScreenRoot(
+    resultMessage: String?,
+    onResultMessageShown: () -> Unit,
     onSectionClick: (WorkspaceSection) -> Unit,
     onAddPassword: () -> Unit,
     onOpenWeakItems: () -> Unit,
@@ -77,6 +80,7 @@ fun DashboardScreenRoot(
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
     ObserveAsEvents(viewModel.events) { event ->
@@ -84,6 +88,7 @@ fun DashboardScreenRoot(
             is DashboardEvent.SessionExpired -> onSessionExpired(event.message.asString(context))
         }
     }
+    ResultMessageEffect(resultMessage, snackbarHostState, onResultMessageShown)
     // Also runs on first display, and again when coming back from Cards or Passwords.
     LifecycleResumeEffect(Unit) {
         viewModel.onAction(DashboardAction.Refresh)
@@ -92,6 +97,7 @@ fun DashboardScreenRoot(
 
     DashboardScreen(
         state = state,
+        snackbarHostState = snackbarHostState,
         onSectionClick = onSectionClick,
         onAddPassword = onAddPassword,
         onOpenWeakItems = onOpenWeakItems,
@@ -105,6 +111,7 @@ fun DashboardScreenRoot(
 @Composable
 fun DashboardScreen(
     state: DashboardUiState,
+    snackbarHostState: SnackbarHostState,
     onSectionClick: (WorkspaceSection) -> Unit,
     onAddPassword: () -> Unit,
     onOpenWeakItems: () -> Unit,
@@ -119,7 +126,7 @@ fun DashboardScreen(
         user = state.user,
         currentSection = WorkspaceSection.DASHBOARD,
         onSectionClick = onSectionClick,
-        snackbarHostState = remember { SnackbarHostState() },
+        snackbarHostState = snackbarHostState,
     ) { padding ->
         Column(
             modifier = Modifier
@@ -450,6 +457,7 @@ private fun DashboardScreenPreview() {
                 security = VaultSecurity.calculate(PreviewItems, missingFieldsCount = 0, markedWeakIds = setOf(2)),
                 recentItems = PreviewItems,
             ),
+            snackbarHostState = remember { SnackbarHostState() },
             onSectionClick = {}, onAddPassword = {}, onOpenWeakItems = {}, onViewPassword = {}, onManageCards = {},
             onGeneratePassword = {}, onImportPasswords = {},
         )
@@ -467,6 +475,7 @@ private fun DashboardScreenDarkPreview() {
                 security = VaultSecurity.calculate(emptyList(), missingFieldsCount = 0, markedWeakIds = emptySet()),
                 recentItems = emptyList(),
             ),
+            snackbarHostState = remember { SnackbarHostState() },
             onSectionClick = {}, onAddPassword = {}, onOpenWeakItems = {}, onViewPassword = {}, onManageCards = {},
             onGeneratePassword = {}, onImportPasswords = {},
         )

@@ -298,6 +298,40 @@
     <string name="password_decrypt_failed">This password couldn\'t be decrypted with your vault key.</string>
     <string name="link_open_failed">Couldn\'t open this link.</string>
 
+    <!-- Settings > Change password (web wording) -->
+    <string name="change_password_title">Change Password</string>
+    <string name="change_password_subtitle">Update your account password using secure OTP verification to protect your keychain data.</string>
+    <string name="change_password_request_otp">Request OTP</string>
+    <string name="change_password_request_otp_body">We\'ll send a one-time password (OTP) to your registered email address to verify your identity before allowing a password reset.</string>
+    <string name="change_password_email_label">Email address</string>
+    <string name="change_password_email_hint">OTP will be sent to this email address.</string>
+    <string name="change_password_send_otp">Send OTP</string>
+    <string name="change_password_sending_otp">Sending OTP…</string>
+    <string name="change_password_verify">Verify OTP &amp; Set New Password</string>
+    <string name="change_password_verify_body">Enter the 6-digit OTP code sent to your email and set a new password of at least 8 characters.</string>
+    <string name="change_password_otp_label">One-Time Password (OTP)</string>
+    <string name="change_password_otp_placeholder">Enter 6-digit OTP</string>
+    <string name="change_password_otp_hint">OTP is valid for 10 minutes.</string>
+    <string name="change_password_new_label">New Password</string>
+    <string name="change_password_new_placeholder">Min 8 characters</string>
+    <string name="change_password_confirm_label">Confirm New Password</string>
+    <string name="change_password_confirm_placeholder">Re-enter password</string>
+    <string name="change_password_submit">Change Password</string>
+    <string name="change_password_submitting">Changing…</string>
+    <string name="change_password_otp_sent">OTP has been sent to your email.</string>
+    <string name="change_password_success">Password changed successfully.</string>
+    <string name="change_password_email_missing">Email address not found.</string>
+    <string name="change_password_otp_required">OTP is required.</string>
+    <string name="change_password_otp_length">OTP must be 6 digits.</string>
+    <string name="change_password_password_required">New password is required.</string>
+    <string name="change_password_password_short">Password must be at least 8 characters.</string>
+    <string name="change_password_mismatch">Passwords don\'t match. Please re-enter the same password.</string>
+    <string name="change_password_vault_locked">Vault locked or session expired. Please login again.</string>
+    <string name="change_password_otp_expired">OTP expired. Please request a new OTP.</string>
+    <string name="change_password_invalid_otp">Invalid OTP. Please check and try again.</string>
+    <string name="change_password_invalid_email_or_otp">Invalid email or OTP. Please check and try again.</string>
+    <string name="change_password_failed">Password change failed. Please try again.</string>
+
     <!-- Settings > About > App Info (web wording; the platform is Android here) -->
     <string name="app_info_title">App Info</string>
     <string name="app_info_subtitle">Basic information about the application and platform.</string>

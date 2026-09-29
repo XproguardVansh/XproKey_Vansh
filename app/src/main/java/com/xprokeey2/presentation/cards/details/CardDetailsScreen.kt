@@ -20,7 +20,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,6 +52,7 @@ import com.xprokeey2.presentation.components.XpPrimaryButton
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import com.xprokeey2.presentation.util.ObserveAsEvents
+import com.xprokeey2.presentation.util.ResultMessageEffect
 import com.xprokeey2.presentation.util.copyToClipboard
 import com.xprokeey2.presentation.workspace.CompactButton
 import com.xprokeey2.presentation.workspace.CompactButtonStyle
@@ -92,12 +92,7 @@ fun CardDetailsScreenRoot(
         }
     }
     // e.g. "Card updated successfully." after coming back from Edit.
-    LaunchedEffect(resultMessage) {
-        if (resultMessage != null) {
-            onResultMessageShown()
-            snackbarHostState.showSnackbar(resultMessage)
-        }
-    }
+    ResultMessageEffect(resultMessage, snackbarHostState, onResultMessageShown)
     LifecycleResumeEffect(Unit) {
         viewModel.onAction(CardDetailsAction.Refresh)
         onPauseOrDispose { }

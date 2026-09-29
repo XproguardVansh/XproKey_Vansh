@@ -32,7 +32,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,6 +73,7 @@ import com.xprokeey2.presentation.passwords.components.shortDate
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import com.xprokeey2.presentation.util.ObserveAsEvents
+import com.xprokeey2.presentation.util.ResultMessageEffect
 import com.xprokeey2.presentation.util.copyToClipboard
 import com.xprokeey2.presentation.workspace.CompactButton
 import com.xprokeey2.presentation.workspace.CompactButtonStyle
@@ -117,12 +117,7 @@ fun PasswordsScreenRoot(
         }
     }
     // e.g. "Password saved successfully." after coming back from Add password.
-    LaunchedEffect(resultMessage) {
-        if (resultMessage != null) {
-            onResultMessageShown()
-            snackbarHostState.showSnackbar(resultMessage)
-        }
-    }
+    ResultMessageEffect(resultMessage, snackbarHostState, onResultMessageShown)
     LifecycleResumeEffect(Unit) {
         viewModel.onAction(PasswordsAction.Refresh)
         onPauseOrDispose { }

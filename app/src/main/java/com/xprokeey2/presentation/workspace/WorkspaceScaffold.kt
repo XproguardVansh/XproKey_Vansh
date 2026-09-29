@@ -84,7 +84,7 @@ enum class WorkspaceSection(
     EXPORT(R.string.nav_export, R.drawable.ic_download, isAvailable = true, group = MenuGroup.TOOLS),
     IMPORT(R.string.nav_import, R.drawable.ic_upload, isAvailable = true, group = MenuGroup.TOOLS),
     SETTINGS(R.string.nav_settings, R.drawable.ic_settings, isAvailable = true, opens = MenuGroup.SETTINGS),
-    CHANGE_PASSWORD(R.string.nav_change_password, R.drawable.ic_key, isAvailable = false, group = MenuGroup.SETTINGS),
+    CHANGE_PASSWORD(R.string.nav_change_password, R.drawable.ic_key, isAvailable = true, group = MenuGroup.SETTINGS),
     SECURITY(R.string.nav_security, R.drawable.ic_shield_check, isAvailable = false, group = MenuGroup.SETTINGS),
     SUBSCRIPTION(R.string.nav_subscription, R.drawable.ic_shield, isAvailable = false, group = MenuGroup.SETTINGS),
     ABOUT(R.string.nav_about, R.drawable.ic_info, isAvailable = true, group = MenuGroup.SETTINGS, opens = MenuGroup.ABOUT),

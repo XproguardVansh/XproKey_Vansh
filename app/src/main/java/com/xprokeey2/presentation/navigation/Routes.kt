@@ -84,6 +84,10 @@ data object ExportRoute
 @Serializable
 data object ImportRoute
 
+/** Settings > Change password */
+@Serializable
+data object ChangePasswordRoute
+
 /** Settings > About > App Info */
 @Serializable
 data object AppInfoRoute

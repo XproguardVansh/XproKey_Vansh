@@ -32,7 +32,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,6 +70,7 @@ import com.xprokeey2.presentation.support.components.label
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import com.xprokeey2.presentation.util.ObserveAsEvents
+import com.xprokeey2.presentation.util.ResultMessageEffect
 import com.xprokeey2.presentation.workspace.CompactButton
 import com.xprokeey2.presentation.workspace.CompactButtonStyle
 import com.xprokeey2.presentation.workspace.IconTile
@@ -103,12 +103,7 @@ fun SupportScreenRoot(
             is SupportEvent.SignInRequired -> onSignInRequired(event.message.asString(context))
         }
     }
-    LaunchedEffect(resultMessage) {
-        if (resultMessage != null) {
-            onResultMessageShown()
-            snackbarHostState.showSnackbar(resultMessage)
-        }
-    }
+    ResultMessageEffect(resultMessage, snackbarHostState, onResultMessageShown)
     // Also after coming back from a ticket or the New Ticket form.
     LifecycleResumeEffect(Unit) {
         viewModel.onAction(SupportAction.Refresh)

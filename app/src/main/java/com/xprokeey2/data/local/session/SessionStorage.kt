@@ -40,6 +40,14 @@ class SessionStorage @Inject constructor(
 
     suspend fun getUserId(): String? = dataStore.data.first()[USER_ID]
 
+    /** The account's master salt from login (the web keeps it in sessionStorage). */
+    suspend fun getMasterSalt(): String? = readSecret(MASTER_SALT)
+
+    /** After Settings > Change password: the vault key as now locked with the new password. */
+    suspend fun saveEncryptedVaultKey(encryptedVaultKey: String) {
+        dataStore.edit { it[ENCRYPTED_VAULT_KEY] = cipher.encrypt(encryptedVaultKey) }
+    }
+
     /** Who is signed in, or null when no session is saved. */
     suspend fun getProfile(): SessionProfile? {
         val prefs = dataStore.data.first()
