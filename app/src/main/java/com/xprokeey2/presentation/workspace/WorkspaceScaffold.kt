@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -59,26 +61,51 @@ import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import kotlinx.coroutines.launch
 
+/** A sub-menu of the drawer; the entry whose [WorkspaceSection.opens] it is shows or hides it. */
+enum class MenuGroup { TOOLS, SETTINGS, ABOUT }
+
 /**
  * Sidebar sections of the web app. Only the ones in [WorkspaceSection.isAvailable] work so far.
- * [isToolsItem] entries are listed under Tools when it's opened (Generator, Export, Import).
+ * [group] is the sub-menu an entry sits in (null = top level); an entry with [opens] opens that
+ * sub-menu instead of a screen, like Tools, Settings and About on the web.
  */
 enum class WorkspaceSection(
     @param:StringRes val title: Int,
     @param:DrawableRes val icon: Int,
     val isAvailable: Boolean,
-    val hasSubmenu: Boolean = false,
-    val isToolsItem: Boolean = false,
+    val group: MenuGroup? = null,
+    val opens: MenuGroup? = null,
 ) {
     DASHBOARD(R.string.nav_dashboard, R.drawable.ic_layout_grid, isAvailable = true),
     PASSWORDS(R.string.nav_passwords, R.drawable.ic_lock, isAvailable = true),
     CARDS(R.string.nav_cards, R.drawable.ic_credit_card, isAvailable = true),
-    TOOLS(R.string.nav_tools, R.drawable.ic_wrench, isAvailable = true, hasSubmenu = true),
-    GENERATOR(R.string.nav_generator, R.drawable.ic_wand, isAvailable = true, isToolsItem = true),
-    EXPORT(R.string.nav_export, R.drawable.ic_download, isAvailable = true, isToolsItem = true),
-    IMPORT(R.string.nav_import, R.drawable.ic_upload, isAvailable = true, isToolsItem = true),
-    SETTINGS(R.string.nav_settings, R.drawable.ic_settings, isAvailable = false, hasSubmenu = true),
-    SUPPORT(R.string.nav_support, R.drawable.ic_headphones, isAvailable = true),
+    TOOLS(R.string.nav_tools, R.drawable.ic_wrench, isAvailable = true, opens = MenuGroup.TOOLS),
+    GENERATOR(R.string.nav_generator, R.drawable.ic_wand, isAvailable = true, group = MenuGroup.TOOLS),
+    EXPORT(R.string.nav_export, R.drawable.ic_download, isAvailable = true, group = MenuGroup.TOOLS),
+    IMPORT(R.string.nav_import, R.drawable.ic_upload, isAvailable = true, group = MenuGroup.TOOLS),
+    SETTINGS(R.string.nav_settings, R.drawable.ic_settings, isAvailable = true, opens = MenuGroup.SETTINGS),
+    CHANGE_PASSWORD(R.string.nav_change_password, R.drawable.ic_key, isAvailable = false, group = MenuGroup.SETTINGS),
+    SECURITY(R.string.nav_security, R.drawable.ic_shield_check, isAvailable = false, group = MenuGroup.SETTINGS),
+    SUBSCRIPTION(R.string.nav_subscription, R.drawable.ic_shield, isAvailable = false, group = MenuGroup.SETTINGS),
+    ABOUT(R.string.nav_about, R.drawable.ic_info, isAvailable = true, group = MenuGroup.SETTINGS, opens = MenuGroup.ABOUT),
+    APP_INFO(R.string.nav_app_info, R.drawable.ic_info, isAvailable = true, group = MenuGroup.ABOUT),
+    FAQ(R.string.nav_faq, R.drawable.ic_file_text, isAvailable = true, group = MenuGroup.ABOUT),
+    SUPPORT(R.string.nav_support, R.drawable.ic_headphones, isAvailable = true);
+
+    val hasSubmenu: Boolean get() = opens != null
+
+    /** The sub-menus that must be open to see this entry, e.g. FAQ → About and Settings. */
+    val openGroups: Set<MenuGroup>
+        get() {
+            val groups = mutableSetOf<MenuGroup>()
+            var current = group
+            while (current != null) {
+                val inside: MenuGroup = current
+                groups += inside
+                current = entries.first { it.opens == inside }.group
+            }
+            return groups
+        }
 }
 
 /**
@@ -239,33 +266,25 @@ private fun WorkspaceDrawer(
                 color = colors.textMuted,
                 modifier = Modifier.padding(start = 22.dp, top = 20.dp, bottom = 10.dp),
             )
-            // Like the web sidebar: Tools opens and closes its list, and starts open on a Tools page.
-            var isToolsOpen by rememberSaveable { mutableStateOf(currentSection.isToolsItem) }
+            // Like the web sidebar: Tools, Settings and About open and close their lists, and the
+            // ones holding the current page start open.
+            var openGroups by rememberSaveable { mutableStateOf(currentSection.openGroups) }
             Column(
-                modifier = Modifier.padding(horizontal = 12.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                WorkspaceSection.entries.filterNot { it.isToolsItem }.forEach { section ->
-                    val isTools = section == WorkspaceSection.TOOLS
-                    DrawerItem(
-                        section = section,
-                        selected = section == currentSection,
-                        isExpanded = isTools && isToolsOpen,
-                        onClick = { if (isTools) isToolsOpen = !isToolsOpen else onSectionClick(section) },
-                    )
-                    if (isTools && isToolsOpen) {
-                        WorkspaceSection.entries.filter { it.isToolsItem }.forEach { item ->
-                            DrawerItem(
-                                section = item,
-                                selected = item == currentSection,
-                                onClick = { onSectionClick(item) },
-                                modifier = Modifier.padding(start = 24.dp),
-                            )
-                        }
-                    }
-                }
+                MenuEntries(
+                    group = null,
+                    depth = 0,
+                    currentSection = currentSection,
+                    openGroups = openGroups,
+                    onToggle = { group -> openGroups = if (group in openGroups) openGroups - group else openGroups + group },
+                    onSectionClick = onSectionClick,
+                )
             }
-            Spacer(Modifier.weight(1f))
             if (user != null) {
                 HorizontalDivider(color = colors.divider)
                 Row(
@@ -296,20 +315,48 @@ private fun WorkspaceDrawer(
     }
 }
 
+/** The entries of [group] (null = top level), each open sub-menu indented below its entry. */
+@Composable
+private fun MenuEntries(
+    group: MenuGroup?,
+    depth: Int,
+    currentSection: WorkspaceSection,
+    openGroups: Set<MenuGroup>,
+    onToggle: (MenuGroup) -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
+) {
+    WorkspaceSection.entries.filter { it.group == group }.forEach { section ->
+        val opens = section.opens
+        val isOpen = opens != null && opens in openGroups
+        DrawerItem(
+            section = section,
+            selected = section == currentSection,
+            depth = depth,
+            isExpanded = isOpen,
+            onClick = { if (opens != null) onToggle(opens) else onSectionClick(section) },
+        )
+        if (opens != null && isOpen) {
+            MenuEntries(opens, depth + 1, currentSection, openGroups, onToggle, onSectionClick)
+        }
+    }
+}
+
 @Composable
 private fun DrawerItem(
     section: WorkspaceSection,
     selected: Boolean,
+    depth: Int,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
     isExpanded: Boolean = false,
 ) {
     val colors = XpTheme.colors
     val tint = if (selected) colors.primary else colors.textSecondary
     Row(
-        modifier = modifier
+        modifier = Modifier
+            // The web indents sub-menus by 24 px, and About's items by 20 px more.
+            .padding(start = if (depth == 0) 0.dp else (4 + 20 * depth).dp)
             .fillMaxWidth()
-            .height(if (section.isToolsItem) 42.dp else 46.dp)
+            .height(if (depth == 0) 46.dp else 42.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(if (selected) colors.primary.copy(alpha = 0.12f) else colors.surface)
             .clickable(enabled = section.isAvailable, role = Role.Button, onClick = onClick)
@@ -321,7 +368,13 @@ private fun DrawerItem(
             painter = painterResource(section.icon),
             contentDescription = null,
             tint = tint,
-            modifier = Modifier.size(if (section.isToolsItem) 15.dp else 18.dp),
+            modifier = Modifier.size(
+                when (depth) {
+                    0 -> 18.dp
+                    1 -> 15.dp
+                    else -> 13.dp
+                }
+            ),
         )
         Spacer(Modifier.width(12.dp))
         Text(

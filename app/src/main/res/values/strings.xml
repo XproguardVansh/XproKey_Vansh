@@ -119,6 +119,12 @@
     <string name="nav_generator">Generator</string>
     <string name="nav_export">Export</string>
     <string name="nav_import">Import</string>
+    <string name="nav_change_password">Change password</string>
+    <string name="nav_security">Security</string>
+    <string name="nav_subscription">Subscription</string>
+    <string name="nav_about">About</string>
+    <string name="nav_app_info">App Info</string>
+    <string name="nav_faq">FAQ</string>
     <string name="nav_settings">Settings</string>
     <string name="nav_support">Support</string>
 
@@ -291,6 +297,61 @@
     <string name="delete_password_body">%1$s will be permanently removed from your vault.</string>
     <string name="password_decrypt_failed">This password couldn\'t be decrypted with your vault key.</string>
     <string name="link_open_failed">Couldn\'t open this link.</string>
+
+    <!-- Settings > About > App Info (web wording; the platform is Android here) -->
+    <string name="app_info_title">App Info</string>
+    <string name="app_info_subtitle">Basic information about the application and platform.</string>
+    <string name="app_info_details">Application Details</string>
+    <string name="app_info_name">Application Name</string>
+    <string name="app_info_name_value" translatable="false">XproKey</string>
+    <string name="app_info_version">Version</string>
+    <string name="app_info_platform">Platform</string>
+    <string name="app_info_platform_value">Android Application</string>
+
+    <!-- Settings > About > FAQ (web wording; "in your browser" says "on your device" here) -->
+    <string name="faq_badge">Answered by the team</string>
+    <string name="faq_title_start">"Questions, "</string>
+    <string name="faq_title_highlight">answered honestly.</string>
+    <string name="faq_subtitle">If something here is unclear, reach out — we\'ll update this page rather than send a templated reply.</string>
+    <string name="faq_cat_security">Security &amp; Encryption</string>
+    <string name="faq_cat_recovery">Recovery &amp; Account</string>
+    <string name="faq_cat_privacy">Privacy</string>
+    <string name="faq_cat_refunds">Refunds &amp; Cancellations</string>
+    <string name="faq_q_employees">Can XproKey employees see what I store?</string>
+    <string name="faq_a_employees">No. Your vault data is encrypted on your device using AES-256-GCM before it ever reaches our servers. We only store encrypted data and an encrypted vault key — never plaintext passwords or card details.</string>
+    <string name="faq_q_breach">What happens if XproKey is breached?</string>
+    <string name="faq_a_breach">Because of our zero-knowledge architecture, our servers never hold your master password or an unencrypted vault key. Even in the event of a breach, attackers would only find encrypted data that cannot be read without your master password.</string>
+    <string name="faq_q_forgot">I forgot my master password. Can you reset it?</string>
+    <string name="faq_a_forgot">We can\'t reset it directly, since we never store it. Instead, you can regain access using your recovery key or by verifying your identity through OTP-based password recovery.</string>
+    <string name="faq_q_recovery_key">What is a recovery key?</string>
+    <string name="faq_a_recovery_key">Your recovery key is a unique key generated when you create your account. It\'s used to unlock your vault key if you ever forget your master password, so it\'s important to store it somewhere safe.</string>
+    <string name="faq_q_recovery_works">How does password recovery work?</string>
+    <string name="faq_a_recovery_works">You request a one-time password (OTP) sent to your registered email. Once verified, your device uses your recovery key to decrypt your vault key locally and re-encrypts it with your new master password. Your vault key is never exposed to our servers during this process.</string>
+    <string name="faq_q_stored">Where is my data stored?</string>
+    <string name="faq_a_stored">Your encrypted vault data and encrypted vault key are stored on our servers. All encryption and decryption happen locally on your device — we never have access to the keys needed to read your data.</string>
+    <string name="faq_q_encrypted">Is my data encrypted before upload?</string>
+    <string name="faq_a_encrypted">Yes. Every password and payment card is encrypted on your device using AES-256-GCM before it\'s sent to our servers. Your master password is never transmitted or stored — it\'s used locally with Argon2id and PBKDF2 to derive the keys that protect your vault.</string>
+    <string name="faq_q_refund_policy">What is XproKey’s refund policy?</string>
+    <string name="faq_a_refund_policy" formatted="false">We offer a 14-day money-back guarantee on all Yearly personal plans and a 7-day refund window on Quarterly plans from the initial date of purchase. If you are not completely satisfied with XproKey, contact us within this period for a full 100% refund.</string>
+    <string name="faq_q_refund_request">How do I request a refund?</string>
+    <string name="faq_refund_intro">You can request a refund through either of the following methods:</string>
+    <string name="faq_refund_form_label">Support Form:</string>
+    <string name="faq_refund_form_before">Submit a request directly through our</string>
+    <string name="faq_refund_form_link">Support Form</string>
+    <string name="faq_refund_form_after">by selecting the \"Billing / Refund\" category.</string>
+    <string name="faq_refund_email_label">Email:</string>
+    <string name="faq_refund_email_before">Email us at</string>
+    <string name="faq_refund_email_after">using your registered account email.</string>
+    <string name="faq_refund_note">Please include your Payment ID / Order ID (available in your payment confirmation email or Billing tab). Our team will review and process your request within 24–48 hours.</string>
+    <string name="faq_q_refund_time">How long does it take for the refund to reach my bank account?</string>
+    <string name="faq_a_refund_time">Once processed via Razorpay, refunds are credited back to your original payment method (Credit/Debit Card, UPI, or Net Banking) within 5 to 7 business days, depending on your bank’s processing timelines.</string>
+    <string name="faq_q_business_refund">Are Business and Enterprise License keys eligible for refunds?</string>
+    <string name="faq_a_business_refund">Once business license keys have been generated, assigned, or activated for an organization, they are non-refundable unless specified otherwise under a custom enterprise agreement or SLA.</string>
+    <string name="faq_still_curious">Still curious</string>
+    <string name="faq_talk_title">Talk With Our Expert Team.</string>
+    <string name="faq_talk_body">We\'re here to help whenever you have questions.</string>
+    <string name="faq_contact_email" translatable="false">contact@xprokey.com</string>
+    <string name="faq_email_unavailable">Couldn\'t open an email app.</string>
 
     <!-- Support (web wording) -->
     <string name="support_title">Help &amp; Support</string>

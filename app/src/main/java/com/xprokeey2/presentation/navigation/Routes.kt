@@ -84,6 +84,14 @@ data object ExportRoute
 @Serializable
 data object ImportRoute
 
+/** Settings > About > App Info */
+@Serializable
+data object AppInfoRoute
+
+/** Settings > About > FAQ */
+@Serializable
+data object FaqRoute
+
 /** Support: "Help & Support", the user's tickets. */
 @Serializable
 data object SupportRoute

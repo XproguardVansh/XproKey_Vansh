@@ -10,6 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.xprokeey2.presentation.about.AppInfoScreenRoot
+import com.xprokeey2.presentation.about.FaqScreenRoot
 import com.xprokeey2.presentation.auth.forgot.ForgotPasswordScreenRoot
 import com.xprokeey2.presentation.auth.login.LoginScreenRoot
 import com.xprokeey2.presentation.auth.reset.ResetPasswordScreenRoot
@@ -221,6 +223,17 @@ fun AppNavHost(
             )
         }
 
+        composable<AppInfoRoute> {
+            AppInfoScreenRoot(onSectionClick = navController::openSection)
+        }
+
+        composable<FaqRoute> {
+            FaqScreenRoot(
+                onSectionClick = navController::openSection,
+                onOpenSupport = { navController.openSection(WorkspaceSection.SUPPORT) },
+            )
+        }
+
         composable<SupportRoute> { entry ->
             val resultMessage by entry.resultMessage()
             SupportScreenRoot(
@@ -315,6 +328,14 @@ private fun NavHostController.openSection(section: WorkspaceSection, showWeakIte
             launchSingleTop = true
         }
         WorkspaceSection.SUPPORT -> navigate(SupportRoute) {
+            popUpTo<DashboardRoute>()
+            launchSingleTop = true
+        }
+        WorkspaceSection.APP_INFO -> navigate(AppInfoRoute) {
+            popUpTo<DashboardRoute>()
+            launchSingleTop = true
+        }
+        WorkspaceSection.FAQ -> navigate(FaqRoute) {
             popUpTo<DashboardRoute>()
             launchSingleTop = true
         }
