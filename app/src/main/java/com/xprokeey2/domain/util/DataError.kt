@@ -1,5 +1,7 @@
 package com.xprokeey2.domain.util
 
+import com.xprokeey2.domain.model.ImportFileProblem
+
 sealed interface DataError {
     /** The server rejected the request, e.g. `{"error": "Invalid email or password"}`. */
     data class Server(val code: Int, val message: String) : DataError
@@ -21,6 +23,9 @@ sealed interface DataError {
      * killed): signing in again unlocks it.
      */
     data object VaultLocked : DataError
+
+    /** Tools > Import: the picked file can't be imported. */
+    data class ImportFile(val problem: ImportFileProblem) : DataError
 
     data object NoInternet : DataError
     data object Timeout : DataError

@@ -28,6 +28,8 @@ import com.xprokeey2.presentation.onboarding.plan.PlanScreen
 import com.xprokeey2.presentation.passwords.details.PasswordDetailsScreenRoot
 import com.xprokeey2.presentation.passwords.form.PasswordFormScreenRoot
 import com.xprokeey2.presentation.passwords.list.PasswordsScreenRoot
+import com.xprokeey2.presentation.tools.exportdata.ExportScreenRoot
+import com.xprokeey2.presentation.tools.importdata.ImportScreenRoot
 import com.xprokeey2.presentation.workspace.WorkspaceSection
 
 @Composable
@@ -125,6 +127,7 @@ fun AppNavHost(
                 onOpenWeakItems = { navController.openSection(WorkspaceSection.PASSWORDS, showWeakItems = true) },
                 onViewPassword = { itemId -> navController.navigate(PasswordDetailsRoute(itemId)) },
                 onManageCards = { navController.openSection(WorkspaceSection.CARDS) },
+                onImportPasswords = { navController.openSection(WorkspaceSection.IMPORT) },
                 onSessionExpired = signInAgain,
             )
         }
@@ -194,6 +197,20 @@ fun AppNavHost(
                 onSignInRequired = signInAgain,
             )
         }
+
+        composable<ExportRoute> {
+            ExportScreenRoot(
+                onSectionClick = navController::openSection,
+                onSignInRequired = signInAgain,
+            )
+        }
+
+        composable<ImportRoute> {
+            ImportScreenRoot(
+                onSectionClick = navController::openSection,
+                onSignInRequired = signInAgain,
+            )
+        }
     }
 }
 
@@ -232,6 +249,14 @@ private fun NavHostController.openSection(section: WorkspaceSection, showWeakIte
             launchSingleTop = true
         }
         WorkspaceSection.CARDS -> navigate(CardsRoute) {
+            popUpTo<DashboardRoute>()
+            launchSingleTop = true
+        }
+        WorkspaceSection.EXPORT -> navigate(ExportRoute) {
+            popUpTo<DashboardRoute>()
+            launchSingleTop = true
+        }
+        WorkspaceSection.IMPORT -> navigate(ImportRoute) {
             popUpTo<DashboardRoute>()
             launchSingleTop = true
         }

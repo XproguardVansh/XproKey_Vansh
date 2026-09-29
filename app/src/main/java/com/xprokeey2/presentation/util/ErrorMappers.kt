@@ -1,6 +1,7 @@
 package com.xprokeey2.presentation.util
 
 import com.xprokeey2.R
+import com.xprokeey2.domain.model.ImportFileProblem
 import com.xprokeey2.domain.usecase.validation.ValidationError
 import com.xprokeey2.domain.util.DataError
 
@@ -11,6 +12,14 @@ fun DataError.asUiText(): UiText = when (this) {
     DataError.InvalidRecoveryKey -> UiText.Resource(R.string.error_invalid_recovery_key)
     DataError.SessionExpired -> UiText.Resource(R.string.error_session_expired)
     DataError.VaultLocked -> UiText.Resource(R.string.error_vault_locked)
+    is DataError.ImportFile -> UiText.Resource(
+        when (problem) {
+            ImportFileProblem.UNSUPPORTED_TYPE -> R.string.import_unsupported_type
+            ImportFileProblem.INVALID_XPK -> R.string.import_invalid_xpk
+            ImportFileProblem.NO_RECORDS -> R.string.import_no_records
+            ImportFileProblem.UNREADABLE -> R.string.import_failed
+        }
+    )
     DataError.NoInternet -> UiText.Resource(R.string.error_no_internet)
     DataError.Timeout -> UiText.Resource(R.string.error_timeout)
     is DataError.Unknown -> UiText.Resource(R.string.error_unknown)

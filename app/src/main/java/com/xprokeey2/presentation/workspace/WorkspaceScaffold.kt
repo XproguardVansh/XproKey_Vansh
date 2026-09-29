@@ -35,12 +35,17 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -54,17 +59,24 @@ import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import kotlinx.coroutines.launch
 
-/** Sidebar sections of the web app. Only the ones in [WorkspaceSection.isAvailable] work so far. */
+/**
+ * Sidebar sections of the web app. Only the ones in [WorkspaceSection.isAvailable] work so far.
+ * [isToolsItem] entries are listed under Tools when it's opened (Generator, Export, Import).
+ */
 enum class WorkspaceSection(
     @param:StringRes val title: Int,
     @param:DrawableRes val icon: Int,
     val isAvailable: Boolean,
     val hasSubmenu: Boolean = false,
+    val isToolsItem: Boolean = false,
 ) {
     DASHBOARD(R.string.nav_dashboard, R.drawable.ic_layout_grid, isAvailable = true),
     PASSWORDS(R.string.nav_passwords, R.drawable.ic_lock, isAvailable = true),
     CARDS(R.string.nav_cards, R.drawable.ic_credit_card, isAvailable = true),
-    TOOLS(R.string.nav_tools, R.drawable.ic_wrench, isAvailable = false, hasSubmenu = true),
+    TOOLS(R.string.nav_tools, R.drawable.ic_wrench, isAvailable = true, hasSubmenu = true),
+    GENERATOR(R.string.nav_generator, R.drawable.ic_wand, isAvailable = false, isToolsItem = true),
+    EXPORT(R.string.nav_export, R.drawable.ic_download, isAvailable = true, isToolsItem = true),
+    IMPORT(R.string.nav_import, R.drawable.ic_upload, isAvailable = true, isToolsItem = true),
     SETTINGS(R.string.nav_settings, R.drawable.ic_settings, isAvailable = false, hasSubmenu = true),
     SUPPORT(R.string.nav_support, R.drawable.ic_headphones, isAvailable = false),
 }
@@ -227,16 +239,30 @@ private fun WorkspaceDrawer(
                 color = colors.textMuted,
                 modifier = Modifier.padding(start = 22.dp, top = 20.dp, bottom = 10.dp),
             )
+            // Like the web sidebar: Tools opens and closes its list, and starts open on a Tools page.
+            var isToolsOpen by rememberSaveable { mutableStateOf(currentSection.isToolsItem) }
             Column(
                 modifier = Modifier.padding(horizontal = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                WorkspaceSection.entries.forEach { section ->
+                WorkspaceSection.entries.filterNot { it.isToolsItem }.forEach { section ->
+                    val isTools = section == WorkspaceSection.TOOLS
                     DrawerItem(
                         section = section,
                         selected = section == currentSection,
-                        onClick = { onSectionClick(section) },
+                        isExpanded = isTools && isToolsOpen,
+                        onClick = { if (isTools) isToolsOpen = !isToolsOpen else onSectionClick(section) },
                     )
+                    if (isTools && isToolsOpen) {
+                        WorkspaceSection.entries.filter { it.isToolsItem }.forEach { item ->
+                            DrawerItem(
+                                section = item,
+                                selected = item == currentSection,
+                                onClick = { onSectionClick(item) },
+                                modifier = Modifier.padding(start = 24.dp),
+                            )
+                        }
+                    }
                 }
             }
             Spacer(Modifier.weight(1f))
@@ -271,13 +297,19 @@ private fun WorkspaceDrawer(
 }
 
 @Composable
-private fun DrawerItem(section: WorkspaceSection, selected: Boolean, onClick: () -> Unit) {
+private fun DrawerItem(
+    section: WorkspaceSection,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isExpanded: Boolean = false,
+) {
     val colors = XpTheme.colors
     val tint = if (selected) colors.primary else colors.textSecondary
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(46.dp)
+            .height(if (section.isToolsItem) 42.dp else 46.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(if (selected) colors.primary.copy(alpha = 0.12f) else colors.surface)
             .clickable(enabled = section.isAvailable, role = Role.Button, onClick = onClick)
@@ -289,7 +321,7 @@ private fun DrawerItem(section: WorkspaceSection, selected: Boolean, onClick: ()
             painter = painterResource(section.icon),
             contentDescription = null,
             tint = tint,
-            modifier = Modifier.size(18.dp),
+            modifier = Modifier.size(if (section.isToolsItem) 15.dp else 18.dp),
         )
         Spacer(Modifier.width(12.dp))
         Text(
@@ -303,7 +335,9 @@ private fun DrawerItem(section: WorkspaceSection, selected: Boolean, onClick: ()
                 painter = painterResource(R.drawable.ic_chevron_down),
                 contentDescription = null,
                 tint = colors.textLabel,
-                modifier = Modifier.size(14.dp),
+                modifier = Modifier
+                    .size(14.dp)
+                    .rotate(if (isExpanded) 180f else 0f),
             )
         }
     }
