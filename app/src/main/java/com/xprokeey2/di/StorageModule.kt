@@ -33,6 +33,10 @@ annotation class SessionTimeoutDataStore
 @Retention(AnnotationRetention.BINARY)
 annotation class PaymentStateDataStore
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class ThemeDataStore
+
 @Module
 @InstallIn(SingletonComponent::class)
 object StorageModule {
@@ -75,5 +79,13 @@ object StorageModule {
     fun providePaymentStateDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
         PreferenceDataStoreFactory.create {
             context.preferencesDataStoreFile("payment_state")
+        }
+
+    @Provides
+    @Singleton
+    @ThemeDataStore
+    fun provideThemeDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
+        PreferenceDataStoreFactory.create {
+            context.preferencesDataStoreFile("theme")
         }
 }

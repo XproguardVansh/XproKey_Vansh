@@ -85,7 +85,8 @@ fun faviconUrl(url: String, name: String): String? {
 }
 
 /**
- * An item's icon in the Passwords list and details: its site logo on a white tile, or its letter.
+ * An item's icon in the Passwords list and details: its site logo on a white tile (dark in dark
+ * mode, like the web's `bg-white dark:bg-[#161B22]`), or its letter.
  * [softLetter] (password cards): a light tint with the letter in a deeper shade of the same colour.
  */
 @Composable
@@ -104,7 +105,7 @@ fun VaultItemAvatar(
         logoUrl = remember(url, title) { faviconUrl(url, title) },
         size = size,
         shape = shape,
-        tileColor = Color.White,
+        tileColor = if (isDark) XpTheme.colors.surface else Color.White,
         modifier = modifier,
     ) {
         LetterTile(

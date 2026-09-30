@@ -5,6 +5,7 @@ import com.xprokeey2.data.local.files.ContentUriFileRepository
 import com.xprokeey2.data.local.session.AccessTokenStore
 import com.xprokeey2.data.local.session.InMemoryVaultSession
 import com.xprokeey2.data.local.session.SessionStorage
+import com.xprokeey2.data.local.theme.ThemeStorage
 import com.xprokeey2.data.local.vault.WeakVaultItemStorage
 import com.xprokeey2.data.remote.auth.AccessGuardInterceptor
 import com.xprokeey2.data.remote.datasource.AccountRemoteDataSource
@@ -42,6 +43,7 @@ import com.xprokeey2.domain.repository.SecuritySettingsRepository
 import com.xprokeey2.domain.repository.SessionRepository
 import com.xprokeey2.domain.repository.SubscriptionRepository
 import com.xprokeey2.domain.repository.SupportRepository
+import com.xprokeey2.domain.repository.ThemeRepository
 import com.xprokeey2.domain.repository.UserFileRepository
 import com.xprokeey2.domain.repository.UserRepository
 import com.xprokeey2.domain.repository.VaultRepository
@@ -143,6 +145,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindSubscriptionRepository(impl: SubscriptionRepositoryImpl): SubscriptionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindThemeRepository(impl: ThemeStorage): ThemeRepository
 
     @Binds
     @Singleton

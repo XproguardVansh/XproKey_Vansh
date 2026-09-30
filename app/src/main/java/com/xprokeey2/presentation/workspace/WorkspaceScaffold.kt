@@ -5,6 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xprokeey2.R
 import com.xprokeey2.presentation.session.SessionTimeoutEffect
+import com.xprokeey2.presentation.theme.LocalThemeToggle
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import kotlinx.coroutines.launch
@@ -206,9 +208,37 @@ private fun WorkspaceTopBar(
             }
             BrandLogo(modifier = Modifier.padding(start = 4.dp))
             Spacer(Modifier.weight(1f))
-            if (user != null) Avatar(user)
+            ThemeToggleButton()
+            if (user != null) {
+                Spacer(Modifier.width(8.dp))
+                Avatar(user)
+            }
         }
         HorizontalDivider(color = colors.divider)
+    }
+}
+
+/** The web header's theme button: a sun while light, a moon while dark; a tap switches to the other. */
+@Composable
+private fun ThemeToggleButton() {
+    val colors = XpTheme.colors
+    val toggleTheme = LocalThemeToggle.current
+    val shape = RoundedCornerShape(12.dp)
+    Box(
+        modifier = Modifier
+            .size(36.dp)
+            .clip(shape)
+            .background(colors.surface)
+            .border(1.dp, colors.divider, shape)
+            .clickable(role = Role.Button) { toggleTheme(colors.isDark) },
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            painter = painterResource(if (colors.isDark) R.drawable.ic_moon else R.drawable.ic_sun),
+            contentDescription = stringResource(R.string.cd_toggle_theme),
+            tint = colors.textSecondary,
+            modifier = Modifier.size(16.dp),
+        )
     }
 }
 

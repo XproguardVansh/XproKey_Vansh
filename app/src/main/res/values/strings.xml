@@ -112,6 +112,7 @@
     <!-- Workspace shell (drawer + top bar) -->
     <string name="menu">Menu</string>
     <string name="cd_open_menu">Open menu</string>
+    <string name="cd_toggle_theme">Toggle theme</string>
     <string name="nav_dashboard">Dashboard</string>
     <string name="nav_passwords">Passwords</string>
     <string name="nav_cards">Cards</string>
