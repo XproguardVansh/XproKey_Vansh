@@ -91,9 +91,10 @@ fun AppNavHost(
                 LaunchDestination.LOCK -> if (!navController.isShowing<LockRoute>()) navController.clearStackAndNavigate(LockRoute)
                 LaunchDestination.APP -> Unit
             }
-            // Like the web's API client, but only inside the signed-in app and not onto the same screen.
-            AppSessionEvent.OpenCheckout -> if (navController.isInWorkspace() && !navController.isShowing<PlanRoute>()) {
-                navController.navigate(PlanRoute) { launchSingleTop = true }
+            // Subscription or trial over, like the web's API client: only the plans remain, and their Back
+            // button logs out. Only inside the signed-in app, and not while already choosing or paying.
+            AppSessionEvent.OpenCheckout -> if (navController.isInWorkspace() && !navController.isChoosingAccess()) {
+                navController.clearStackAndNavigate(PlanRoute(subscriptionEnded = true))
             }
             AppSessionEvent.OpenLicenseActivation ->
                 if (navController.isInWorkspace() && !navController.isShowing<ActivateLicenseRoute>()) {
@@ -169,14 +170,16 @@ fun AppNavHost(
 
         composable<AccountTypeRoute> {
             AccountTypeScreen(
-                onPersonalClick = { navController.navigate(PlanRoute) },
+                onPersonalClick = { navController.navigate(PlanRoute()) },
                 onBusinessClick = { navController.navigate(ActivateLicenseRoute) },
             )
         }
 
-        composable<PlanRoute> {
+        composable<PlanRoute> { entry ->
+            val subscriptionEnded = entry.toRoute<PlanRoute>().subscriptionEnded
             PlanScreenRoot(
-                onBack = { navController.popBackStack() },
+                // After the subscription ended, Back logs out: Login until the user signs in again.
+                onBack = { if (subscriptionEnded) appSession.logOut() else navController.popBackStack() },
                 onFinished = { navController.clearStackAndNavigate(DashboardRoute) },
                 // Like the web: nothing to buy, so Manage Subscription instead of this screen. Straight
                 // after login (no Dashboard yet) the subscription is simply active: into the app.
@@ -325,7 +328,7 @@ fun AppNavHost(
             SubscriptionScreenRoot(
                 onSectionClick = navController::openSection,
                 onManageSubscription = { navController.navigate(BillingRoute) },
-                onContinueWithPlan = { navController.navigate(PlanRoute) },
+                onContinueWithPlan = { navController.navigate(PlanRoute()) },
                 onGetAccess = { navController.navigate(AccountTypeRoute) },
                 onSignInRequired = signInAgain,
             )
@@ -337,7 +340,7 @@ fun AppNavHost(
                 resultMessage = resultMessage,
                 onResultMessageShown = entry::clearResultMessage,
                 onBack = { navController.popBackStack() },
-                onUpgrade = { navController.navigate(PlanRoute) },
+                onUpgrade = { navController.navigate(PlanRoute()) },
                 onGetAccess = { navController.navigate(AccountTypeRoute) },
                 onLoadFailed = navController::popBackWithMessage,
                 onSignInRequired = signInAgain,
@@ -348,7 +351,7 @@ fun AppNavHost(
             ProfileScreenRoot(
                 onSectionClick = navController::openSection,
                 onManageSubscription = { navController.navigate(BillingRoute) },
-                onContinueWithPlan = { navController.navigate(PlanRoute) },
+                onContinueWithPlan = { navController.navigate(PlanRoute()) },
                 onGetAccess = { navController.navigate(AccountTypeRoute) },
                 onSignInRequired = signInAgain,
             )
@@ -507,6 +510,10 @@ private fun NavHostController.isInWorkspace(): Boolean =
 
 private inline fun <reified T : Any> NavHostController.isShowing(): Boolean =
     currentDestination?.hasRoute<T>() == true
+
+/** On the Personal / Business choice, Choose your plan, or Activate license. */
+private fun NavHostController.isChoosingAccess(): Boolean =
+    isShowing<AccountTypeRoute>() || isShowing<PlanRoute>() || isShowing<ActivateLicenseRoute>()
 
 private const val RESULT_MESSAGE = "result_message"
 

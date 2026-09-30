@@ -40,9 +40,12 @@ data class ResetPasswordRoute(
 @Serializable
 data object AccountTypeRoute
 
-/** Personal: "Choose your plan" (payment not built yet). */
+/**
+ * Personal: "Choose your plan". [subscriptionEnded] when the server said the subscription or trial is
+ * over: then this is the only screen left, and its Back button logs out (the user's rule).
+ */
 @Serializable
-data object PlanRoute
+data class PlanRoute(val subscriptionEnded: Boolean = false)
 
 @Serializable
 data object ActivateLicenseRoute

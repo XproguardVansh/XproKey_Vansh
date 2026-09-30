@@ -31,7 +31,7 @@ sealed interface AppSessionEvent {
     /** The app was opened: show [destination] unless it's already on screen (e.g. restored after the system closed it). */
     data class Launched(val destination: LaunchDestination) : AppSessionEvent
 
-    /** The server wants a payment ("payment" or "trial_expired"): open Choose your plan. */
+    /** The subscription or trial is over ("payment" or "trial_expired"): only the plans remain; their Back logs out. */
     data object OpenCheckout : AppSessionEvent
 
     /** Business account without a license: open Activate license. */

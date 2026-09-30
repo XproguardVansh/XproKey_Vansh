@@ -1,5 +1,6 @@
 package com.xprokeey2.presentation.onboarding.plan
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -84,6 +85,8 @@ fun PlanScreenRoot(
 
     // Loads Razorpay Checkout ahead of time so the payment sheet opens faster.
     LaunchedEffect(Unit) { RazorpayCheckout.preload(context) }
+    // The phone's back gesture does what the Back button does (after a subscription ended: log out).
+    BackHandler(onBack = onBack)
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
