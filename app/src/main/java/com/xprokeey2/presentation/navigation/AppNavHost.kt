@@ -3,8 +3,12 @@ package com.xprokeey2.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,6 +17,7 @@ import androidx.navigation.toRoute
 import com.xprokeey2.presentation.about.AppInfoScreenRoot
 import com.xprokeey2.presentation.about.FaqScreenRoot
 import com.xprokeey2.presentation.auth.forgot.ForgotPasswordScreenRoot
+import com.xprokeey2.presentation.auth.lock.LockScreenRoot
 import com.xprokeey2.presentation.auth.login.LoginScreenRoot
 import com.xprokeey2.presentation.auth.reset.ResetPasswordScreenRoot
 import com.xprokeey2.presentation.auth.signup.SignupScreenRoot
@@ -26,17 +31,22 @@ import com.xprokeey2.presentation.legal.PrivacyPolicy
 import com.xprokeey2.presentation.legal.TermsOfService
 import com.xprokeey2.presentation.onboarding.AccountTypeScreen
 import com.xprokeey2.presentation.onboarding.license.ActivateLicenseScreenRoot
-import com.xprokeey2.presentation.onboarding.plan.PlanScreen
+import com.xprokeey2.presentation.onboarding.plan.PlanScreenRoot
 import com.xprokeey2.presentation.passwords.details.PasswordDetailsScreenRoot
 import com.xprokeey2.presentation.passwords.form.PasswordFormScreenRoot
 import com.xprokeey2.presentation.passwords.list.PasswordsScreenRoot
+import com.xprokeey2.presentation.payment.RazorpayCheckout
+import com.xprokeey2.presentation.settings.billing.BillingScreenRoot
 import com.xprokeey2.presentation.settings.changepassword.ChangePasswordScreenRoot
+import com.xprokeey2.presentation.settings.security.SecurityScreenRoot
+import com.xprokeey2.presentation.settings.subscription.SubscriptionScreenRoot
 import com.xprokeey2.presentation.support.details.SupportTicketScreenRoot
 import com.xprokeey2.presentation.support.list.SupportScreenRoot
 import com.xprokeey2.presentation.support.newticket.NewTicketScreenRoot
 import com.xprokeey2.presentation.tools.exportdata.ExportScreenRoot
 import com.xprokeey2.presentation.tools.generator.GeneratorScreenRoot
 import com.xprokeey2.presentation.tools.importdata.ImportScreenRoot
+import com.xprokeey2.presentation.util.ObserveAsEvents
 import com.xprokeey2.presentation.workspace.WorkspaceSection
 
 @Composable
@@ -46,6 +56,32 @@ fun AppNavHost(
 ) {
     // Session over or vault locked: start again at Login, showing why.
     val signInAgain = { message: String -> navController.clearStackAndNavigate(LoginRoute(message = message)) }
+    val context = LocalContext.current
+    // Signed out on this device: Razorpay also forgets the saved customer details (Razorpay guide 12).
+    val signedOut = { message: String? ->
+        RazorpayCheckout.clearUserData(context)
+        navController.clearStackAndNavigate(LoginRoute(message = message))
+    }
+
+    val appSession: AppSessionViewModel = hiltViewModel()
+    ObserveAsEvents(appSession.events) { event ->
+        when (event) {
+            // Like the web's API client, but only inside the signed-in app and not onto the same screen.
+            AppSessionEvent.OpenCheckout -> if (navController.isInWorkspace() && !navController.isShowing<PlanRoute>()) {
+                navController.navigate(PlanRoute) { launchSingleTop = true }
+            }
+            AppSessionEvent.OpenLicenseActivation ->
+                if (navController.isInWorkspace() && !navController.isShowing<ActivateLicenseRoute>()) {
+                    navController.navigate(ActivateLicenseRoute) { launchSingleTop = true }
+                }
+            AppSessionEvent.Locked -> navController.clearStackAndNavigate(LockRoute)
+            AppSessionEvent.SignedOut -> signedOut(null)
+        }
+    }
+    LifecycleStartEffect(Unit) {
+        appSession.onAppForeground()
+        onStopOrDispose { }
+    }
 
     NavHost(
         navController = navController,
@@ -117,7 +153,23 @@ fun AppNavHost(
         }
 
         composable<PlanRoute> {
-            PlanScreen(onBack = { navController.popBackStack() })
+            PlanScreenRoot(
+                onBack = { navController.popBackStack() },
+                onFinished = { navController.clearStackAndNavigate(DashboardRoute) },
+                // Like the web: nothing to buy, so Manage Subscription instead of this screen. Straight
+                // after login (no Dashboard yet) the subscription is simply active: into the app.
+                onAlreadyActive = { message ->
+                    if (navController.isInWorkspace()) {
+                        navController.navigate(BillingRoute) {
+                            popUpTo<PlanRoute> { inclusive = true }
+                        }
+                    } else {
+                        navController.clearStackAndNavigate(DashboardRoute)
+                    }
+                    navController.currentBackStackEntry?.savedStateHandle?.set(RESULT_MESSAGE, message)
+                },
+                onSignInRequired = signInAgain,
+            )
         }
 
         composable<ActivateLicenseRoute> {
@@ -239,6 +291,47 @@ fun AppNavHost(
             )
         }
 
+        composable<SecurityRoute> {
+            SecurityScreenRoot(
+                onSectionClick = navController::openSection,
+                onCancel = { navController.openSection(WorkspaceSection.DASHBOARD) },
+                onSignInRequired = signInAgain,
+            )
+        }
+
+        composable<SubscriptionRoute> {
+            SubscriptionScreenRoot(
+                onSectionClick = navController::openSection,
+                onManageSubscription = { navController.navigate(BillingRoute) },
+                onContinueWithPlan = { navController.navigate(PlanRoute) },
+                onGetAccess = { navController.navigate(AccountTypeRoute) },
+                onSignInRequired = signInAgain,
+            )
+        }
+
+        composable<BillingRoute> { entry ->
+            val resultMessage by entry.resultMessage()
+            BillingScreenRoot(
+                resultMessage = resultMessage,
+                onResultMessageShown = entry::clearResultMessage,
+                onBack = { navController.popBackStack() },
+                onUpgrade = { navController.navigate(PlanRoute) },
+                onGetAccess = { navController.navigate(AccountTypeRoute) },
+                onLoadFailed = navController::popBackWithMessage,
+                onSignInRequired = signInAgain,
+            )
+        }
+
+        composable<LockRoute> {
+            LockScreenRoot(
+                onUnlocked = { message ->
+                    navController.clearStackAndNavigate(DashboardRoute)
+                    navController.currentBackStackEntry?.savedStateHandle?.set(RESULT_MESSAGE, message)
+                },
+                onSignedOut = signedOut,
+            )
+        }
+
         composable<AppInfoRoute> {
             AppInfoScreenRoot(onSectionClick = navController::openSection)
         }
@@ -351,6 +444,14 @@ private fun NavHostController.openSection(section: WorkspaceSection, showWeakIte
             popUpTo<DashboardRoute>()
             launchSingleTop = true
         }
+        WorkspaceSection.SECURITY -> navigate(SecurityRoute) {
+            popUpTo<DashboardRoute>()
+            launchSingleTop = true
+        }
+        WorkspaceSection.SUBSCRIPTION -> navigate(SubscriptionRoute) {
+            popUpTo<DashboardRoute>()
+            launchSingleTop = true
+        }
         WorkspaceSection.APP_INFO -> navigate(AppInfoRoute) {
             popUpTo<DashboardRoute>()
             launchSingleTop = true
@@ -363,6 +464,13 @@ private fun NavHostController.openSection(section: WorkspaceSection, showWeakIte
         else -> Unit
     }
 }
+
+/** Signed in and inside the app: the Dashboard is at the bottom of every workspace back stack. */
+private fun NavHostController.isInWorkspace(): Boolean =
+    runCatching { getBackStackEntry<DashboardRoute>() }.isSuccess
+
+private inline fun <reified T : Any> NavHostController.isShowing(): Boolean =
+    currentDestination?.hasRoute<T>() == true
 
 private const val RESULT_MESSAGE = "result_message"
 

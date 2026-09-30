@@ -57,6 +57,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xprokeey2.R
+import com.xprokeey2.presentation.session.SessionTimeoutEffect
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import kotlinx.coroutines.launch
@@ -85,8 +86,8 @@ enum class WorkspaceSection(
     IMPORT(R.string.nav_import, R.drawable.ic_upload, isAvailable = true, group = MenuGroup.TOOLS),
     SETTINGS(R.string.nav_settings, R.drawable.ic_settings, isAvailable = true, opens = MenuGroup.SETTINGS),
     CHANGE_PASSWORD(R.string.nav_change_password, R.drawable.ic_key, isAvailable = true, group = MenuGroup.SETTINGS),
-    SECURITY(R.string.nav_security, R.drawable.ic_shield_check, isAvailable = false, group = MenuGroup.SETTINGS),
-    SUBSCRIPTION(R.string.nav_subscription, R.drawable.ic_shield, isAvailable = false, group = MenuGroup.SETTINGS),
+    SECURITY(R.string.nav_security, R.drawable.ic_shield_check, isAvailable = true, group = MenuGroup.SETTINGS),
+    SUBSCRIPTION(R.string.nav_subscription, R.drawable.ic_shield, isAvailable = true, group = MenuGroup.SETTINGS),
     ABOUT(R.string.nav_about, R.drawable.ic_info, isAvailable = true, group = MenuGroup.SETTINGS, opens = MenuGroup.ABOUT),
     APP_INFO(R.string.nav_app_info, R.drawable.ic_info, isAvailable = true, group = MenuGroup.ABOUT),
     FAQ(R.string.nav_faq, R.drawable.ic_file_text, isAvailable = true, group = MenuGroup.ABOUT),
@@ -125,6 +126,7 @@ fun WorkspaceScaffold(
     val colors = XpTheme.colors
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    SessionTimeoutEffect()
 
     val scaffold = @Composable {
         Scaffold(

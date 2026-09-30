@@ -25,6 +25,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "BASE_URL", "\"https://api.xprokey.com/\"")
+        // Razorpay public key ID (never the secret). Live key: the server's plans are live too.
+        buildConfigField("String", "RAZORPAY_KEY_ID", "\"rzp_live_SeVdEk5cjvcBhb\"")
     }
 
     buildTypes {
@@ -81,6 +83,10 @@ dependencies {
     // Site logos (Google's favicon service, like the web)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    // Payments: Razorpay Checkout for subscriptions
+    implementation(libs.razorpay.checkout)
+    implementation(libs.razorpay.standard.core)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

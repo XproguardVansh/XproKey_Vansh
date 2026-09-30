@@ -1,13 +1,16 @@
 package com.xprokeey2.di
 
 import com.xprokeey2.BuildConfig
+import com.xprokeey2.data.remote.api.AccountApi
 import com.xprokeey2.data.remote.api.AuthApi
 import com.xprokeey2.data.remote.api.CardApi
 import com.xprokeey2.data.remote.api.LicenseApi
+import com.xprokeey2.data.remote.api.PaymentsApi
 import com.xprokeey2.data.remote.api.SupportApi
 import com.xprokeey2.data.remote.api.TokenApi
 import com.xprokeey2.data.remote.api.TransferApi
 import com.xprokeey2.data.remote.api.VaultApi
+import com.xprokeey2.data.remote.auth.AccessGuardInterceptor
 import com.xprokeey2.data.remote.auth.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
@@ -46,8 +49,11 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(authenticator: TokenAuthenticator): OkHttpClient =
-        baseClient().authenticator(authenticator).build()
+    fun provideOkHttpClient(authenticator: TokenAuthenticator, accessGuard: AccessGuardInterceptor): OkHttpClient =
+        baseClient()
+            .addInterceptor(accessGuard)
+            .authenticator(authenticator)
+            .build()
 
     @Provides
     @Singleton
@@ -81,6 +87,14 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideSupportApi(retrofit: Retrofit): SupportApi = retrofit.create(SupportApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAccountApi(retrofit: Retrofit): AccountApi = retrofit.create(AccountApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providePaymentsApi(retrofit: Retrofit): PaymentsApi = retrofit.create(PaymentsApi::class.java)
 
     private fun baseClient(): OkHttpClient.Builder {
         // BASIC only: request/response bodies carry passwords and tokens, never log them.

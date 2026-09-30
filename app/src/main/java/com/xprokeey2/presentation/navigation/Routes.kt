@@ -88,6 +88,22 @@ data object ImportRoute
 @Serializable
 data object ChangePasswordRoute
 
+/** Settings > Security: the session timeout. */
+@Serializable
+data object SecurityRoute
+
+/** Settings > Subscription: the Personal plan or the Business license. */
+@Serializable
+data object SubscriptionRoute
+
+/** Manage Subscription (the web's /billing): billing details and cancelling renewal. */
+@Serializable
+data object BillingRoute
+
+/** After a session timeout with "Lock": the master password opens the vault again. */
+@Serializable
+data object LockRoute
+
 /** Settings > About > App Info */
 @Serializable
 data object AppInfoRoute

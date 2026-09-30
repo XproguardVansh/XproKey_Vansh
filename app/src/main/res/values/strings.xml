@@ -298,6 +298,115 @@
     <string name="password_decrypt_failed">This password couldn\'t be decrypted with your vault key.</string>
     <string name="link_open_failed">Couldn\'t open this link.</string>
 
+    <!-- Settings > Security (web wording; "session storage" says "stored on this device" here) -->
+    <string name="security_title">Security Settings</string>
+    <string name="security_subtitle">Configure session timeout actions to automatically protect your vault credentials when you are away.</string>
+    <string name="security_timeout_after">Timeout After</string>
+    <string name="security_when_timeout">When timeout is reached</string>
+    <string name="security_timeout_1_minute">1 minute</string>
+    <string name="security_timeout_5_minutes">5 minutes</string>
+    <string name="security_timeout_15_minutes">15 minutes</string>
+    <string name="security_timeout_30_minutes">30 minutes</string>
+    <string name="security_timeout_1_hour">1 hour</string>
+    <string name="security_timeout_4_hours">4 hours</string>
+    <string name="security_timeout_never">Never</string>
+    <string name="security_action_logout">Log out</string>
+    <string name="security_action_logout_description">Clears session &amp; vault keys from memory securely.</string>
+    <string name="security_action_lock">Lock</string>
+    <string name="security_action_lock_description">Keeps session alive, requires master password to unlock.</string>
+    <string name="security_recommended">Recommended</string>
+    <string name="security_info">%1$s is the more secure option — it fully clears vault keys from memory. %2$s keeps keys stored on this device and shows a lock screen.</string>
+    <string name="security_save">Save changes</string>
+    <string name="security_saving">Saving…</string>
+    <string name="security_saved">✓ Saved</string>
+    <string name="security_saved_message">Security settings saved successfully.</string>
+    <string name="security_save_failed">Failed to save settings. Please try again.</string>
+
+    <!-- Lock screen after a session timeout (web wording) -->
+    <string name="lock_title">Vault locked</string>
+    <string name="lock_subtitle">Session timed out. Enter your master password to continue.</string>
+    <string name="lock_password_placeholder">Master password</string>
+    <string name="lock_password_required">Master password is required.</string>
+    <string name="lock_incorrect_password">Incorrect master password. Please try again.</string>
+    <string name="lock_incorrect_password_short">Incorrect master password.</string>
+    <string name="lock_session_missing">Session data missing. Please log in again.</string>
+    <string name="lock_unlocked">Vault unlocked!</string>
+    <string name="lock_unlock">Unlock vault</string>
+    <string name="lock_unlocking">Unlocking…</string>
+    <string name="lock_log_out_instead">Log out instead</string>
+
+    <!-- Settings > Subscription (web wording) -->
+    <string name="subscription_title">Billing &amp; Subscription</string>
+    <string name="subscription_subtitle">Manage your plan, billing details and subscription status</string>
+    <string name="subscription_plan_name">%1$s Plan</string>
+    <string name="subscription_plan_fallback">Plan</string>
+    <string name="subscription_current_plan">Current Plan</string>
+    <string name="subscription_active_subscription">Your active subscription</string>
+    <string name="subscription_status_unknown">Unknown</string>
+    <string name="subscription_days_remaining">Days Remaining</string>
+    <string name="subscription_days_left">Days Left</string>
+    <string name="subscription_next_billing">Next Billing</string>
+    <string name="subscription_auto_renews">Auto-renews</string>
+    <string name="subscription_manage">Manage Subscription</string>
+    <string name="subscription_continue_with">Continue with %1$s Plan</string>
+    <string name="subscription_get_access">Get Access</string>
+    <string name="subscription_business_plan">Business Plan</string>
+    <string name="subscription_business_subtitle">Your organization license details</string>
+    <string name="subscription_license_expiry">License Expiry</string>
+    <string name="subscription_status">Status</string>
+    <string name="subscription_plan_type">Plan Type</string>
+    <string name="subscription_business">Business</string>
+
+    <!-- Manage Subscription (web /billing wording) -->
+    <string name="billing_subtitle">Manage your subscription and billing information</string>
+    <string name="billing_not_purchased">Not Purchased</string>
+    <string name="billing_badge_cancelled">Cancelled</string>
+    <string name="billing_badge_active">Active</string>
+    <string name="billing_badge_trial">Trial</string>
+    <string name="billing_badge_inactive">Inactive</string>
+    <string name="billing_cycle">Billing Cycle</string>
+    <string name="billing_next_billing_date">Next Billing Date</string>
+    <string name="billing_access_until">Access Until</string>
+    <string name="billing_trial_remaining">Trial Remaining</string>
+    <string name="billing_trial_days">%1$d days</string>
+    <string name="billing_cancelled_title">Your subscription has been cancelled</string>
+    <string name="billing_cancelled_body">You\'ll keep full access until %1$s. It won\'t renew automatically after that.</string>
+    <string name="billing_period_ends">your billing period ends</string>
+    <string name="billing_expiring_title">Your trial expires soon</string>
+    <string name="billing_expiring_body">Subscribe to a plan to avoid interruption of service.</string>
+    <string name="billing_management">Subscription Management</string>
+    <string name="billing_renewing_text">Your subscription is active and will renew automatically on %1$s.</string>
+    <string name="billing_next_billing_fallback">your next billing date</string>
+    <string name="billing_cancel">Cancel Subscription</string>
+    <string name="billing_cancelling">Cancelling…</string>
+    <string name="billing_cancelled_text">Your subscription is cancelled and won\'t renew. You\'ll keep access until %1$s.</string>
+    <string name="billing_trial_text">Your trial period is active. Upgrade to a paid plan to continue using XproKey after your trial ends.</string>
+    <string name="billing_upgrade">Upgrade to Paid Plan</string>
+    <string name="billing_inactive_text">You don\'t have an active subscription. Get started with a plan to access all features.</string>
+    <string name="billing_dialog_title">Cancel Subscription?</string>
+    <string name="billing_dialog_body">Are you sure you want to cancel your subscription? You\'ll keep access until %1$s, but it won\'t renew after that. This action cannot be undone.</string>
+    <string name="billing_current_period_ends">your current billing period ends</string>
+    <string name="billing_keep">Keep Subscription</string>
+    <string name="billing_confirm_cancel">Yes, Cancel Subscription</string>
+    <string name="billing_cancel_success">Your subscription will not renew. You\'ll keep access until your current billing period ends.</string>
+    <string name="billing_cancel_failed">Failed to cancel subscription</string>
+    <string name="billing_cancel_record_lagging">Your renewal was cancelled, but your billing details may take a moment to update. Contact support if they still look wrong.</string>
+    <string name="billing_load_failed">Failed to load billing information.</string>
+
+    <!-- Choose your plan: checkout (web wording) -->
+    <string name="checkout_checking">Checking subscription status…</string>
+    <string name="checkout_already_active">You already have an active subscription</string>
+    <string name="checkout_please_wait">Please wait…</string>
+    <string name="checkout_loading">Loading…</string>
+    <string name="checkout_continue_to_payment">Continue to Payment →</string>
+    <string name="checkout_trial_started">7-day free trial started 🎉</string>
+    <string name="checkout_payment_success">Payment successful — activating your subscription…</string>
+    <string name="checkout_still_activating">Still activating — this can take a moment. Redirecting…</string>
+    <string name="checkout_payment_failed">Payment failed</string>
+    <string name="checkout_unable_to_continue">Unable to continue</string>
+    <string name="checkout_description_quarterly">Quarterly Plan</string>
+    <string name="checkout_description_yearly">Yearly Plan</string>
+
     <!-- Settings > Change password (web wording) -->
     <string name="change_password_title">Change Password</string>
     <string name="change_password_subtitle">Update your account password using secure OTP verification to protect your keychain data.</string>

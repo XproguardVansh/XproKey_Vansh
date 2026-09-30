@@ -65,6 +65,8 @@ class ChangePasswordUseCaseTest {
 
         override suspend fun getMasterSalt(): String? = masterSalt
 
+        override suspend fun getEncryptedVaultKey(): String? = savedEncryptedVaultKey
+
         override suspend fun saveEncryptedVaultKey(encryptedVaultKey: String) {
             savedEncryptedVaultKey = encryptedVaultKey
         }

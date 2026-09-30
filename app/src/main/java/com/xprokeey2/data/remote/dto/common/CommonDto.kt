@@ -20,6 +20,8 @@ data class ErrorResponseDto(
     val message: String? = null,
     val detail: String? = null,
     @SerialName("is_verified") val isVerified: Boolean? = null,
+    /** 403 from the access guard: where the user has to go ("payment", "trial_expired", "activate_license"). */
+    @SerialName("next_action") val nextAction: String? = null,
 )
 
 /** Envelope of the card endpoints: `{"data": ..., "message": "..."}`. */

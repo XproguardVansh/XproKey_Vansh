@@ -43,6 +43,9 @@ class SessionStorage @Inject constructor(
     /** The account's master salt from login (the web keeps it in sessionStorage). */
     suspend fun getMasterSalt(): String? = readSecret(MASTER_SALT)
 
+    /** The vault key locked with the master password, for the Lock screen (the web keeps it in localStorage). */
+    suspend fun getEncryptedVaultKey(): String? = readSecret(ENCRYPTED_VAULT_KEY)
+
     /** After Settings > Change password: the vault key as now locked with the new password. */
     suspend fun saveEncryptedVaultKey(encryptedVaultKey: String) {
         dataStore.edit { it[ENCRYPTED_VAULT_KEY] = cipher.encrypt(encryptedVaultKey) }

@@ -18,6 +18,9 @@ kotlinxSerialization = "1.9.0"
 datastore = "1.1.7"
 # 3.4.0+ is built with Kotlin 2.3/2.4, which this project's Kotlin 2.2.20 can't read.
 coil = "3.3.0"
+razorpayCheckout = "1.6.41"
+# checkout asks for standard-core "LATEST"; pinned so every build gets the same SDK.
+razorpayStandardCore = { strictly = "1.7.19" }
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +54,9 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+
+razorpay-checkout = { group = "com.razorpay", name = "checkout", version.ref = "razorpayCheckout" }
+razorpay-standard-core = { group = "com.razorpay", name = "standard-core", version.ref = "razorpayStandardCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

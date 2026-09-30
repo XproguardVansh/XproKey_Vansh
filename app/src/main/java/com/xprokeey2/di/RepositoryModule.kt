@@ -6,12 +6,17 @@ import com.xprokeey2.data.local.session.AccessTokenStore
 import com.xprokeey2.data.local.session.InMemoryVaultSession
 import com.xprokeey2.data.local.session.SessionStorage
 import com.xprokeey2.data.local.vault.WeakVaultItemStorage
+import com.xprokeey2.data.remote.auth.AccessGuardInterceptor
+import com.xprokeey2.data.remote.datasource.AccountRemoteDataSource
+import com.xprokeey2.data.remote.datasource.AccountRemoteDataSourceImpl
 import com.xprokeey2.data.remote.datasource.AuthRemoteDataSource
 import com.xprokeey2.data.remote.datasource.AuthRemoteDataSourceImpl
 import com.xprokeey2.data.remote.datasource.CardRemoteDataSource
 import com.xprokeey2.data.remote.datasource.CardRemoteDataSourceImpl
 import com.xprokeey2.data.remote.datasource.LicenseRemoteDataSource
 import com.xprokeey2.data.remote.datasource.LicenseRemoteDataSourceImpl
+import com.xprokeey2.data.remote.datasource.PaymentRemoteDataSource
+import com.xprokeey2.data.remote.datasource.PaymentRemoteDataSourceImpl
 import com.xprokeey2.data.remote.datasource.SupportRemoteDataSource
 import com.xprokeey2.data.remote.datasource.SupportRemoteDataSourceImpl
 import com.xprokeey2.data.remote.datasource.TransferRemoteDataSource
@@ -22,7 +27,9 @@ import com.xprokeey2.data.repository.AuthRepositoryImpl
 import com.xprokeey2.data.repository.CardRepositoryImpl
 import com.xprokeey2.data.repository.LicenseRepositoryImpl
 import com.xprokeey2.data.repository.RecoveryKeyRepositoryImpl
+import com.xprokeey2.data.repository.SecuritySettingsRepositoryImpl
 import com.xprokeey2.data.repository.SessionRepositoryImpl
+import com.xprokeey2.data.repository.SubscriptionRepositoryImpl
 import com.xprokeey2.data.repository.SupportRepositoryImpl
 import com.xprokeey2.data.repository.UserRepositoryImpl
 import com.xprokeey2.data.repository.VaultRepositoryImpl
@@ -31,13 +38,16 @@ import com.xprokeey2.domain.repository.AuthRepository
 import com.xprokeey2.domain.repository.CardRepository
 import com.xprokeey2.domain.repository.LicenseRepository
 import com.xprokeey2.domain.repository.RecoveryKeyRepository
+import com.xprokeey2.domain.repository.SecuritySettingsRepository
 import com.xprokeey2.domain.repository.SessionRepository
+import com.xprokeey2.domain.repository.SubscriptionRepository
 import com.xprokeey2.domain.repository.SupportRepository
 import com.xprokeey2.domain.repository.UserFileRepository
 import com.xprokeey2.domain.repository.UserRepository
 import com.xprokeey2.domain.repository.VaultRepository
 import com.xprokeey2.domain.repository.VaultTransferRepository
 import com.xprokeey2.domain.repository.WeakVaultItemRepository
+import com.xprokeey2.domain.security.AccessGate
 import com.xprokeey2.domain.security.VaultCrypto
 import com.xprokeey2.domain.security.VaultSession
 import dagger.Binds
@@ -117,6 +127,26 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindSessionRepository(impl: SessionRepositoryImpl): SessionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAccountRemoteDataSource(impl: AccountRemoteDataSourceImpl): AccountRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindPaymentRemoteDataSource(impl: PaymentRemoteDataSourceImpl): PaymentRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindSecuritySettingsRepository(impl: SecuritySettingsRepositoryImpl): SecuritySettingsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSubscriptionRepository(impl: SubscriptionRepositoryImpl): SubscriptionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAccessGate(impl: AccessGuardInterceptor): AccessGate
 
     @Binds
     @Singleton

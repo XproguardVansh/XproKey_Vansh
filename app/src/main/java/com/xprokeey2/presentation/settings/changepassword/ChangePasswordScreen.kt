@@ -3,7 +3,6 @@ package com.xprokeey2.presentation.settings.changepassword
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
@@ -33,24 +31,22 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xprokeey2.R
+import com.xprokeey2.presentation.components.XpActionButton
 import com.xprokeey2.presentation.components.XpPasswordField
 import com.xprokeey2.presentation.components.XpSecondaryButton
 import com.xprokeey2.presentation.components.XpTextField
@@ -63,8 +59,6 @@ import com.xprokeey2.presentation.workspace.WorkspacePanel
 import com.xprokeey2.presentation.workspace.WorkspaceScaffold
 import com.xprokeey2.presentation.workspace.WorkspaceSection
 import kotlinx.coroutines.launch
-
-private val ButtonShape = RoundedCornerShape(12.dp)
 
 @Composable
 fun ChangePasswordScreenRoot(
@@ -166,7 +160,7 @@ private fun RequestOtpStep(state: ChangePasswordUiState, onAction: (ChangePasswo
             modifier = Modifier.fillMaxWidth(),
         )
         state.error?.let { ErrorBox(it.asString()) }
-        FormButton(
+        XpActionButton(
             text = stringResource(R.string.change_password_send_otp),
             loadingText = stringResource(R.string.change_password_sending_otp),
             isLoading = state.isSendingOtp,
@@ -236,7 +230,7 @@ private fun VerifyOtpStep(state: ChangePasswordUiState, onAction: (ChangePasswor
                         .weight(1f)
                         .height(44.dp),
                 )
-                FormButton(
+                XpActionButton(
                     text = stringResource(R.string.change_password_submit),
                     loadingText = stringResource(R.string.change_password_submitting),
                     isLoading = state.isSubmitting,
@@ -293,56 +287,6 @@ private fun ErrorBox(message: String) {
             .border(1.dp, colors.error.copy(alpha = if (colors.isDark) 0.3f else 0.15f), shape)
             .padding(16.dp),
     )
-}
-
-/** Blue button of the page: while [isLoading] it shows a spinner and [loadingText] ("Sending OTP…"). */
-@Composable
-private fun FormButton(
-    text: String,
-    loadingText: String,
-    isLoading: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    @DrawableRes icon: Int? = null,
-) {
-    val colors = XpTheme.colors
-    val clickable = enabled && !isLoading
-    Row(
-        modifier = modifier
-            .height(44.dp)
-            .alpha(if (clickable) 1f else 0.5f)
-            .clip(ButtonShape)
-            .background(colors.primary)
-            .clickable(enabled = clickable, role = Role.Button, onClick = onClick)
-            .padding(horizontal = 10.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(14.dp),
-                color = colors.onPrimary,
-                strokeWidth = 2.dp,
-            )
-            Spacer(Modifier.width(6.dp))
-        } else if (icon != null) {
-            Icon(
-                painter = painterResource(icon),
-                contentDescription = null,
-                tint = colors.onPrimary,
-                modifier = Modifier.size(14.dp),
-            )
-            Spacer(Modifier.width(6.dp))
-        }
-        Text(
-            text = if (isLoading) loadingText else text,
-            style = XpTheme.typography.button.copy(fontSize = 13.sp, lineHeight = 15.sp),
-            color = colors.onPrimary,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-        )
-    }
 }
 
 @Preview(showBackground = true, heightDp = 800)

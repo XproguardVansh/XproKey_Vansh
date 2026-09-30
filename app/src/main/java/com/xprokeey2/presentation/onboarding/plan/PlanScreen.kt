@@ -1,5 +1,6 @@
 package com.xprokeey2.presentation.onboarding.plan
 
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,18 +16,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -34,20 +36,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xprokeey2.R
+import com.xprokeey2.domain.model.SubscriptionPlan
 import com.xprokeey2.presentation.auth.components.AuthScreenLayout
-import com.xprokeey2.presentation.components.XpPrimaryButton
+import com.xprokeey2.presentation.components.XpActionButton
+import com.xprokeey2.presentation.payment.PaymentResult
+import com.xprokeey2.presentation.payment.RazorpayCheckout
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
+import com.xprokeey2.presentation.util.ObserveAsEvents
+import kotlinx.coroutines.launch
 
-private enum class Plan(
+/** How each plan is shown; the prices are the web's (the API doesn't send them). */
+private enum class PlanOption(
+    val plan: SubscriptionPlan,
     @param:StringRes val title: Int,
     @param:StringRes val tagline: Int,
     @param:StringRes val period: Int,
     val isRecommended: Boolean,
 ) {
-    QUARTERLY(R.string.plan_quarterly, R.string.plan_quarterly_tagline, R.string.plan_quarterly_period, isRecommended = false),
-    YEARLY(R.string.plan_yearly, R.string.plan_yearly_tagline, R.string.plan_yearly_period, isRecommended = true),
+    QUARTERLY(SubscriptionPlan.QUARTERLY, R.string.plan_quarterly, R.string.plan_quarterly_tagline, R.string.plan_quarterly_period, isRecommended = false),
+    YEARLY(SubscriptionPlan.YEARLY, R.string.plan_yearly, R.string.plan_yearly_tagline, R.string.plan_yearly_period, isRecommended = true),
 }
 
 private val PlanFeatures = listOf(
@@ -57,18 +68,66 @@ private val PlanFeatures = listOf(
     R.string.feature_zero_knowledge,
 )
 
+@Composable
+fun PlanScreenRoot(
+    onBack: () -> Unit,
+    onFinished: () -> Unit,
+    onAlreadyActive: (message: String) -> Unit,
+    onSignInRequired: (message: String) -> Unit,
+    viewModel: PlanViewModel = hiltViewModel(),
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val activity = LocalActivity.current
+
+    // Loads Razorpay Checkout ahead of time so the payment sheet opens faster.
+    LaunchedEffect(Unit) { RazorpayCheckout.preload(context) }
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is PlanEvent.ShowMessage -> scope.launch {
+                // The next step's message replaces the last one instead of waiting behind it.
+                snackbarHostState.currentSnackbarData?.dismiss()
+                snackbarHostState.showSnackbar(event.message.asString(context))
+            }
+            is PlanEvent.OpenCheckout -> {
+                val opened = activity != null && runCatching {
+                    RazorpayCheckout.open(activity, event.subscriptionId, event.description.asString(context))
+                }.isSuccess
+                if (!opened) viewModel.onAction(PlanAction.PaymentFinished(PaymentResult.Failed(description = null)))
+            }
+            PlanEvent.Finished -> onFinished()
+            is PlanEvent.AlreadyActive -> onAlreadyActive(event.message.asString(context))
+            is PlanEvent.SignInRequired -> onSignInRequired(event.message.asString(context))
+        }
+    }
+
+    PlanScreen(state = state, snackbarHostState = snackbarHostState, onAction = viewModel::onAction, onBack = onBack)
+}
+
 /**
- * "Choose your plan" for Personal accounts. Payment (Razorpay) isn't built yet, so the plans can
- * be compared and selected but the trial button stays disabled.
+ * "Choose your plan" for Personal accounts, like the web checkout: the 7-day free trial when the server
+ * allows it, otherwise payment with Razorpay.
  */
 @Composable
-fun PlanScreen(onBack: () -> Unit) {
+fun PlanScreen(
+    state: PlanUiState,
+    snackbarHostState: SnackbarHostState,
+    onAction: (PlanAction) -> Unit,
+    onBack: () -> Unit,
+) {
     val colors = XpTheme.colors
     val typography = XpTheme.typography
-    var selected by rememberSaveable { mutableStateOf(Plan.YEARLY) }
+
+    if (state.isCheckingAccess) {
+        CheckingAccess(snackbarHostState)
+        return
+    }
 
     AuthScreenLayout(
-        snackbarHostState = remember { SnackbarHostState() },
+        snackbarHostState = snackbarHostState,
         horizontalAlignment = Alignment.CenterHorizontally,
         containerColor = colors.background,
     ) {
@@ -136,23 +195,53 @@ fun PlanScreen(onBack: () -> Unit) {
 
         Spacer(Modifier.height(28.dp))
         Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            Plan.entries.forEach { plan ->
-                PlanCard(plan = plan, selected = plan == selected, onSelect = { selected = plan })
+            PlanOption.entries.forEach { option ->
+                PlanCard(
+                    option = option,
+                    selected = option.plan == state.selectedPlan,
+                    onSelect = { onAction(PlanAction.PlanSelected(option.plan)) },
+                )
             }
         }
 
         Spacer(Modifier.height(28.dp))
-        XpPrimaryButton(
-            text = stringResource(R.string.plan_start_trial),
-            onClick = {},
-            enabled = false,
+        XpActionButton(
+            text = when (state.trialEligible) {
+                null -> stringResource(R.string.checkout_loading)
+                true -> stringResource(R.string.plan_start_trial)
+                false -> stringResource(R.string.checkout_continue_to_payment)
+            },
+            loadingText = stringResource(R.string.checkout_please_wait),
+            isLoading = state.isLoading,
+            enabled = state.trialEligible != null,
+            onClick = { onAction(PlanAction.Continue) },
             modifier = Modifier.fillMaxWidth(),
         )
     }
 }
 
+/** The web's "Checking subscription status…" page while billing and the trial are checked. */
 @Composable
-private fun PlanCard(plan: Plan, selected: Boolean, onSelect: () -> Unit) {
+private fun CheckingAccess(snackbarHostState: SnackbarHostState) {
+    val colors = XpTheme.colors
+    AuthScreenLayout(
+        snackbarHostState = snackbarHostState,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        containerColor = colors.background,
+    ) {
+        CircularProgressIndicator(color = colors.primary, strokeWidth = 3.dp, modifier = Modifier.size(32.dp))
+        Spacer(Modifier.height(12.dp))
+        Text(
+            text = stringResource(R.string.checkout_checking),
+            style = XpTheme.typography.bodyBold.copy(fontSize = 12.sp),
+            color = colors.textSecondary,
+        )
+    }
+}
+
+@Composable
+private fun PlanCard(option: PlanOption, selected: Boolean, onSelect: () -> Unit) {
     val colors = XpTheme.colors
     val typography = XpTheme.typography
     val shape = RoundedCornerShape(20.dp)
@@ -168,13 +257,13 @@ private fun PlanCard(plan: Plan, selected: Boolean, onSelect: () -> Unit) {
                 .padding(24.dp),
         ) {
             Text(
-                text = stringResource(plan.title),
+                text = stringResource(option.title),
                 style = typography.headline.copy(fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = (-0.4).sp),
                 color = colors.textPrimary,
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = stringResource(plan.tagline),
+                text = stringResource(option.tagline),
                 style = typography.body.copy(fontSize = 12.5.sp),
                 color = colors.textLabel,
             )
@@ -195,7 +284,7 @@ private fun PlanCard(plan: Plan, selected: Boolean, onSelect: () -> Unit) {
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    text = stringResource(plan.period),
+                    text = stringResource(option.period),
                     style = typography.bodyBold.copy(fontSize = 12.5.sp),
                     color = colors.textSecondary,
                     modifier = Modifier.weight(1f),
@@ -246,7 +335,7 @@ private fun PlanCard(plan: Plan, selected: Boolean, onSelect: () -> Unit) {
             }
         }
 
-        if (plan.isRecommended) {
+        if (option.isRecommended) {
             Text(
                 text = stringResource(R.string.plan_recommended).uppercase(),
                 style = typography.caption.copy(fontSize = 9.5.sp, letterSpacing = 0.8.sp),
@@ -261,14 +350,28 @@ private fun PlanCard(plan: Plan, selected: Boolean, onSelect: () -> Unit) {
     }
 }
 
-@Preview(name = "Light", showBackground = true, heightDp = 1500)
+@Preview(name = "Light, trial", showBackground = true, heightDp = 1500)
 @Composable
 private fun PlanScreenPreview() {
-    XproKeyTheme(darkTheme = false) { PlanScreen(onBack = {}) }
+    XproKeyTheme(darkTheme = false) {
+        PlanScreen(
+            state = PlanUiState(isCheckingAccess = false, trialEligible = true),
+            snackbarHostState = remember { SnackbarHostState() },
+            onAction = {},
+            onBack = {},
+        )
+    }
 }
 
-@Preview(name = "Dark", showBackground = true, heightDp = 1500)
+@Preview(name = "Dark, payment", showBackground = true, heightDp = 1500)
 @Composable
 private fun PlanScreenDarkPreview() {
-    XproKeyTheme(darkTheme = true) { PlanScreen(onBack = {}) }
+    XproKeyTheme(darkTheme = true) {
+        PlanScreen(
+            state = PlanUiState(isCheckingAccess = false, trialEligible = false),
+            snackbarHostState = remember { SnackbarHostState() },
+            onAction = {},
+            onBack = {},
+        )
+    }
 }

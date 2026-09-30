@@ -10,6 +10,8 @@ class SessionRepositoryImpl @Inject constructor(
 
     override suspend fun getMasterSalt(): String? = sessionStorage.getMasterSalt()
 
+    override suspend fun getEncryptedVaultKey(): String? = sessionStorage.getEncryptedVaultKey()
+
     override suspend fun saveEncryptedVaultKey(encryptedVaultKey: String) =
         sessionStorage.saveEncryptedVaultKey(encryptedVaultKey)
 }

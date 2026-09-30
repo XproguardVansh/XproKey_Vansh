@@ -25,6 +25,14 @@ annotation class RecoveryKeyDataStore
 @Retention(AnnotationRetention.BINARY)
 annotation class VaultSecurityDataStore
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class SessionTimeoutDataStore
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class PaymentStateDataStore
+
 @Module
 @InstallIn(SingletonComponent::class)
 object StorageModule {
@@ -51,5 +59,21 @@ object StorageModule {
     fun provideVaultSecurityDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
         PreferenceDataStoreFactory.create {
             context.preferencesDataStoreFile("vault_security")
+        }
+
+    @Provides
+    @Singleton
+    @SessionTimeoutDataStore
+    fun provideSessionTimeoutDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
+        PreferenceDataStoreFactory.create {
+            context.preferencesDataStoreFile("session_timeout")
+        }
+
+    @Provides
+    @Singleton
+    @PaymentStateDataStore
+    fun providePaymentStateDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
+        PreferenceDataStoreFactory.create {
+            context.preferencesDataStoreFile("payment_state")
         }
 }
