@@ -38,6 +38,14 @@ class SessionStorage @Inject constructor(
         dataStore.edit { it[ACCESS_TOKEN] = cipher.encrypt(accessToken) }
     }
 
+    override suspend fun clearSession() = clear()
+
+    /** Someone is signed in on this device (saved at login, removed by logging out). */
+    suspend fun hasSession(): Boolean {
+        val prefs = dataStore.data.first()
+        return prefs[ACCESS_TOKEN] != null && prefs[REFRESH_TOKEN] != null
+    }
+
     suspend fun getUserId(): String? = dataStore.data.first()[USER_ID]
 
     /** The account's master salt from login (the web keeps it in sessionStorage). */

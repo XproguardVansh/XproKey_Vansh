@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.xprokeey2.domain.model.LaunchDestination
 import com.xprokeey2.presentation.about.AppInfoScreenRoot
 import com.xprokeey2.presentation.about.FaqScreenRoot
 import com.xprokeey2.presentation.auth.forgot.ForgotPasswordScreenRoot
@@ -36,6 +37,7 @@ import com.xprokeey2.presentation.passwords.details.PasswordDetailsScreenRoot
 import com.xprokeey2.presentation.passwords.form.PasswordFormScreenRoot
 import com.xprokeey2.presentation.passwords.list.PasswordsScreenRoot
 import com.xprokeey2.presentation.payment.RazorpayCheckout
+import com.xprokeey2.presentation.profile.ProfileScreenRoot
 import com.xprokeey2.presentation.settings.billing.BillingScreenRoot
 import com.xprokeey2.presentation.settings.changepassword.ChangePasswordScreenRoot
 import com.xprokeey2.presentation.settings.security.SecurityScreenRoot
@@ -54,18 +56,41 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
-    // Session over or vault locked: start again at Login, showing why.
-    val signInAgain = { message: String -> navController.clearStackAndNavigate(LoginRoute(message = message)) }
+    val appSession: AppSessionViewModel = hiltViewModel()
+    // A screen needs sign-in again: the Lock screen if only the vault key is missing, else Login.
+    val signInAgain = { message: String -> appSession.onSignInRequired(message) }
     val context = LocalContext.current
     // Signed out on this device: Razorpay also forgets the saved customer details (Razorpay guide 12).
     val signedOut = { message: String? ->
         RazorpayCheckout.clearUserData(context)
-        navController.clearStackAndNavigate(LoginRoute(message = message))
+        if (message != null || !navController.isShowing<LoginRoute>()) {
+            navController.clearStackAndNavigate(LoginRoute(message = message))
+        }
     }
 
-    val appSession: AppSessionViewModel = hiltViewModel()
+    LifecycleStartEffect(Unit) {
+        appSession.onAppForeground()
+        onStopOrDispose { appSession.onAppBackground() }
+    }
+
+    // Signed in: straight into the app, like the web; the Security timeout may lock or log out instead.
+    // Nothing is drawn until this is known (MainActivity waits for it).
+    val launchDestination by appSession.launchDestination.collectAsStateWithLifecycle()
+    val startDestination: Any = when (launchDestination ?: return) {
+        LaunchDestination.LOGIN -> LoginRoute()
+        LaunchDestination.APP -> DashboardRoute
+        LaunchDestination.LOCK -> LockRoute
+    }
+
+    // Collected only once the NavHost below exists, so navigating never comes before its graph.
     ObserveAsEvents(appSession.events) { event ->
         when (event) {
+            // A back stack restored after the system closed the app still has to follow the timeout.
+            is AppSessionEvent.Launched -> when (event.destination) {
+                LaunchDestination.LOGIN -> if (!navController.isShowing<LoginRoute>()) navController.clearStackAndNavigate(LoginRoute())
+                LaunchDestination.LOCK -> if (!navController.isShowing<LockRoute>()) navController.clearStackAndNavigate(LockRoute)
+                LaunchDestination.APP -> Unit
+            }
             // Like the web's API client, but only inside the signed-in app and not onto the same screen.
             AppSessionEvent.OpenCheckout -> if (navController.isInWorkspace() && !navController.isShowing<PlanRoute>()) {
                 navController.navigate(PlanRoute) { launchSingleTop = true }
@@ -74,18 +99,15 @@ fun AppNavHost(
                 if (navController.isInWorkspace() && !navController.isShowing<ActivateLicenseRoute>()) {
                     navController.navigate(ActivateLicenseRoute) { launchSingleTop = true }
                 }
-            AppSessionEvent.Locked -> navController.clearStackAndNavigate(LockRoute)
+            AppSessionEvent.Locked -> if (!navController.isShowing<LockRoute>()) navController.clearStackAndNavigate(LockRoute)
             AppSessionEvent.SignedOut -> signedOut(null)
+            is AppSessionEvent.SignInRequired -> signedOut(event.message)
         }
-    }
-    LifecycleStartEffect(Unit) {
-        appSession.onAppForeground()
-        onStopOrDispose { }
     }
 
     NavHost(
         navController = navController,
-        startDestination = LoginRoute(),
+        startDestination = startDestination,
         modifier = modifier,
     ) {
         composable<LoginRoute> {
@@ -322,6 +344,16 @@ fun AppNavHost(
             )
         }
 
+        composable<ProfileRoute> {
+            ProfileScreenRoot(
+                onSectionClick = navController::openSection,
+                onManageSubscription = { navController.navigate(BillingRoute) },
+                onContinueWithPlan = { navController.navigate(PlanRoute) },
+                onGetAccess = { navController.navigate(AccountTypeRoute) },
+                onSignInRequired = signInAgain,
+            )
+        }
+
         composable<LockRoute> {
             LockScreenRoot(
                 onUnlocked = { message ->
@@ -449,6 +481,10 @@ private fun NavHostController.openSection(section: WorkspaceSection, showWeakIte
             launchSingleTop = true
         }
         WorkspaceSection.SUBSCRIPTION -> navigate(SubscriptionRoute) {
+            popUpTo<DashboardRoute>()
+            launchSingleTop = true
+        }
+        WorkspaceSection.PROFILE -> navigate(ProfileRoute) {
             popUpTo<DashboardRoute>()
             launchSingleTop = true
         }

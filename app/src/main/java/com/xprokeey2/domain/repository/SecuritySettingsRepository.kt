@@ -21,4 +21,9 @@ interface SecuritySettingsRepository {
 
     /** This device's copy as it changes; null until one was saved here. */
     fun observeSavedSettings(): Flow<SessionTimeoutSettings?>
+
+    /** When the signed-in app was last used (wall-clock ms, the web's `xpk_last_activity`); null if never recorded. */
+    suspend fun getLastActivity(): Long?
+
+    suspend fun saveLastActivity(epochMillis: Long)
 }

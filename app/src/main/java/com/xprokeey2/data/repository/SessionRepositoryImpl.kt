@@ -8,6 +8,8 @@ class SessionRepositoryImpl @Inject constructor(
     private val sessionStorage: SessionStorage,
 ) : SessionRepository {
 
+    override suspend fun hasSession(): Boolean = sessionStorage.hasSession()
+
     override suspend fun getMasterSalt(): String? = sessionStorage.getMasterSalt()
 
     override suspend fun getEncryptedVaultKey(): String? = sessionStorage.getEncryptedVaultKey()

@@ -1,8 +1,14 @@
 package com.xprokeey2.presentation.settings
 
+import androidx.compose.ui.graphics.Color
+import com.xprokeey2.presentation.theme.XpColors
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Locale
+
+/** The web's trial colour: purple-600, and purple-400 in dark mode. */
+val XpColors.trialPurple: Color
+    get() = if (isDark) Color(0xFFC084FC) else Color(0xFF9333EA)
 
 /**
  * The browser's en-IN short month names. Spelled out because Android versions differ on September

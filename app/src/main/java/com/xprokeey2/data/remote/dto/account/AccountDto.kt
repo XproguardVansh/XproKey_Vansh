@@ -3,6 +3,20 @@ package com.xprokeey2.data.remote.dto.account
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/** GET /me: the signed-in account (the web's `User` type). */
+@Serializable
+data class MeDto(
+    val email: String? = null,
+    val name: String? = null,
+    @SerialName("account_type") val accountType: String? = null,
+    @SerialName("created_at") val createdAt: String? = null,
+    /** The web also accepts this spelling of the join date. */
+    @SerialName("createdAt") val createdAtCamel: String? = null,
+    @SerialName("organization_name") val organizationName: String? = null,
+    @SerialName("license_status") val licenseStatus: String? = null,
+    @SerialName("license_expires_at") val licenseExpiresAt: String? = null,
+)
+
 /** GET and PUT /me/security: minutes before the session times out ("1"…"240", or "never") and what happens then. */
 @Serializable
 data class SecuritySettingsDto(

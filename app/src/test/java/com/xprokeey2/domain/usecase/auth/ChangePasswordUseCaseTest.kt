@@ -63,6 +63,8 @@ class ChangePasswordUseCaseTest {
     private class FakeSessionRepository(private val masterSalt: String?) : SessionRepository {
         var savedEncryptedVaultKey: String? = null
 
+        override suspend fun hasSession() = true
+
         override suspend fun getMasterSalt(): String? = masterSalt
 
         override suspend fun getEncryptedVaultKey(): String? = savedEncryptedVaultKey

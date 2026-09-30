@@ -27,4 +27,8 @@ class SecuritySettingsRepositoryImpl @Inject constructor(
     override suspend fun saveSettings(settings: SessionTimeoutSettings) = storage.save(settings)
 
     override fun observeSavedSettings(): Flow<SessionTimeoutSettings?> = storage.settings
+
+    override suspend fun getLastActivity(): Long? = storage.getLastActivity()
+
+    override suspend fun saveLastActivity(epochMillis: Long) = storage.saveLastActivity(epochMillis)
 }

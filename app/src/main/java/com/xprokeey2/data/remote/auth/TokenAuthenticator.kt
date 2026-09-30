@@ -10,13 +10,17 @@ import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
+import retrofit2.HttpException
+import java.net.HttpURLConnection
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
  * Access tokens live about 15 minutes. When an authorised request comes back 401, this swaps the
- * refresh token for a new access token (POST /refresh) and retries the request once. If the refresh
- * token is rejected too (it lasts 7 days), the 401 goes through and the app sends the user to Login.
+ * refresh token for a new access token (POST /refresh) and retries the request once. If the server
+ * rejects the refresh token too (it lasts 7 days), the saved session is cleared, the 401 goes through,
+ * and the app sends the user to Login. A refresh that fails for another reason (e.g. no network)
+ * keeps the session.
  */
 @Singleton
 class TokenAuthenticator @Inject constructor(
@@ -54,6 +58,11 @@ class TokenAuthenticator @Inject constructor(
             tokenApi.refresh(BEARER + refreshToken).accessToken
         } catch (e: CancellationException) {
             throw e
+        } catch (e: HttpException) {
+            if (e.code() == HttpURLConnection.HTTP_UNAUTHORIZED || e.code() == HttpURLConnection.HTTP_FORBIDDEN) {
+                tokenStore.clearSession()
+            }
+            null
         } catch (e: Exception) {
             null
         }

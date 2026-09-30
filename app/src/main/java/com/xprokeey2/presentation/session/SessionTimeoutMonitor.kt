@@ -10,6 +10,7 @@ import com.xprokeey2.domain.model.TimeoutDuration
 import com.xprokeey2.domain.usecase.auth.LockVaultUseCase
 import com.xprokeey2.domain.usecase.auth.SignOutUseCase
 import com.xprokeey2.domain.usecase.security.ObserveSessionTimeoutUseCase
+import com.xprokeey2.domain.usecase.security.RecordLastActivityUseCase
 import com.xprokeey2.domain.usecase.security.SyncSessionTimeoutUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +27,8 @@ import javax.inject.Singleton
 /**
  * The web's useSessionTimeout, run while a workspace screen is shown (the web runs it in the signed-in
  * layout): after the chosen minutes without a touch, the vault is locked or the user is logged out.
- * Time in the background counts too, like a browser tab's timer that keeps running.
+ * Time in the background counts too, like a browser tab's timer that keeps running. The last use is
+ * also saved (the web's `xpk_last_activity`), so reopening the app later applies the same rule.
  */
 @Singleton
 class SessionTimeoutMonitor @Inject constructor(
@@ -34,6 +36,7 @@ class SessionTimeoutMonitor @Inject constructor(
     private val syncSettings: SyncSessionTimeoutUseCase,
     private val lockVault: LockVaultUseCase,
     private val signOut: SignOutUseCase,
+    private val recordLastActivity: RecordLastActivityUseCase,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -42,6 +45,7 @@ class SessionTimeoutMonitor @Inject constructor(
     private var lastActivityAt = 0L
     private var timedOut = false
     private var timer: Job? = null
+    private var lastSavedAt = 0L
 
     private val _timeouts = Channel<TimeoutAction>(Channel.CONFLATED)
 
@@ -63,6 +67,7 @@ class SessionTimeoutMonitor @Inject constructor(
         if (workspaceScreens == 1) {
             timedOut = false
             lastActivityAt = now()
+            saveLastActivity()
             restartTimer()
             scope.launch { syncSettings() }
         }
@@ -77,7 +82,14 @@ class SessionTimeoutMonitor @Inject constructor(
     fun onUserActivity() {
         if (workspaceScreens == 0 || timedOut) return
         lastActivityAt = now()
+        if (lastActivityAt - lastSavedAt >= SAVE_INTERVAL_MILLIS) saveLastActivity()
         restartTimer()
+    }
+
+    /** Leaving the app: the last use is saved, in case the app isn't running when it's opened again. */
+    fun onAppBackground() {
+        if (workspaceScreens == 0 || timedOut) return
+        saveLastActivity()
     }
 
     /** Back in the foreground: a sleeping device may have held the timer back. */
@@ -96,6 +108,14 @@ class SessionTimeoutMonitor @Inject constructor(
             timer = null
             timeOut()
         }
+    }
+
+    /** Saves the wall-clock time of the last touch. */
+    private fun saveLastActivity() {
+        val now = now()
+        lastSavedAt = now
+        val lastUsedAt = System.currentTimeMillis() - (now - lastActivityAt)
+        scope.launch { recordLastActivity(lastUsedAt) }
     }
 
     private fun cancelTimer() {
@@ -118,6 +138,11 @@ class SessionTimeoutMonitor @Inject constructor(
     }
 
     private fun now(): Long = SystemClock.elapsedRealtime()
+
+    private companion object {
+        /** Touches come constantly; the time is written at most this often (and when leaving the app). */
+        const val SAVE_INTERVAL_MILLIS = 30_000L
+    }
 }
 
 /** When the timeout hits after a last touch at [lastActivityAt] (ms); null for "Never". */

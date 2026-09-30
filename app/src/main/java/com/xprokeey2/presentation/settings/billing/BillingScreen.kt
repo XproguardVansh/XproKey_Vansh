@@ -35,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,6 +52,7 @@ import com.xprokeey2.domain.model.Billing
 import com.xprokeey2.presentation.components.XpActionButton
 import com.xprokeey2.presentation.settings.billingDate
 import com.xprokeey2.presentation.settings.capitalizeFirst
+import com.xprokeey2.presentation.settings.trialPurple
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
 import com.xprokeey2.presentation.util.ObserveAsEvents
@@ -63,10 +63,6 @@ import com.xprokeey2.presentation.workspace.WorkspaceScaffold
 import com.xprokeey2.presentation.workspace.WorkspaceSection
 import kotlinx.coroutines.launch
 import java.time.Instant
-
-/** The web's Trial badge colour (purple-600 / purple-400). */
-private val TrialPurple = Color(0xFF9333EA)
-private val TrialPurpleDark = Color(0xFFC084FC)
 
 @Composable
 fun BillingScreenRoot(
@@ -294,7 +290,7 @@ private fun StatusBadge(badge: BillingBadge) {
     val (icon, text, color) = when (badge) {
         BillingBadge.CANCELLED -> Triple(R.drawable.ic_x_circle, R.string.billing_badge_cancelled, colors.warning)
         BillingBadge.ACTIVE -> Triple(R.drawable.ic_check_circle, R.string.billing_badge_active, colors.success)
-        BillingBadge.TRIAL -> Triple(R.drawable.ic_crown, R.string.billing_badge_trial, if (colors.isDark) TrialPurpleDark else TrialPurple)
+        BillingBadge.TRIAL -> Triple(R.drawable.ic_crown, R.string.billing_badge_trial, colors.trialPurple)
         BillingBadge.INACTIVE -> Triple(R.drawable.ic_alert_triangle, R.string.billing_badge_inactive, colors.error)
     }
     val shape = RoundedCornerShape(8.dp)

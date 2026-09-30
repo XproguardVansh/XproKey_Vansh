@@ -27,6 +27,7 @@ class LockAndSignOutUseCasesTest {
         private val encryptedVaultKey: String?,
         private val masterSalt: String?,
     ) : SessionRepository {
+        override suspend fun hasSession() = true
         override suspend fun getMasterSalt() = masterSalt
         override suspend fun getEncryptedVaultKey() = encryptedVaultKey
         override suspend fun saveEncryptedVaultKey(encryptedVaultKey: String) = error("unused")

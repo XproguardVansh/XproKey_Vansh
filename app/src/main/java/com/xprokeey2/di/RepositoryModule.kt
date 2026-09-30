@@ -24,6 +24,7 @@ import com.xprokeey2.data.remote.datasource.TransferRemoteDataSource
 import com.xprokeey2.data.remote.datasource.TransferRemoteDataSourceImpl
 import com.xprokeey2.data.remote.datasource.VaultRemoteDataSource
 import com.xprokeey2.data.remote.datasource.VaultRemoteDataSourceImpl
+import com.xprokeey2.data.repository.AccountRepositoryImpl
 import com.xprokeey2.data.repository.AuthRepositoryImpl
 import com.xprokeey2.data.repository.CardRepositoryImpl
 import com.xprokeey2.data.repository.LicenseRepositoryImpl
@@ -35,6 +36,7 @@ import com.xprokeey2.data.repository.SupportRepositoryImpl
 import com.xprokeey2.data.repository.UserRepositoryImpl
 import com.xprokeey2.data.repository.VaultRepositoryImpl
 import com.xprokeey2.data.repository.VaultTransferRepositoryImpl
+import com.xprokeey2.domain.repository.AccountRepository
 import com.xprokeey2.domain.repository.AuthRepository
 import com.xprokeey2.domain.repository.CardRepository
 import com.xprokeey2.domain.repository.LicenseRepository
@@ -153,6 +155,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAccessGate(impl: AccessGuardInterceptor): AccessGate
+
+    @Binds
+    @Singleton
+    abstract fun bindAccountRepository(impl: AccountRepositoryImpl): AccountRepository
 
     @Binds
     @Singleton

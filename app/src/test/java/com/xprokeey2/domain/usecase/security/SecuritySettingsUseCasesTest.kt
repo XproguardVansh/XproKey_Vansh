@@ -36,6 +36,8 @@ class SecuritySettingsUseCasesTest {
             saved = settings
         }
         override fun observeSavedSettings(): Flow<SessionTimeoutSettings?> = flowOf(saved)
+        override suspend fun getLastActivity(): Long? = null
+        override suspend fun saveLastActivity(epochMillis: Long) = Unit
     }
 
     private fun server(duration: TimeoutDuration?, action: TimeoutAction?) =

@@ -100,6 +100,10 @@ data object SubscriptionRoute
 @Serializable
 data object BillingRoute
 
+/** Profile, from the account menu: the account and its plan or business license. */
+@Serializable
+data object ProfileRoute
+
 /** After a session timeout with "Lock": the master password opens the vault again. */
 @Serializable
 data object LockRoute

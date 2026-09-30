@@ -21,9 +21,11 @@ import com.razorpay.Checkout
 import com.razorpay.PaymentData
 import com.razorpay.PaymentResultWithDataListener
 import com.xprokeey2.presentation.navigation.AppNavHost
+import com.xprokeey2.presentation.navigation.AppSessionViewModel
 import com.xprokeey2.presentation.payment.PaymentResult
 import com.xprokeey2.presentation.payment.PaymentResults
 import com.xprokeey2.presentation.payment.razorpayErrorDescription
+import com.xprokeey2.presentation.session.LocalLogOut
 import com.xprokeey2.presentation.session.LocalSessionTimeoutMonitor
 import com.xprokeey2.presentation.session.SessionTimeoutMonitor
 import com.xprokeey2.presentation.theme.DarkXpColors
@@ -50,6 +52,9 @@ class MainActivity : ComponentActivity(), PaymentResultWithDataListener {
 
     private val themeViewModel: ThemeViewModel by viewModels()
 
+    /** The same instance AppNavHost uses, which moves to Login once the user is logged out. */
+    private val appSession: AppSessionViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -70,6 +75,7 @@ class MainActivity : ComponentActivity(), PaymentResultWithDataListener {
             CompositionLocalProvider(
                 LocalSessionTimeoutMonitor provides sessionTimeout,
                 LocalThemeToggle provides themeViewModel::onToggleTheme,
+                LocalLogOut provides appSession::logOut,
             ) {
                 AppNavHost()
             }
@@ -79,12 +85,13 @@ class MainActivity : ComponentActivity(), PaymentResultWithDataListener {
     /**
      * Nothing is drawn until the saved theme is read (a few milliseconds), so the app never opens in
      * the wrong colours; the web's next-themes runs a script before the page paints for the same reason.
+     * The first screen (Login, the app, or the Lock screen) is decided in that time as well.
      */
     private fun drawOnceThemeIsKnown() {
         val content: View = findViewById(android.R.id.content)
         content.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
             override fun onPreDraw(): Boolean {
-                if (themeViewModel.themeMode.value == null) return false
+                if (themeViewModel.themeMode.value == null || appSession.launchDestination.value == null) return false
                 content.viewTreeObserver.removeOnPreDrawListener(this)
                 return true
             }

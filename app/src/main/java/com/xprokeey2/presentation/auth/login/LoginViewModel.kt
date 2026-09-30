@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.xprokeey2.domain.usecase.auth.LoginUseCase
+import com.xprokeey2.domain.usecase.security.RecordLastActivityUseCase
 import com.xprokeey2.domain.usecase.validation.ValidateLoginFormUseCase
 import com.xprokeey2.domain.util.DataError
 import com.xprokeey2.domain.util.Resource
@@ -25,6 +26,7 @@ class LoginViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val login: LoginUseCase,
     private val validateLoginForm: ValidateLoginFormUseCase,
+    private val recordLastActivity: RecordLastActivityUseCase,
 ) : ViewModel() {
 
     private val route = savedStateHandle.toRoute<LoginRoute>()
@@ -79,13 +81,17 @@ class LoginViewModel @Inject constructor(
             _state.update { it.copy(isLoading = false) }
 
             when (result) {
-                is Resource.Success -> _events.send(
-                    if (result.data.needsAccountSetup) {
-                        LoginEvent.NavigateToAccountSetup
-                    } else {
-                        LoginEvent.NavigateToDashboard
-                    }
-                )
+                is Resource.Success -> {
+                    // Logging in counts as use for the session timeout, even before the app itself opens.
+                    recordLastActivity(System.currentTimeMillis())
+                    _events.send(
+                        if (result.data.needsAccountSetup) {
+                            LoginEvent.NavigateToAccountSetup
+                        } else {
+                            LoginEvent.NavigateToDashboard
+                        }
+                    )
+                }
                 is Resource.Error -> when (val error = result.error) {
                     // Unverified accounts go back to OTP entry; the earlier OTP is still valid.
                     is DataError.AccountNotVerified ->

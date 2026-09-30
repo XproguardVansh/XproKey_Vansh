@@ -3,6 +3,7 @@ package com.xprokeey2.presentation.workspace
 import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,6 +28,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,6 +60,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xprokeey2.R
+import com.xprokeey2.presentation.session.LocalLogOut
 import com.xprokeey2.presentation.session.SessionTimeoutEffect
 import com.xprokeey2.presentation.theme.LocalThemeToggle
 import com.xprokeey2.presentation.theme.XpTheme
@@ -70,7 +73,8 @@ enum class MenuGroup { TOOLS, SETTINGS, ABOUT }
 /**
  * Sidebar sections of the web app. Only the ones in [WorkspaceSection.isAvailable] work so far.
  * [group] is the sub-menu an entry sits in (null = top level); an entry with [opens] opens that
- * sub-menu instead of a screen, like Tools, Settings and About on the web.
+ * sub-menu instead of a screen, like Tools, Settings and About on the web. [inDrawer] is false for
+ * pages opened elsewhere, such as Profile from the account menu.
  */
 enum class WorkspaceSection(
     @param:StringRes val title: Int,
@@ -78,6 +82,7 @@ enum class WorkspaceSection(
     val isAvailable: Boolean,
     val group: MenuGroup? = null,
     val opens: MenuGroup? = null,
+    val inDrawer: Boolean = true,
 ) {
     DASHBOARD(R.string.nav_dashboard, R.drawable.ic_layout_grid, isAvailable = true),
     PASSWORDS(R.string.nav_passwords, R.drawable.ic_lock, isAvailable = true),
@@ -93,7 +98,8 @@ enum class WorkspaceSection(
     ABOUT(R.string.nav_about, R.drawable.ic_info, isAvailable = true, group = MenuGroup.SETTINGS, opens = MenuGroup.ABOUT),
     APP_INFO(R.string.nav_app_info, R.drawable.ic_info, isAvailable = true, group = MenuGroup.ABOUT),
     FAQ(R.string.nav_faq, R.drawable.ic_file_text, isAvailable = true, group = MenuGroup.ABOUT),
-    SUPPORT(R.string.nav_support, R.drawable.ic_headphones, isAvailable = true);
+    SUPPORT(R.string.nav_support, R.drawable.ic_headphones, isAvailable = true),
+    PROFILE(R.string.nav_profile, R.drawable.ic_user, isAvailable = true, inDrawer = false);
 
     val hasSubmenu: Boolean get() = opens != null
 
@@ -144,6 +150,7 @@ fun WorkspaceScaffold(
                         null
                     },
                     onBack = onBack,
+                    onSectionClick = { section -> if (section != currentSection) onSectionClick(section) },
                 )
             },
             content = content,
@@ -177,6 +184,7 @@ private fun WorkspaceTopBar(
     user: UserBadge?,
     onMenuClick: (() -> Unit)?,
     onBack: (() -> Unit)?,
+    onSectionClick: (WorkspaceSection) -> Unit,
 ) {
     val colors = XpTheme.colors
     Column(modifier = Modifier.background(colors.surface)) {
@@ -211,7 +219,7 @@ private fun WorkspaceTopBar(
             ThemeToggleButton()
             if (user != null) {
                 Spacer(Modifier.width(8.dp))
-                Avatar(user)
+                AccountMenu(user = user, onSectionClick = onSectionClick)
             }
         }
         HorizontalDivider(color = colors.divider)
@@ -260,9 +268,9 @@ private fun BrandLogo(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun Avatar(user: UserBadge, size: Int = 34) {
+private fun Avatar(user: UserBadge, modifier: Modifier = Modifier, size: Int = 34) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(size.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(XpTheme.colors.primary),
@@ -270,8 +278,101 @@ private fun Avatar(user: UserBadge, size: Int = 34) {
     ) {
         Text(
             text = user.initials,
-            style = XpTheme.typography.bodyBold.copy(fontSize = 12.sp),
+            style = XpTheme.typography.bodyBold.copy(fontSize = if (size >= 40) 13.sp else 12.sp),
             color = XpTheme.colors.onPrimary,
+        )
+    }
+}
+
+/**
+ * The web header's account menu, opened from the avatar: who is signed in, View profile, My
+ * passwords, Account settings (the Security page, like the web) and Log out.
+ */
+@Composable
+private fun AccountMenu(user: UserBadge, onSectionClick: (WorkspaceSection) -> Unit) {
+    val colors = XpTheme.colors
+    val logOut = LocalLogOut.current
+    var expanded by remember { mutableStateOf(false) }
+    val open = { section: WorkspaceSection ->
+        expanded = false
+        onSectionClick(section)
+    }
+    Box {
+        Avatar(
+            user = user,
+            modifier = Modifier
+                .clip(RoundedCornerShape(10.dp))
+                .clickable(role = Role.Button, onClickLabel = stringResource(R.string.cd_account_menu)) { expanded = true },
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            shape = RoundedCornerShape(16.dp),
+            containerColor = colors.surface,
+            border = BorderStroke(1.dp, colors.divider),
+            modifier = Modifier.width(256.dp),
+        ) {
+            Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Avatar(user = user, size = 40)
+                    Spacer(Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = user.displayName,
+                            style = XpTheme.typography.bodyBold.copy(fontSize = 12.5.sp),
+                            color = colors.textPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = user.email,
+                            style = XpTheme.typography.body.copy(fontSize = 10.5.sp),
+                            color = colors.textLabel,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+                HorizontalDivider(color = colors.divider, modifier = Modifier.padding(vertical = 10.dp))
+                AccountMenuItem(R.drawable.ic_user, stringResource(R.string.account_view_profile)) { open(WorkspaceSection.PROFILE) }
+                AccountMenuItem(R.drawable.ic_key_round, stringResource(R.string.account_my_passwords)) { open(WorkspaceSection.PASSWORDS) }
+                AccountMenuItem(R.drawable.ic_settings, stringResource(R.string.account_settings)) { open(WorkspaceSection.SECURITY) }
+                HorizontalDivider(color = colors.divider, modifier = Modifier.padding(vertical = 10.dp))
+                AccountMenuItem(R.drawable.ic_log_out, stringResource(R.string.account_log_out), isDanger = true) {
+                    expanded = false
+                    logOut()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AccountMenuItem(@DrawableRes icon: Int, text: String, isDanger: Boolean = false, onClick: () -> Unit) {
+    val colors = XpTheme.colors
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 10.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = null,
+            tint = if (isDanger) colors.error else colors.textLabel,
+            modifier = Modifier.size(16.dp),
+        )
+        Spacer(Modifier.width(10.dp))
+        Text(
+            text = text,
+            style = XpTheme.typography.body.copy(fontSize = 12.5.sp),
+            color = if (isDanger) colors.error else colors.textSecondary,
         )
     }
 }
@@ -357,7 +458,7 @@ private fun MenuEntries(
     onToggle: (MenuGroup) -> Unit,
     onSectionClick: (WorkspaceSection) -> Unit,
 ) {
-    WorkspaceSection.entries.filter { it.group == group }.forEach { section ->
+    WorkspaceSection.entries.filter { it.group == group && it.inDrawer }.forEach { section ->
         val opens = section.opens
         val isOpen = opens != null && opens in openGroups
         DrawerItem(
