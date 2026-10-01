@@ -2,12 +2,14 @@ package com.xprokeey2.presentation.passwords.form
 
 import com.xprokeey2.domain.model.PasswordStrength
 import com.xprokeey2.presentation.util.UiText
+import com.xprokeey2.presentation.workspace.UserBadge
 
 /** Default category of a new password, as in the web form. */
 const val DEFAULT_CATEGORY = "Personal"
 
 /** Add new password, or "Update Vault Details" when [isEditing]. */
 data class PasswordFormUiState(
+    val user: UserBadge? = null,
     val isEditing: Boolean = false,
     val isLoadingItem: Boolean = false,
     /** Edit only: the item couldn't be loaded. */

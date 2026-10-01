@@ -72,6 +72,7 @@ fun PasswordDetailsScreenRoot(
     resultMessage: String?,
     onResultMessageShown: () -> Unit,
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
     onEdit: () -> Unit,
     onDeleted: (message: String) -> Unit,
     onSignInRequired: (message: String) -> Unit,
@@ -109,6 +110,7 @@ fun PasswordDetailsScreenRoot(
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
         onBack = onBack,
+        onSectionClick = onSectionClick,
         onEdit = onEdit,
         onOpenLink = { url ->
             if (!openLink(uriHandler, url)) {
@@ -124,14 +126,15 @@ fun PasswordDetailsScreen(
     snackbarHostState: SnackbarHostState,
     onAction: (PasswordDetailsAction) -> Unit,
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
     onEdit: () -> Unit,
     onOpenLink: (url: String) -> Unit,
 ) {
     val colors = XpTheme.colors
     WorkspaceScaffold(
-        user = null,
+        user = state.user,
         currentSection = WorkspaceSection.PASSWORDS,
-        onSectionClick = {},
+        onSectionClick = onSectionClick,
         snackbarHostState = snackbarHostState,
         onBack = onBack,
     ) { padding ->
@@ -442,7 +445,7 @@ private fun PasswordDetailsScreenPreview() {
                 ),
             ),
             snackbarHostState = remember { SnackbarHostState() },
-            onAction = {}, onBack = {}, onEdit = {}, onOpenLink = {},
+            onAction = {}, onBack = {}, onSectionClick = {}, onEdit = {}, onOpenLink = {},
         )
     }
 }

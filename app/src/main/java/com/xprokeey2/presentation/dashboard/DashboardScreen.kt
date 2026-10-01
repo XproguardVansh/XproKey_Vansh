@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -150,7 +151,12 @@ fun DashboardScreen(
 
             Spacer(Modifier.height(20.dp))
             val unknown = stringResource(R.string.stat_unknown)
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            // Both tiles of a row are as tall as the taller one (e.g. when a label wraps on a narrow
+            // phone), like the web's grid.
+            Row(
+                modifier = Modifier.height(IntrinsicSize.Min),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 StatTile(
                     title = stringResource(R.string.stat_passwords),
                     value = state.passwordCount?.toString() ?: unknown,
@@ -158,7 +164,9 @@ fun DashboardScreen(
                     captionColor = colors.success,
                     icon = R.drawable.ic_key,
                     iconTint = colors.primary,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                 )
                 StatTile(
                     title = stringResource(R.string.stat_cards),
@@ -167,11 +175,16 @@ fun DashboardScreen(
                     captionColor = colors.warning,
                     icon = R.drawable.ic_credit_card,
                     iconTint = colors.primary,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                 )
             }
             Spacer(Modifier.height(12.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(
+                modifier = Modifier.height(IntrinsicSize.Min),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 val (scoreCaption, scoreColor) = when (security?.rating) {
                     VaultSecurity.Rating.EXCELLENT -> stringResource(R.string.security_excellent) to colors.success
                     VaultSecurity.Rating.GOOD -> stringResource(R.string.security_good) to colors.warning
@@ -185,7 +198,9 @@ fun DashboardScreen(
                     captionColor = scoreColor,
                     icon = R.drawable.ic_shield,
                     iconTint = colors.primary,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                 )
                 StatTile(
                     title = stringResource(R.string.stat_weak_items),
@@ -195,7 +210,9 @@ fun DashboardScreen(
                     icon = R.drawable.ic_alert_triangle,
                     iconTint = colors.warning,
                     onClick = onOpenWeakItems,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                 )
             }
 

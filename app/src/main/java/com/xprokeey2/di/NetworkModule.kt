@@ -4,6 +4,7 @@ import com.xprokeey2.BuildConfig
 import com.xprokeey2.data.remote.api.AccountApi
 import com.xprokeey2.data.remote.api.AuthApi
 import com.xprokeey2.data.remote.api.CardApi
+import com.xprokeey2.data.remote.api.GoogleAuthApi
 import com.xprokeey2.data.remote.api.LicenseApi
 import com.xprokeey2.data.remote.api.PaymentsApi
 import com.xprokeey2.data.remote.api.SupportApi
@@ -26,7 +27,11 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-/** Plain client for POST /refresh: it must not go through [TokenAuthenticator] itself. */
+/**
+ * Plain client for POST /refresh: it must not go through [TokenAuthenticator] itself. Google sign-in
+ * uses it too: its calls come before there is a session, so a 401 must never be retried with a saved
+ * access token in place of the setup token.
+ */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class TokenRefreshClient
@@ -67,6 +72,11 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideAuthApi(retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideGoogleAuthApi(@TokenRefreshClient client: OkHttpClient, json: Json): GoogleAuthApi =
+        retrofit(client, json).create(GoogleAuthApi::class.java)
 
     @Provides
     @Singleton

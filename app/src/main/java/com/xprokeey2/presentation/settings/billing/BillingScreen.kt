@@ -69,6 +69,7 @@ fun BillingScreenRoot(
     resultMessage: String?,
     onResultMessageShown: () -> Unit,
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
     onUpgrade: () -> Unit,
     onGetAccess: () -> Unit,
     onLoadFailed: (message: String) -> Unit,
@@ -94,6 +95,7 @@ fun BillingScreenRoot(
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
         onBack = onBack,
+        onSectionClick = onSectionClick,
         onUpgrade = onUpgrade,
         onGetAccess = onGetAccess,
     )
@@ -106,14 +108,15 @@ fun BillingScreen(
     snackbarHostState: SnackbarHostState,
     onAction: (BillingAction) -> Unit,
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
     onUpgrade: () -> Unit,
     onGetAccess: () -> Unit,
 ) {
     val colors = XpTheme.colors
     WorkspaceScaffold(
-        user = null,
+        user = state.user,
         currentSection = WorkspaceSection.SUBSCRIPTION,
-        onSectionClick = {},
+        onSectionClick = onSectionClick,
         snackbarHostState = snackbarHostState,
         onBack = onBack,
     ) { padding ->
@@ -479,6 +482,7 @@ private fun BillingActivePreview() {
             snackbarHostState = remember { SnackbarHostState() },
             onAction = {},
             onBack = {},
+            onSectionClick = {},
             onUpgrade = {},
             onGetAccess = {},
         )
@@ -494,6 +498,7 @@ private fun BillingTrialPreview() {
             snackbarHostState = remember { SnackbarHostState() },
             onAction = {},
             onBack = {},
+            onSectionClick = {},
             onUpgrade = {},
             onGetAccess = {},
         )

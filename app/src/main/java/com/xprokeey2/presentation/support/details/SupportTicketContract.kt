@@ -2,8 +2,10 @@ package com.xprokeey2.presentation.support.details
 
 import com.xprokeey2.domain.model.SupportTicket
 import com.xprokeey2.presentation.util.UiText
+import com.xprokeey2.presentation.workspace.UserBadge
 
 data class SupportTicketUiState(
+    val user: UserBadge? = null,
     val isLoading: Boolean = true,
     val ticket: SupportTicket? = null,
     val isRefreshing: Boolean = false,

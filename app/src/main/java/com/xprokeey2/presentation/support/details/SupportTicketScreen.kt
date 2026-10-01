@@ -76,6 +76,7 @@ fun SupportTicketScreenRoot(
     resultMessage: String?,
     onResultMessageShown: () -> Unit,
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
     onLoadFailed: (message: String) -> Unit,
     onSignInRequired: (message: String) -> Unit,
     viewModel: SupportTicketViewModel = hiltViewModel(),
@@ -104,6 +105,7 @@ fun SupportTicketScreenRoot(
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
         onBack = onBack,
+        onSectionClick = onSectionClick,
     )
 }
 
@@ -113,11 +115,12 @@ fun SupportTicketScreen(
     snackbarHostState: SnackbarHostState,
     onAction: (SupportTicketAction) -> Unit,
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
 ) {
     WorkspaceScaffold(
-        user = null,
+        user = state.user,
         currentSection = WorkspaceSection.SUPPORT,
-        onSectionClick = {},
+        onSectionClick = onSectionClick,
         snackbarHostState = snackbarHostState,
         onBack = onBack,
     ) { padding ->
@@ -375,6 +378,7 @@ private fun SupportTicketScreenPreview() {
             snackbarHostState = remember { SnackbarHostState() },
             onAction = {},
             onBack = {},
+            onSectionClick = {},
         )
     }
 }

@@ -15,4 +15,6 @@ data class NewVault(
     val encryptedKeys: EncryptedVaultKeys,
     /** Base64 of the 256-bit recovery key. Shown to the user once; never sent to the server. */
     val recoveryKey: String,
+    /** The new vault key itself (Base64), for opening the vault right away (Google sign-up). */
+    val vaultKey: String,
 )

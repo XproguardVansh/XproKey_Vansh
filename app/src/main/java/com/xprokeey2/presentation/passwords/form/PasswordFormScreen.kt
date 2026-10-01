@@ -75,6 +75,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun PasswordFormScreenRoot(
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
     onSaved: (message: String) -> Unit,
     onSignInRequired: (message: String) -> Unit,
     viewModel: PasswordFormViewModel = hiltViewModel(),
@@ -99,6 +100,7 @@ fun PasswordFormScreenRoot(
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
         onBack = onBack,
+        onSectionClick = onSectionClick,
     )
 }
 
@@ -108,12 +110,13 @@ fun PasswordFormScreen(
     snackbarHostState: SnackbarHostState,
     onAction: (PasswordFormAction) -> Unit,
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
 ) {
     val colors = XpTheme.colors
     WorkspaceScaffold(
-        user = null,
+        user = state.user,
         currentSection = WorkspaceSection.PASSWORDS,
-        onSectionClick = {},
+        onSectionClick = onSectionClick,
         snackbarHostState = snackbarHostState,
         onBack = onBack,
     ) { padding ->
@@ -496,6 +499,7 @@ private fun PasswordFormScreenPreview() {
             snackbarHostState = remember { SnackbarHostState() },
             onAction = {},
             onBack = {},
+            onSectionClick = {},
         )
     }
 }
@@ -517,6 +521,7 @@ private fun PasswordFormScreenEditPreview() {
             snackbarHostState = remember { SnackbarHostState() },
             onAction = {},
             onBack = {},
+            onSectionClick = {},
         )
     }
 }

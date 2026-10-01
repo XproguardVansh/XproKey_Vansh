@@ -2,9 +2,11 @@ package com.xprokeey2.presentation.support.newticket
 
 import com.xprokeey2.domain.model.TicketCategory
 import com.xprokeey2.presentation.util.UiText
+import com.xprokeey2.presentation.workspace.UserBadge
 
 /** "Submit a Support Ticket"; name and email start from the signed-in account, like the web. */
 data class NewTicketUiState(
+    val user: UserBadge? = null,
     val name: String = "",
     val email: String = "",
     val category: TicketCategory = TicketCategory.TECHNICAL,

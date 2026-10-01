@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.xprokeey2.R
+import com.xprokeey2.domain.usecase.user.GetSignedInUserUseCase
 import com.xprokeey2.domain.usecase.vault.DeleteVaultItemsUseCase
 import com.xprokeey2.domain.usecase.vault.GetVaultItemDetailsUseCase
 import com.xprokeey2.domain.util.DataError
@@ -12,6 +13,7 @@ import com.xprokeey2.domain.util.Resource
 import com.xprokeey2.presentation.navigation.PasswordDetailsRoute
 import com.xprokeey2.presentation.util.UiText
 import com.xprokeey2.presentation.util.asUiText
+import com.xprokeey2.presentation.workspace.toBadge
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PasswordDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val getSignedInUser: GetSignedInUserUseCase,
     private val getItemDetails: GetVaultItemDetailsUseCase,
     private val deleteItems: DeleteVaultItemsUseCase,
 ) : ViewModel() {
@@ -35,6 +38,13 @@ class PasswordDetailsViewModel @Inject constructor(
 
     private val _events = Channel<PasswordDetailsEvent>()
     val events = _events.receiveAsFlow()
+
+    init {
+        viewModelScope.launch {
+            val user = getSignedInUser()?.toBadge()
+            _state.update { it.copy(user = user) }
+        }
+    }
 
     fun onAction(action: PasswordDetailsAction) {
         when (action) {

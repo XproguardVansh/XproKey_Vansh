@@ -3,9 +3,11 @@ package com.xprokeey2.presentation.cards.form
 import com.xprokeey2.domain.model.CardBrand
 import com.xprokeey2.domain.model.CardCategory
 import com.xprokeey2.presentation.util.UiText
+import com.xprokeey2.presentation.workspace.UserBadge
 
 /** Add card, or Edit card when [isEditing]. Number, expiry ("MMYY") and CVC hold digits only. */
 data class CardFormUiState(
+    val user: UserBadge? = null,
     val isEditing: Boolean = false,
     val isLoadingCard: Boolean = false,
     /** Edit only: the card couldn't be loaded. */

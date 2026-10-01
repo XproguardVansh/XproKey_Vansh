@@ -145,26 +145,24 @@ fun SupportScreen(
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             item {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = stringResource(R.string.support_title),
-                        style = XpTheme.typography.pageTitle,
-                        color = colors.textPrimary,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Spacer(Modifier.width(10.dp))
-                    CompactButton(
-                        text = stringResource(R.string.support_new_ticket),
-                        icon = R.drawable.ic_plus,
-                        onClick = onNewTicket,
-                        style = CompactButtonStyle.Primary,
-                    )
-                }
+                // Like the web on phones: title and subtitle on their own lines, the button below them.
+                Text(
+                    text = stringResource(R.string.support_title),
+                    style = XpTheme.typography.pageTitle,
+                    color = colors.textPrimary,
+                )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = stringResource(R.string.support_subtitle),
                     style = XpTheme.typography.body.copy(fontSize = 12.5.sp, lineHeight = 18.sp),
                     color = colors.textSecondary,
+                )
+                Spacer(Modifier.height(16.dp))
+                CompactButton(
+                    text = stringResource(R.string.support_new_ticket),
+                    icon = R.drawable.ic_plus,
+                    onClick = onNewTicket,
+                    style = CompactButtonStyle.Primary,
                 )
                 Spacer(Modifier.height(4.dp))
             }

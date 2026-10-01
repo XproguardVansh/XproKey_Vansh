@@ -12,6 +12,40 @@
     <string name="cd_show_password">Show password</string>
     <string name="cd_hide_password">Hide password</string>
 
+    <!-- Google sign-in / sign-up (web components/auth/google-auth-button.tsx) -->
+    <string name="google_authenticating">Authenticating with Google...</string>
+    <string name="google_auth_failed">Google authentication failed. Please try again.</string>
+    <string name="google_sign_in_failed">Google sign-in failed. Please try again.</string>
+    <string name="google_sign_in_successful">Google sign-in successful!</string>
+    <string name="google_setup_badge">Zero-Knowledge Security</string>
+    <string name="google_setup_title">Create Your Master Password</string>
+    <string name="google_setup_body">Welcome! Because XproKey uses zero-knowledge encryption, your vault requires a master password to encrypt your credentials. We never store this password.</string>
+    <string name="google_setup_body_named">Welcome, %1$s! Because XproKey uses zero-knowledge encryption, your vault requires a master password to encrypt your credentials. We never store this password.</string>
+    <string name="google_setup_password_label">Master Password</string>
+    <string name="google_setup_password_placeholder">At least 8 characters...</string>
+    <string name="google_setup_confirm_label">Confirm Master Password</string>
+    <string name="google_setup_confirm_placeholder">Repeat master password...</string>
+    <string name="google_setup_strength_weak">Weak</string>
+    <string name="google_setup_strength_medium">Medium</string>
+    <string name="google_setup_strength_strong">Strong</string>
+    <string name="google_setup_password_too_short">Master password must be at least 8 characters long.</string>
+    <string name="google_setup_password_mismatch">Passwords do not match.</string>
+    <string name="google_setup_submit">Set Master Password &amp; Encrypt Vault</string>
+    <string name="google_setup_submitting">Encrypting Vault...</string>
+    <string name="google_setup_failed">Failed to set up vault password.</string>
+    <string name="google_setup_done">Vault password configured successfully!</string>
+    <!-- Only if the server sends no session back after the master password was set (not expected). -->
+    <string name="google_sign_in_again">Your vault is ready. Sign in with Google again to continue.</string>
+    <string name="google_unlock_badge">Unlock Your Vault</string>
+    <string name="google_unlock_title">Enter Master Password</string>
+    <string name="google_unlock_body">You\'re signed in as %1$s. XproKey never stores your master password, so we need it once to unlock your vault locally.</string>
+    <string name="google_unlock_placeholder">Master password</string>
+    <string name="google_unlock_incorrect">Incorrect master password.</string>
+    <string name="google_unlock_submit">Unlock Vault</string>
+    <string name="google_unlock_submitting">Unlocking...</string>
+    <string name="google_unlock_forgot">Forgot master password?</string>
+    <string name="google_vault_unlocked">Vault unlocked</string>
+
     <!-- Login -->
     <string name="login_title">Welcome back</string>
     <string name="login_subtitle">Sign in to unlock your account.</string>

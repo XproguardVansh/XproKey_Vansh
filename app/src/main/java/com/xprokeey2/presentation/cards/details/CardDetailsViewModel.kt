@@ -8,6 +8,7 @@ import com.xprokeey2.R
 import com.xprokeey2.domain.model.CardCategory
 import com.xprokeey2.domain.usecase.card.DeleteCardUseCase
 import com.xprokeey2.domain.usecase.card.GetCardDetailsUseCase
+import com.xprokeey2.domain.usecase.user.GetSignedInUserUseCase
 import com.xprokeey2.domain.util.DataError
 import com.xprokeey2.domain.util.Resource
 import com.xprokeey2.presentation.cards.components.formatExpiry
@@ -15,6 +16,7 @@ import com.xprokeey2.presentation.cards.components.labelRes
 import com.xprokeey2.presentation.navigation.CardDetailsRoute
 import com.xprokeey2.presentation.util.UiText
 import com.xprokeey2.presentation.util.asUiText
+import com.xprokeey2.presentation.workspace.toBadge
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CardDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val getSignedInUser: GetSignedInUserUseCase,
     private val getCardDetails: GetCardDetailsUseCase,
     private val deleteCard: DeleteCardUseCase,
 ) : ViewModel() {
@@ -38,6 +41,13 @@ class CardDetailsViewModel @Inject constructor(
 
     private val _events = Channel<CardDetailsEvent>()
     val events = _events.receiveAsFlow()
+
+    init {
+        viewModelScope.launch {
+            val user = getSignedInUser()?.toBadge()
+            _state.update { it.copy(user = user) }
+        }
+    }
 
     fun onAction(action: CardDetailsAction) {
         when (action) {

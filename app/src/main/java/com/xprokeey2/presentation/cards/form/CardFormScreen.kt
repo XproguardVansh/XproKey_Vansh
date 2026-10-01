@@ -75,6 +75,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CardFormScreenRoot(
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
     onSaved: (message: String) -> Unit,
     onSignInRequired: (message: String) -> Unit,
     viewModel: CardFormViewModel = hiltViewModel(),
@@ -99,6 +100,7 @@ fun CardFormScreenRoot(
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
         onBack = onBack,
+        onSectionClick = onSectionClick,
     )
 }
 
@@ -108,6 +110,7 @@ fun CardFormScreen(
     snackbarHostState: SnackbarHostState,
     onAction: (CardFormAction) -> Unit,
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
 ) {
     val colors = XpTheme.colors
     val focusManager = LocalFocusManager.current
@@ -117,9 +120,9 @@ fun CardFormScreen(
     }
 
     WorkspaceScaffold(
-        user = null,
+        user = state.user,
         currentSection = WorkspaceSection.CARDS,
-        onSectionClick = {},
+        onSectionClick = onSectionClick,
         snackbarHostState = snackbarHostState,
         onBack = onBack,
     ) { padding ->
@@ -440,6 +443,7 @@ private fun CardFormScreenPreview() {
             snackbarHostState = remember { SnackbarHostState() },
             onAction = {},
             onBack = {},
+            onSectionClick = {},
         )
     }
 }
@@ -460,6 +464,7 @@ private fun CardFormScreenEditPreview() {
             snackbarHostState = remember { SnackbarHostState() },
             onAction = {},
             onBack = {},
+            onSectionClick = {},
         )
     }
 }

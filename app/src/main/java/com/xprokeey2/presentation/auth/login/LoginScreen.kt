@@ -1,6 +1,5 @@
 package com.xprokeey2.presentation.auth.login
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.SnackbarHostState
@@ -22,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
@@ -37,12 +34,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xprokeey2.R
 import com.xprokeey2.presentation.auth.components.AuthScreenLayout
+import com.xprokeey2.presentation.auth.google.GoogleAuthHost
+import com.xprokeey2.presentation.auth.google.GoogleSignInButton
 import com.xprokeey2.presentation.components.OrDivider
 import com.xprokeey2.presentation.components.XpCheckbox
 import com.xprokeey2.presentation.components.XpLogoHeader
 import com.xprokeey2.presentation.components.XpPasswordField
 import com.xprokeey2.presentation.components.XpPrimaryButton
-import com.xprokeey2.presentation.components.XpSecondaryButton
 import com.xprokeey2.presentation.components.XpTextField
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
@@ -55,7 +53,8 @@ fun LoginScreenRoot(
     onNavigateToVerify: (email: String) -> Unit,
     onNavigateToForgotPassword: (email: String) -> Unit,
     onNavigateToAccountSetup: () -> Unit,
-    onNavigateToDashboard: () -> Unit,
+    /** [message] (e.g. "Vault unlocked" after Google sign-in) shows once on the Dashboard. */
+    onNavigateToDashboard: (message: String?) -> Unit,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -67,21 +66,30 @@ fun LoginScreenRoot(
         when (event) {
             is LoginEvent.NavigateToVerify -> onNavigateToVerify(event.email)
             LoginEvent.NavigateToAccountSetup -> onNavigateToAccountSetup()
-            LoginEvent.NavigateToDashboard -> onNavigateToDashboard()
+            LoginEvent.NavigateToDashboard -> onNavigateToDashboard(null)
             is LoginEvent.ShowMessage -> scope.launch {
                 snackbarHostState.showSnackbar(event.message.asString(context))
             }
         }
     }
 
-    LoginScreen(
-        state = state,
+    GoogleAuthHost(
         snackbarHostState = snackbarHostState,
-        onAction = viewModel::onAction,
-        onForgotPasswordClick = { onNavigateToForgotPassword(state.email.trim()) },
-        onGoogleClick = {}, // No Google-login API yet.
-        onCreateAccountClick = onNavigateToSignup,
-    )
+        onSignedIn = { needsAccountSetup, message ->
+            if (needsAccountSetup) onNavigateToAccountSetup() else onNavigateToDashboard(message)
+        },
+        onForgotPassword = onNavigateToForgotPassword,
+    ) { isGoogleBusy, onGoogleClick ->
+        LoginScreen(
+            state = state,
+            snackbarHostState = snackbarHostState,
+            onAction = viewModel::onAction,
+            onForgotPasswordClick = { onNavigateToForgotPassword(state.email.trim()) },
+            isGoogleBusy = isGoogleBusy,
+            onGoogleClick = onGoogleClick,
+            onCreateAccountClick = onNavigateToSignup,
+        )
+    }
 }
 
 @Composable
@@ -92,6 +100,7 @@ fun LoginScreen(
     onForgotPasswordClick: () -> Unit,
     onGoogleClick: () -> Unit,
     onCreateAccountClick: () -> Unit,
+    isGoogleBusy: Boolean = false,
 ) {
     val colors = XpTheme.colors
     val typography = XpTheme.typography
@@ -188,16 +197,10 @@ fun LoginScreen(
         OrDivider(modifier = Modifier.fillMaxWidth())
 
         Spacer(Modifier.height(24.dp))
-        XpSecondaryButton(
+        GoogleSignInButton(
             text = stringResource(R.string.continue_with_google),
+            isBusy = isGoogleBusy,
             onClick = onGoogleClick,
-            leadingIcon = {
-                Image(
-                    painter = painterResource(R.drawable.ic_google),
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                )
-            },
             modifier = Modifier.fillMaxWidth(),
         )
 

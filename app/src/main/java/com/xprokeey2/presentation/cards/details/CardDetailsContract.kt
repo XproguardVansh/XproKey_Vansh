@@ -2,8 +2,10 @@ package com.xprokeey2.presentation.cards.details
 
 import com.xprokeey2.domain.model.CardDetails
 import com.xprokeey2.presentation.util.UiText
+import com.xprokeey2.presentation.workspace.UserBadge
 
 data class CardDetailsUiState(
+    val user: UserBadge? = null,
     val isLoading: Boolean = true,
     val loadError: UiText? = null,
     val details: CardDetails? = null,

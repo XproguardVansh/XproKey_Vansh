@@ -1,12 +1,10 @@
 package com.xprokeey2.presentation.auth.signup
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.SnackbarHostState
@@ -21,7 +19,6 @@ import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.LinkAnnotation
@@ -42,13 +39,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xprokeey2.R
 import com.xprokeey2.domain.model.PasswordStrength
 import com.xprokeey2.presentation.auth.components.AuthScreenLayout
+import com.xprokeey2.presentation.auth.google.GoogleAuthHost
+import com.xprokeey2.presentation.auth.google.GoogleSignInButton
 import com.xprokeey2.presentation.components.OrDivider
 import com.xprokeey2.presentation.components.PasswordStrengthMeter
 import com.xprokeey2.presentation.components.XpCheckbox
 import com.xprokeey2.presentation.components.XpLogoHeader
 import com.xprokeey2.presentation.components.XpPasswordField
 import com.xprokeey2.presentation.components.XpPrimaryButton
-import com.xprokeey2.presentation.components.XpSecondaryButton
 import com.xprokeey2.presentation.components.XpTextField
 import com.xprokeey2.presentation.theme.XpTheme
 import com.xprokeey2.presentation.theme.XproKeyTheme
@@ -61,6 +59,10 @@ fun SignupScreenRoot(
     onNavigateToVerify: (email: String) -> Unit,
     onOpenTerms: () -> Unit,
     onOpenPrivacyPolicy: () -> Unit,
+    /** Google sign-up ends signed in, like a login: first-time account setup or the Dashboard. */
+    onNavigateToAccountSetup: () -> Unit,
+    onNavigateToDashboard: (message: String?) -> Unit,
+    onNavigateToForgotPassword: (email: String) -> Unit,
     viewModel: SignupViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -77,15 +79,24 @@ fun SignupScreenRoot(
         }
     }
 
-    SignupScreen(
-        state = state,
+    GoogleAuthHost(
         snackbarHostState = snackbarHostState,
-        onAction = viewModel::onAction,
-        onGoogleClick = {}, // Google sign-in not built yet.
-        onSignInClick = onNavigateToLogin,
-        onTermsClick = onOpenTerms,
-        onPrivacyPolicyClick = onOpenPrivacyPolicy,
-    )
+        onSignedIn = { needsAccountSetup, message ->
+            if (needsAccountSetup) onNavigateToAccountSetup() else onNavigateToDashboard(message)
+        },
+        onForgotPassword = onNavigateToForgotPassword,
+    ) { isGoogleBusy, onGoogleClick ->
+        SignupScreen(
+            state = state,
+            snackbarHostState = snackbarHostState,
+            onAction = viewModel::onAction,
+            isGoogleBusy = isGoogleBusy,
+            onGoogleClick = onGoogleClick,
+            onSignInClick = onNavigateToLogin,
+            onTermsClick = onOpenTerms,
+            onPrivacyPolicyClick = onOpenPrivacyPolicy,
+        )
+    }
 }
 
 @Composable
@@ -97,6 +108,7 @@ fun SignupScreen(
     onSignInClick: () -> Unit,
     onTermsClick: () -> Unit,
     onPrivacyPolicyClick: () -> Unit,
+    isGoogleBusy: Boolean = false,
 ) {
     val colors = XpTheme.colors
     val typography = XpTheme.typography
@@ -246,16 +258,10 @@ fun SignupScreen(
         OrDivider(modifier = Modifier.fillMaxWidth())
 
         Spacer(Modifier.height(24.dp))
-        XpSecondaryButton(
+        GoogleSignInButton(
             text = stringResource(R.string.sign_up_with_google),
+            isBusy = isGoogleBusy,
             onClick = onGoogleClick,
-            leadingIcon = {
-                Image(
-                    painter = painterResource(R.drawable.ic_google),
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                )
-            },
             modifier = Modifier.fillMaxWidth(),
         )
 

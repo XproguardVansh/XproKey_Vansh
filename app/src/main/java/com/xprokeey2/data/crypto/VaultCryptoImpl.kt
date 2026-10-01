@@ -40,6 +40,7 @@ class VaultCryptoImpl @Inject constructor() : VaultCrypto {
                 encryptedVaultKeyRecovery = wrap(vaultKey, secret = recoveryKey, masterSalt = masterSalt),
             ),
             recoveryKey = recoveryKey,
+            vaultKey = vaultKey,
         )
     }
 

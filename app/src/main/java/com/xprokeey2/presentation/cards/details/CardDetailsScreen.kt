@@ -67,6 +67,7 @@ fun CardDetailsScreenRoot(
     resultMessage: String?,
     onResultMessageShown: () -> Unit,
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
     onEdit: () -> Unit,
     onDeleted: (message: String) -> Unit,
     onSignInRequired: (message: String) -> Unit,
@@ -103,6 +104,7 @@ fun CardDetailsScreenRoot(
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
         onBack = onBack,
+        onSectionClick = onSectionClick,
         onEdit = onEdit,
     )
 }
@@ -113,13 +115,14 @@ fun CardDetailsScreen(
     snackbarHostState: SnackbarHostState,
     onAction: (CardDetailsAction) -> Unit,
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
     onEdit: () -> Unit,
 ) {
     val colors = XpTheme.colors
     WorkspaceScaffold(
-        user = null,
+        user = state.user,
         currentSection = WorkspaceSection.CARDS,
-        onSectionClick = {},
+        onSectionClick = onSectionClick,
         snackbarHostState = snackbarHostState,
         onBack = onBack,
     ) { padding ->
@@ -359,6 +362,7 @@ private fun CardDetailsScreenPreview() {
             snackbarHostState = remember { SnackbarHostState() },
             onAction = {},
             onBack = {},
+            onSectionClick = {},
             onEdit = {},
         )
     }

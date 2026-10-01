@@ -2,8 +2,10 @@ package com.xprokeey2.presentation.passwords.details
 
 import com.xprokeey2.domain.model.VaultItemDetails
 import com.xprokeey2.presentation.util.UiText
+import com.xprokeey2.presentation.workspace.UserBadge
 
 data class PasswordDetailsUiState(
+    val user: UserBadge? = null,
     val isLoading: Boolean = true,
     val loadError: UiText? = null,
     val details: VaultItemDetails? = null,

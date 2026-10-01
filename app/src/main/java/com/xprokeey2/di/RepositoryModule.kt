@@ -14,6 +14,8 @@ import com.xprokeey2.data.remote.datasource.AuthRemoteDataSource
 import com.xprokeey2.data.remote.datasource.AuthRemoteDataSourceImpl
 import com.xprokeey2.data.remote.datasource.CardRemoteDataSource
 import com.xprokeey2.data.remote.datasource.CardRemoteDataSourceImpl
+import com.xprokeey2.data.remote.datasource.GoogleAuthRemoteDataSource
+import com.xprokeey2.data.remote.datasource.GoogleAuthRemoteDataSourceImpl
 import com.xprokeey2.data.remote.datasource.LicenseRemoteDataSource
 import com.xprokeey2.data.remote.datasource.LicenseRemoteDataSourceImpl
 import com.xprokeey2.data.remote.datasource.PaymentRemoteDataSource
@@ -27,6 +29,7 @@ import com.xprokeey2.data.remote.datasource.VaultRemoteDataSourceImpl
 import com.xprokeey2.data.repository.AccountRepositoryImpl
 import com.xprokeey2.data.repository.AuthRepositoryImpl
 import com.xprokeey2.data.repository.CardRepositoryImpl
+import com.xprokeey2.data.repository.GoogleAuthRepositoryImpl
 import com.xprokeey2.data.repository.LicenseRepositoryImpl
 import com.xprokeey2.data.repository.RecoveryKeyRepositoryImpl
 import com.xprokeey2.data.repository.SecuritySettingsRepositoryImpl
@@ -39,6 +42,7 @@ import com.xprokeey2.data.repository.VaultTransferRepositoryImpl
 import com.xprokeey2.domain.repository.AccountRepository
 import com.xprokeey2.domain.repository.AuthRepository
 import com.xprokeey2.domain.repository.CardRepository
+import com.xprokeey2.domain.repository.GoogleAuthRepository
 import com.xprokeey2.domain.repository.LicenseRepository
 import com.xprokeey2.domain.repository.RecoveryKeyRepository
 import com.xprokeey2.domain.repository.SecuritySettingsRepository
@@ -71,6 +75,14 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGoogleAuthRemoteDataSource(impl: GoogleAuthRemoteDataSourceImpl): GoogleAuthRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindGoogleAuthRepository(impl: GoogleAuthRepositoryImpl): GoogleAuthRepository
 
     @Binds
     @Singleton

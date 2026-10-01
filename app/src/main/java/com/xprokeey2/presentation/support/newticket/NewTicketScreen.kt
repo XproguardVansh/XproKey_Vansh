@@ -64,6 +64,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun NewTicketScreenRoot(
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
     onCreated: (ticketId: String?, message: String) -> Unit,
     onSignInRequired: (message: String) -> Unit,
     viewModel: NewTicketViewModel = hiltViewModel(),
@@ -86,6 +87,7 @@ fun NewTicketScreenRoot(
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
         onBack = onBack,
+        onSectionClick = onSectionClick,
     )
 }
 
@@ -95,13 +97,14 @@ fun NewTicketScreen(
     snackbarHostState: SnackbarHostState,
     onAction: (NewTicketAction) -> Unit,
     onBack: () -> Unit,
+    onSectionClick: (WorkspaceSection) -> Unit,
 ) {
     val colors = XpTheme.colors
     val focusManager = LocalFocusManager.current
     WorkspaceScaffold(
-        user = null,
+        user = state.user,
         currentSection = WorkspaceSection.SUPPORT,
-        onSectionClick = {},
+        onSectionClick = onSectionClick,
         snackbarHostState = snackbarHostState,
         onBack = onBack,
     ) { padding ->
@@ -285,6 +288,7 @@ private fun NewTicketScreenPreview() {
             snackbarHostState = remember { SnackbarHostState() },
             onAction = {},
             onBack = {},
+            onSectionClick = {},
         )
     }
 }

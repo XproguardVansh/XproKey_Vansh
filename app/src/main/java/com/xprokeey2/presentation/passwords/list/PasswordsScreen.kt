@@ -163,27 +163,27 @@ fun PasswordsScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
         ) {
             item {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.passwords_title),
-                            style = XpTheme.typography.pageTitle,
-                            color = colors.textPrimary,
-                        )
-                        Text(
-                            text = stringResource(R.string.passwords_subtitle),
-                            style = XpTheme.typography.body.copy(fontSize = 12.5.sp),
-                            color = colors.textSecondary,
-                        )
-                    }
-                    Spacer(Modifier.width(10.dp))
-                    CompactButton(
-                        text = stringResource(R.string.add_password_button),
-                        icon = R.drawable.ic_plus,
-                        onClick = onAddPassword,
-                        style = CompactButtonStyle.Primary,
-                    )
-                }
+                // Like the web on phones: title and subtitle on their own lines, the button below
+                // them at full width.
+                Text(
+                    text = stringResource(R.string.passwords_title),
+                    style = XpTheme.typography.pageTitle,
+                    color = colors.textPrimary,
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.passwords_subtitle),
+                    style = XpTheme.typography.body.copy(fontSize = 13.sp, lineHeight = 19.sp),
+                    color = colors.textSecondary,
+                )
+                Spacer(Modifier.height(14.dp))
+                CompactButton(
+                    text = stringResource(R.string.add_password_button),
+                    icon = R.drawable.ic_plus,
+                    onClick = onAddPassword,
+                    style = CompactButtonStyle.Primary,
+                    modifier = Modifier.fillMaxWidth(),
+                )
                 Spacer(Modifier.height(18.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     XpTextField(
@@ -428,9 +428,10 @@ private fun TableHeader(allSelected: Boolean, onToggleAll: () -> Unit) {
 }
 
 /**
- * One password as a card. Portrait: logo, name, website and username with the star in the corner,
- * then category, date, view and copy. Landscape: one row with the buttons on the right. The
- * checkbox keeps selecting several passwords working.
+ * One password as a card. Portrait: checkbox, logo, name, website and username with the star in the
+ * corner; below them a full-width row with the category, date, view and copy (like the web's phone
+ * card, so nothing is squeezed next to the logo). Landscape: one row with the buttons on the right.
+ * The checkbox keeps selecting several passwords working.
  */
 @Composable
 private fun PasswordCard(
@@ -445,30 +446,26 @@ private fun PasswordCard(
     modifier: Modifier = Modifier,
 ) {
     val colors = XpTheme.colors
-    val shape = RoundedCornerShape(14.dp)
+    val shape = RoundedCornerShape(16.dp)
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .background(if (isSelected) colors.primary.copy(alpha = 0.06f) else colors.surface)
-            .border(1.dp, colors.divider, shape)
-            .clickable(onClick = onView)
-            .padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = if (isLandscape) 12.dp else 8.dp),
-        verticalAlignment = if (isLandscape) Alignment.CenterVertically else Alignment.Top,
-    ) {
-        val selectLabel = stringResource(R.string.cd_select_item, item.title)
-        SelectBox(
-            checked = isSelected,
-            onToggle = onToggleSelected,
-            modifier = Modifier
-                .padding(top = if (isLandscape) 0.dp else 11.dp)
-                .semantics { contentDescription = selectLabel },
-        )
-        Spacer(Modifier.width(10.dp))
-        VaultItemAvatar(title = item.title, url = item.url, size = 40.dp, softLetter = true)
-        Spacer(Modifier.width(12.dp))
-        if (isLandscape) {
+    val selectLabel = stringResource(R.string.cd_select_item, item.title)
+    val cardModifier = modifier
+        .fillMaxWidth()
+        .clip(shape)
+        .background(if (isSelected) colors.primary.copy(alpha = 0.06f) else colors.surface)
+        .border(1.dp, colors.divider, shape)
+        .clickable(onClick = onView)
+
+    if (isLandscape) {
+        Row(modifier = cardModifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            SelectBox(
+                checked = isSelected,
+                onToggle = onToggleSelected,
+                modifier = Modifier.semantics { contentDescription = selectLabel },
+            )
+            Spacer(Modifier.width(10.dp))
+            VaultItemAvatar(title = item.title, url = item.url, size = 40.dp, softLetter = true)
+            Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     CardTitle(item.title, modifier = Modifier.weight(1f, fill = false))
@@ -490,32 +487,44 @@ private fun PasswordCard(
             FavoriteButton(isFavorite = item.isFavorite, enabled = !isUpdatingFavorite, onClick = onToggleFavorite)
             ViewButton(onClick = onView)
             CopyButton(enabled = item.username.isNotBlank(), onClick = onCopyUsername)
-        } else {
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.Top) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        CardTitle(item.title)
-                        CardWebsite(url = item.url, onOpenLink = onOpenLink, showIcon = true)
-                        CardUsername(item.username)
-                    }
-                    // In the top corner, level with the name.
-                    FavoriteButton(
-                        isFavorite = item.isFavorite,
-                        enabled = !isUpdatingFavorite,
-                        onClick = onToggleFavorite,
-                        modifier = Modifier.offset(x = 4.dp, y = (-12).dp),
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                        CategoryChip(category = item.category, modifier = Modifier.widthIn(max = 120.dp))
-                        Spacer(Modifier.width(8.dp))
-                        CardDate(item.updatedAt.shortDate())
-                    }
-                    ViewButton(onClick = onView)
-                    CopyButton(enabled = item.username.isNotBlank(), onClick = onCopyUsername)
-                }
+        }
+        return
+    }
+
+    Column(modifier = cardModifier.padding(start = 16.dp, end = 12.dp, top = 14.dp, bottom = 12.dp)) {
+        Row(verticalAlignment = Alignment.Top) {
+            SelectBox(
+                checked = isSelected,
+                onToggle = onToggleSelected,
+                modifier = Modifier
+                    // Level with the middle of the logo.
+                    .padding(top = 11.dp)
+                    .semantics { contentDescription = selectLabel },
+            )
+            Spacer(Modifier.width(12.dp))
+            VaultItemAvatar(title = item.title, url = item.url, size = 40.dp, softLetter = true)
+            Spacer(Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                CardTitle(item.title)
+                CardWebsite(url = item.url, onOpenLink = onOpenLink, showIcon = true)
+                CardUsername(item.username)
             }
+            // In the top corner, level with the name.
+            FavoriteButton(
+                isFavorite = item.isFavorite,
+                enabled = !isUpdatingFavorite,
+                onClick = onToggleFavorite,
+                modifier = Modifier.offset(x = 6.dp, y = (-12).dp),
+            )
+        }
+        Spacer(Modifier.height(12.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            CategoryChip(category = item.category, modifier = Modifier.widthIn(max = 140.dp))
+            Spacer(Modifier.width(10.dp))
+            CardDate(item.updatedAt.shortDate(), modifier = Modifier.weight(1f))
+            ViewButton(onClick = onView)
+            Spacer(Modifier.width(4.dp))
+            CopyButton(enabled = item.username.isNotBlank(), onClick = onCopyUsername)
         }
     }
 }
@@ -560,13 +569,14 @@ private fun CardWebsite(url: String, onOpenLink: (String) -> Unit, showIcon: Boo
 }
 
 @Composable
-private fun CardDate(text: String) {
+private fun CardDate(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = XpTheme.typography.body.copy(fontSize = 12.sp),
         color = XpTheme.colors.textLabel,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
+        modifier = modifier,
     )
 }
 

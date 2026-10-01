@@ -117,7 +117,7 @@ fun AppNavHost(
                 onNavigateToVerify = { email -> navController.navigate(VerifyEmailRoute(email)) },
                 onNavigateToForgotPassword = { email -> navController.navigate(ForgotPasswordRoute(email)) },
                 onNavigateToAccountSetup = { navController.clearStackAndNavigate(AccountTypeRoute) },
-                onNavigateToDashboard = { navController.clearStackAndNavigate(DashboardRoute) },
+                onNavigateToDashboard = navController::openDashboardAfterSignIn,
             )
         }
 
@@ -127,6 +127,10 @@ fun AppNavHost(
                 onNavigateToVerify = { email -> navController.navigate(VerifyEmailRoute(email)) },
                 onOpenTerms = { navController.navigate(TermsRoute) },
                 onOpenPrivacyPolicy = { navController.navigate(PrivacyPolicyRoute) },
+                // Google sign-up ends signed in, like the web.
+                onNavigateToAccountSetup = { navController.clearStackAndNavigate(AccountTypeRoute) },
+                onNavigateToDashboard = navController::openDashboardAfterSignIn,
+                onNavigateToForgotPassword = { email -> navController.navigate(ForgotPasswordRoute(email)) },
             )
         }
 
@@ -235,6 +239,7 @@ fun AppNavHost(
         composable<PasswordFormRoute> {
             PasswordFormScreenRoot(
                 onBack = { navController.popBackStack() },
+                onSectionClick = navController::openSection,
                 onSaved = navController::popBackWithMessage,
                 onSignInRequired = signInAgain,
             )
@@ -246,6 +251,7 @@ fun AppNavHost(
                 resultMessage = resultMessage,
                 onResultMessageShown = entry::clearResultMessage,
                 onBack = { navController.popBackStack() },
+                onSectionClick = navController::openSection,
                 onEdit = {
                     navController.navigate(PasswordFormRoute(itemId = entry.toRoute<PasswordDetailsRoute>().itemId))
                 },
@@ -269,6 +275,7 @@ fun AppNavHost(
         composable<CardFormRoute> {
             CardFormScreenRoot(
                 onBack = { navController.popBackStack() },
+                onSectionClick = navController::openSection,
                 onSaved = navController::popBackWithMessage,
                 onSignInRequired = signInAgain,
             )
@@ -280,6 +287,7 @@ fun AppNavHost(
                 resultMessage = resultMessage,
                 onResultMessageShown = entry::clearResultMessage,
                 onBack = { navController.popBackStack() },
+                onSectionClick = navController::openSection,
                 onEdit = { navController.navigate(CardFormRoute(cardId = entry.toRoute<CardDetailsRoute>().cardId)) },
                 onDeleted = navController::popBackWithMessage,
                 onSignInRequired = signInAgain,
@@ -340,6 +348,7 @@ fun AppNavHost(
                 resultMessage = resultMessage,
                 onResultMessageShown = entry::clearResultMessage,
                 onBack = { navController.popBackStack() },
+                onSectionClick = navController::openSection,
                 onUpgrade = { navController.navigate(PlanRoute()) },
                 onGetAccess = { navController.navigate(AccountTypeRoute) },
                 onLoadFailed = navController::popBackWithMessage,
@@ -393,6 +402,7 @@ fun AppNavHost(
         composable<NewTicketRoute> {
             NewTicketScreenRoot(
                 onBack = { navController.popBackStack() },
+                onSectionClick = navController::openSection,
                 onCreated = { ticketId, message ->
                     // Like the web: straight to the new ticket when the server returns it.
                     if (ticketId == null) {
@@ -414,6 +424,7 @@ fun AppNavHost(
                 resultMessage = resultMessage,
                 onResultMessageShown = entry::clearResultMessage,
                 onBack = { navController.popBackStack() },
+                onSectionClick = navController::openSection,
                 onLoadFailed = navController::popBackWithMessage,
                 onSignInRequired = signInAgain,
             )
@@ -440,6 +451,12 @@ private fun <T : Any> NavHostController.clearStackAndNavigate(route: T) {
     navigate(route) {
         popUpTo(graph.id) { inclusive = true }
     }
+}
+
+/** Signed in: into the app. [message] (e.g. "Vault unlocked" after Google sign-in) shows once there. */
+private fun NavHostController.openDashboardAfterSignIn(message: String?) {
+    clearStackAndNavigate(DashboardRoute)
+    if (message != null) currentBackStackEntry?.savedStateHandle?.set(RESULT_MESSAGE, message)
 }
 
 /**

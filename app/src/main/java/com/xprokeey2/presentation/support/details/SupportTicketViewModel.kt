@@ -6,11 +6,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.xprokeey2.R
 import com.xprokeey2.domain.usecase.support.GetSupportTicketUseCase
+import com.xprokeey2.domain.usecase.user.GetSignedInUserUseCase
 import com.xprokeey2.domain.util.DataError
 import com.xprokeey2.domain.util.Resource
 import com.xprokeey2.presentation.navigation.SupportTicketRoute
 import com.xprokeey2.presentation.util.UiText
 import com.xprokeey2.presentation.util.asUiText
+import com.xprokeey2.presentation.workspace.toBadge
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SupportTicketViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val getSignedInUser: GetSignedInUserUseCase,
     private val getTicket: GetSupportTicketUseCase,
 ) : ViewModel() {
 
@@ -35,6 +38,10 @@ class SupportTicketViewModel @Inject constructor(
     val events = _events.receiveAsFlow()
 
     init {
+        viewModelScope.launch {
+            val user = getSignedInUser()?.toBadge()
+            _state.update { it.copy(user = user) }
+        }
         load()
     }
 

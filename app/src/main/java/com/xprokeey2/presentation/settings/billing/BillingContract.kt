@@ -2,12 +2,14 @@ package com.xprokeey2.presentation.settings.billing
 
 import com.xprokeey2.domain.model.Billing
 import com.xprokeey2.presentation.util.UiText
+import com.xprokeey2.presentation.workspace.UserBadge
 
 /** The status badge of Manage Subscription, in the web's order of checks. */
 enum class BillingBadge { CANCELLED, ACTIVE, TRIAL, INACTIVE }
 
 /** Manage Subscription (the web's /billing page). */
 data class BillingUiState(
+    val user: UserBadge? = null,
     val isLoading: Boolean = true,
     val billing: Billing? = null,
     val isCancelDialogVisible: Boolean = false,

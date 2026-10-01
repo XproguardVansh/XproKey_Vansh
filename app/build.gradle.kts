@@ -27,6 +27,14 @@ android {
         buildConfigField("String", "BASE_URL", "\"https://api.xprokey.com/\"")
         // Razorpay public key ID (never the secret). Live key: the server's plans are live too.
         buildConfigField("String", "RAZORPAY_KEY_ID", "\"rzp_live_SeVdEk5cjvcBhb\"")
+        // Google sign-in: the web app's OAuth client, so the ID token is issued for it and the server
+        // checks it like the web's. Google also needs an Android OAuth client in the same project
+        // (package com.xprokeey2 + the signing certificate's SHA-1).
+        buildConfigField(
+            "String",
+            "GOOGLE_WEB_CLIENT_ID",
+            "\"601848693409-erm4508vpu5hjnlm2b6eckutvacbt01s.apps.googleusercontent.com\"",
+        )
     }
 
     buildTypes {
@@ -87,6 +95,11 @@ dependencies {
     // Payments: Razorpay Checkout for subscriptions
     implementation(libs.razorpay.checkout)
     implementation(libs.razorpay.standard.core)
+
+    // Google sign-in: Credential Manager's "Sign in with Google"
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

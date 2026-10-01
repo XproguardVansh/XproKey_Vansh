@@ -14,6 +14,7 @@ import com.xprokeey2.domain.model.CardExpiry
 import com.xprokeey2.domain.usecase.card.AddCardUseCase
 import com.xprokeey2.domain.usecase.card.GetCardDetailsUseCase
 import com.xprokeey2.domain.usecase.card.UpdateCardUseCase
+import com.xprokeey2.domain.usecase.user.GetSignedInUserUseCase
 import com.xprokeey2.domain.usecase.validation.CardFormField
 import com.xprokeey2.domain.usecase.validation.ValidateCardFormUseCase
 import com.xprokeey2.domain.util.DataError
@@ -21,6 +22,7 @@ import com.xprokeey2.domain.util.Resource
 import com.xprokeey2.presentation.navigation.CardFormRoute
 import com.xprokeey2.presentation.util.UiText
 import com.xprokeey2.presentation.util.asUiText
+import com.xprokeey2.presentation.workspace.toBadge
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +44,7 @@ private val HolderNameFilter = Regex("[^a-zA-Z\\s'-]")
 @HiltViewModel
 class CardFormViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val getSignedInUser: GetSignedInUserUseCase,
     private val getCardDetails: GetCardDetailsUseCase,
     private val addCard: AddCardUseCase,
     private val updateCard: UpdateCardUseCase,
@@ -60,6 +63,10 @@ class CardFormViewModel @Inject constructor(
     val events = _events.receiveAsFlow()
 
     init {
+        viewModelScope.launch {
+            val user = getSignedInUser()?.toBadge()
+            _state.update { it.copy(user = user) }
+        }
         if (cardId != null) loadCard(cardId)
     }
 

@@ -12,6 +12,7 @@ import com.xprokeey2.domain.util.DataError
 import com.xprokeey2.domain.util.Resource
 import com.xprokeey2.presentation.util.UiText
 import com.xprokeey2.presentation.util.asUiText
+import com.xprokeey2.presentation.workspace.toBadge
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +41,7 @@ class NewTicketViewModel @Inject constructor(
             val user = getSignedInUser() ?: return@launch
             _state.update {
                 it.copy(
+                    user = user.toBadge(),
                     name = it.name.ifEmpty { user.name },
                     email = it.email.ifEmpty { user.email },
                 )

@@ -119,7 +119,8 @@ enum class WorkspaceSection(
 
 /**
  * Shell of the signed-in app: top bar + side drawer (the web sidebar). Section screens get the menu
- * button; sub-screens pass [onBack] and get a back arrow and no drawer.
+ * button; sub-screens pass [onBack] and get a back arrow and no drawer. Both show the account menu
+ * when [user] is known, like the web header.
  */
 @Composable
 fun WorkspaceScaffold(
@@ -150,7 +151,8 @@ fun WorkspaceScaffold(
                         null
                     },
                     onBack = onBack,
-                    onSectionClick = { section -> if (section != currentSection) onSectionClick(section) },
+                    // A sub-screen isn't its section's page: My passwords from a password's details opens the list.
+                    onSectionClick = { section -> if (onBack != null || section != currentSection) onSectionClick(section) },
                 )
             },
             content = content,
